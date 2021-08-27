@@ -1,0 +1,80 @@
+specVersion: 0.0.1
+description: Fundraising on Ethereum
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: AelinPoolFactory
+    network: mainnet
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: AelinPoolFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.2
+      language: wasm/assemblyscript
+      entities:
+        - CreatePool
+      abis:
+        - name: AelinPoolFactory
+          file: ./abis/AelinPoolFactory.json
+      eventHandlers:
+        - event: CreatePool(address,string,string,uint256,address,uint256,uint256,address,uint256))
+          handler: handleCreatePool
+      file: ./src/aelin-pool-factory.ts
+
+templates:
+  - name: AelinPool
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: AelinPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./src/mappings/aelin-pool.ts
+      entities:
+        - DealCreated
+        - PurchasePoolToken
+        - WithdrawFromPool
+        - AcceptDeal
+      abis:
+        - name: AelinPool
+          file: ./abis/AelinPool.json
+      eventHandlers:
+        - event: PurchasePoolToken(address,address,uint256,uint256)
+          handler: handlePurchasePoolToken
+        - event: WithdrawFromPool(address,address,uint256,uint256)
+          handler: handleWithdrawFromPool
+        - event: AcceptDeal(address,address,address,uint256)
+          handler: handleAcceptDeal
+        - event: CreateDeal(string,string,address,address,uint256,uint256,uint256,uint256,uint256,address)
+          handler: handleCreateDeal
+
+  - name: AelinDeal
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: AelinDeal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./src/mappings/aelin-deal.ts
+      entities:
+        - AelinDeal
+      abis:
+        - name: AelinDeal
+          file: ./abis/AelinDeal.json
+      eventHandlers:
+        - event: DealFullyFunded(address,address,uint256,uint256)
+          handler: handleDealFullyFunded
+        - event: DepositDealTokens(address,address,address,uint256)
+          handler: handleDepositDealTokens
+        - event: WithdrawUnderlyingDealTokens(address,address,address,uint256)
+          handler: handleWithdrawUnderlyingDealTokens
+        - event: ClaimedUnderlyingDealTokens(address,address,address,uint256)
+          handler: handleClaimedUnderlyingDealTokens
+        - event: MintDealTokens(address,address,uint256)
+          handler: handleMintDealTokens

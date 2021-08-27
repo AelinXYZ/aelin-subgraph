@@ -1,0 +1,196 @@
+type PoolCreated @entity {
+  " the address of the pool "
+  id: ID!
+
+  " represents the pool token name `aePool-${name}` "
+  name: String!
+
+  " represents the pool token symbol `aeP-${symbol}` "
+  symbol: String!
+
+  " the cap on the amount of purchase tokens in the pool. If 0 - that means uncapped "
+  purchaseTokenCap: BigInt!
+
+  " the address of the purchase token "
+  purchaseToken: Bytes!
+
+  " the duration of the pool assuming no deal is presented when purchasers can withdraw all of their locked funds "
+  duration: BigInt!
+
+  " the fee paid to the sponsor when a purchaser accepts a deal "
+  sponsorFee: BigInt!
+
+  " the address of the sponsor for fee payments. only the msg.sender of the createPool method can be the sponsor "
+  sponsor: Bytes!
+
+  " the amount of time after which a pool is created during which a pool token can be purchased. After which the purchase period is locked. "
+  purchaseExpiry: BigInt!
+}
+
+type PurchasePoolToken @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the pool token purchaser "
+  purchaser: Bytes!
+
+  " the address of the pool "
+  poolAddress: Bytes!
+
+  " the amount of purchase tokens spent "
+  purchaseTokenAmount: BigInt!
+
+  " the amount of pool tokens received "
+  poolTokenAmount: BigInt!
+}
+
+type WithdrawFromPool @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the pool token purchaser "
+  purchaser: Bytes!
+
+  " the address of the pool "
+  poolAddress: Bytes!
+
+  " the amount of purchase tokens spent "
+  purchaseTokenAmount: BigInt!
+
+  " the amount of pool tokens received "
+  poolTokenAmount: BigInt!
+}
+
+type AcceptDeal @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the deal token purchaser "
+  purchaser: Bytes!
+
+  " the address of the pool "
+  poolAddress: Bytes!
+
+  " the address of the deal "
+  dealAddress: Bytes!
+
+  " the amount of pool tokens spent. will also equal the amount of deal tokens received. "
+  poolTokenAmount: BigInt!
+}
+
+type CreateDeal @entity {
+  " the address of the deal "
+  id: ID!
+
+  " the name of the deal "
+  name: String!
+
+  " the symbol of the deal "
+  symbol: String!
+
+  " the underlying deal token address "
+  underlyingDealToken: Bytes!
+
+  " the total amount of purchse tokens for the deal "
+  dealPurchaseTokenTotal: BigInt!
+
+  " the total amount of underlying deal tokens available for the deal "
+  underlyingDealTokenTotal: BigInt!
+
+  " the vesting period which is linear for all deals in v1 "
+  vestingPeriod: BigInt!
+
+  " the vesting cliff after which linear vesting starts "
+  vestingCliff: BigInt!
+
+  # @TODO make sure deal tokens can be redeemed by the holder if not enough are accepted. maybe there is a function to update the amount of deal tokens minted after expiry as part of the withdrawal "
+  " the period in which a deal can be accepted by the purchaser after which they can only retrieve their deal tokens "
+  redemptionPeriod: BigInt!
+
+  " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
+  holder: Bytes!
+
+  " the max amount of pool tokens that can be converted for the deal "
+  poolTokenMaxPurchaseAmount: BigInt!
+}
+
+# Not tracking transfers initially to save subgraph space unless necessary in the UI - event Transfer(address indexed from, address indexed to, uint amount);
+
+type DealFullyFunded @entity {
+  " the address of the deal "
+  id: ID!
+
+  " the address of the pool "
+  poolAddress: Bytes!
+
+  " the start of the redemption period "
+  redemptionStart: BigInt!
+
+  " the end of the redemption period "
+  redemptionExpiry: BigInt!
+}
+
+type DepositDealTokens @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the underlying deal token "
+  underlyingDealTokenAddress: Bytes!
+
+  " the address of the depositor "
+  depositor: Bytes!
+
+  " the address of the deal contract "
+  dealContract: Bytes!
+
+  " the amount of underlying deal tokens deposited "
+  underlyingDealTokenAmount: BigInt!
+}
+
+type WithdrawUnderlyingDealTokens @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the underlying deal token "
+  underlyingDealTokenAddress: Bytes!
+
+  " the address of the depositor "
+  depositor: Bytes!
+
+  " the address of the deal contract "
+  dealContract: Bytes!
+
+  " the amount of underlying deal tokens deposited "
+  underlyingDealTokenAmount: BigInt!
+}
+
+type ClaimedUnderlyingDealTokens @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the underlying deal token "
+  underlyingDealTokenAddress: Bytes!
+
+  " address of the claimant "
+  fromAddress: Bytes!
+
+  " address of the recipient - will generally just be the claimant but does not have to be "
+  recipient: Bytes!
+
+  " the number of underlying deal tokens claimed "
+  underlyingDealTokensClaimed: BigInt!
+}
+
+type MintDealTokens @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the deal contract "
+  dealContract: Bytes!
+
+  " the address of the recipient "
+  recipient: Bytes!
+
+  " the amount of deal tokens minted "
+  dealTokenAmount: BigInt!
+}
