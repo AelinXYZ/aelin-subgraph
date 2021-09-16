@@ -19,7 +19,7 @@ dataSources:
         - name: AelinPoolFactory
           file: ./abis/AelinPoolFactory.json
       eventHandlers:
-        - event: CreatePool(address,string,string,uint256,address,uint256,uint256,address,uint256))
+        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256))
           handler: handleCreatePool
       file: ./src/aelin-pool-factory.ts
 
@@ -43,14 +43,19 @@ templates:
         - name: AelinPool
           file: ./abis/AelinPool.json
       eventHandlers:
-        - event: PurchasePoolToken(address,address,uint256,uint256)
+        - event: SetSponsor(indexed address)
+        - event: PurchasePoolToken(indexed address,indexed address,uint256,uint256)
           handler: handlePurchasePoolToken
-        - event: WithdrawFromPool(address,address,uint256,uint256)
+        - event: WithdrawFromPool(indexed address,indexed address,uint256,uint256)
           handler: handleWithdrawFromPool
-        - event: AcceptDeal(address,address,address,uint256)
+        - event: AcceptDeal(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleAcceptDeal
-        - event: CreateDeal(string,string,address,address,uint256,uint256,uint256,uint256,uint256,address)
+        - event: CreateDeal(string,string,indexed address,indexed address,indexed address)
           handler: handleCreateDeal
+        - event: DealDetails(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,indexed address)
+          handler: handleDealDetails
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlePoolTransfer
 
   - name: AelinDeal
     kind: ethereum/contract
@@ -68,13 +73,16 @@ templates:
         - name: AelinDeal
           file: ./abis/AelinDeal.json
       eventHandlers:
-        - event: DealFullyFunded(address,address,uint256,uint256)
+        - event: SetHolder(indexed address)
+        - event: DealFullyFunded(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleDealFullyFunded
-        - event: DepositDealTokens(address,address,address,uint256)
+        - event: DepositDealTokens(indexed address,indexed address,indexed address,uint256)
           handler: handleDepositDealTokens
-        - event: WithdrawUnderlyingDealTokens(address,address,address,uint256)
+        - event: WithdrawUnderlyingDealTokens(indexed address,indexed address,indexed address,uint256)
           handler: handleWithdrawUnderlyingDealTokens
-        - event: ClaimedUnderlyingDealTokens(address,address,address,uint256)
+        - event: ClaimedUnderlyingDealTokens(indexed address,indexed address,uint256)
           handler: handleClaimedUnderlyingDealTokens
-        - event: MintDealTokens(address,address,uint256)
+        - event: MintDealTokens(indexed address,indexed address,uint256)
           handler: handleMintDealTokens
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleDealTransfer
