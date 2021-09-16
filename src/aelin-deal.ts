@@ -4,12 +4,34 @@ import {
   WithdrawUnderlyingDealTokens,
   ClaimedUnderlyingDealTokens,
   MintDealTokens,
+  SetHolder,
+  Transfer,
 } from "./types/schema";
+import { Transfer as TransferEvent } from "./types/Transfer/Transfer";
+import { SetHolder as SetHolderEvent } from "./types/SetHolder/SetHolder";
 import { DealFullyFunded as DealFullyFundedEvent } from "./types/DealFullyFunded/DealFullyFunded";
 import { DepositDealTokens as DepositDealTokensEvent } from "./types/DepositDealTokens/DepositDealTokens";
 import { WithdrawUnderlyingDealTokens as WithdrawUnderlyingDealTokensEvent } from "./types/WithdrawUnderlyingDealTokens/WithdrawUnderlyingDealTokens";
 import { ClaimedUnderlyingDealTokens as ClaimedUnderlyingDealTokensEvent } from "./types/ClaimedUnderlyingDealTokens/ClaimedUnderlyingDealTokens";
 import { MintDealTokens as MintDealTokensEvent } from "./types/MintDealTokens/MintDealTokens";
+
+export function handleSetHolder(event: SetHolderEvent): void {
+  let setHolderEntity = new SetHolder(
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+  );
+  setHolderEntity.holder = event.params.holder;
+  setHolderEntity.save();
+}
+
+export function handleDealTransfer(event: TransferEvent): void {
+  let tranferEntity = new Transfer(
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+  );
+  tranferEntity.from = event.params.from;
+  tranferEntity.to = event.params.to;
+  tranferEntity.value = event.params.value;
+  tranferEntity.save();
+}
 
 export function handleClaimedUnderlyingDealTokens(
   event: ClaimedUnderlyingDealTokensEvent
@@ -19,7 +41,6 @@ export function handleClaimedUnderlyingDealTokens(
   );
   claimedEntity.underlyingDealTokenAddress =
     event.params.underlyingDealTokenAddress;
-  claimedEntity.fromAddress = event.params.from;
   claimedEntity.recipient = event.params.recipient;
   claimedEntity.underlyingDealTokensClaimed =
     event.params.underlyingDealTokensClaimed;

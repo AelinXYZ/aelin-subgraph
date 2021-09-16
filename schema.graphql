@@ -74,8 +74,17 @@ type AcceptDeal @entity {
   " the address of the deal "
   dealAddress: Bytes!
 
-  " the amount of pool tokens spent. will also equal the amount of deal tokens received. "
+  " the fee going to the sponsor "
+  sponsorFee: BigInt!
+
+  " the fee going to Aelin stakers "
+  aelinFee: BigInt!
+
+  " the amount of pool tokens spent. will also equal the amount of deal tokens received "
   poolTokenAmount: BigInt!
+
+  " the amount of underlying purchase tokens sent to the holder when the purchaser acccepts "
+  underlyingToHolderAmt: BigInt!
 }
 
 type CreateDeal @entity {
@@ -88,11 +97,22 @@ type CreateDeal @entity {
   " the symbol of the deal "
   symbol: String!
 
+  " the address of the pool "
+  poolAddress: Bytes!
+
+  " the address of the sponsor "
+  sponsor: Bytes!
+}
+
+type DealDetails @entity {
+  " the address of the deal "
+  id: ID!
+
   " the underlying deal token address "
   underlyingDealToken: Bytes!
 
   " the total amount of purchse tokens for the deal "
-  dealPurchaseTokenTotal: BigInt!
+  purchaseTokenTotalForDeal: BigInt!
 
   " the total amount of underlying deal tokens available for the deal "
   underlyingDealTokenTotal: BigInt!
@@ -103,18 +123,31 @@ type CreateDeal @entity {
   " the vesting cliff after which linear vesting starts "
   vestingCliff: BigInt!
 
-  # @TODO make sure deal tokens can be redeemed by the holder if not enough are accepted. maybe there is a function to update the amount of deal tokens minted after expiry as part of the withdrawal "
-  " the period in which a deal can be accepted by the purchaser after which they can only retrieve their deal tokens "
-  redemptionPeriod: BigInt!
+  " the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
+  proRataRedemptionPeriod: BigInt!
+
+  " after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
+  openRedemptionPeriod: BigInt!
 
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
   holder: Bytes!
-
-  " the max amount of pool tokens that can be converted for the deal "
-  poolTokenMaxPurchaseAmount: BigInt!
 }
 
-# Not tracking transfers initially to save subgraph space unless necessary in the UI - event Transfer(address indexed from, address indexed to, uint amount);
+type SetSponsor @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the new sponsor "
+  sponsor: Bytes!
+}
+
+type SetHolder @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of the new holder "
+  holder: Bytes!
+}
 
 type DealFullyFunded @entity {
   " the address of the deal "
@@ -123,11 +156,17 @@ type DealFullyFunded @entity {
   " the address of the pool "
   poolAddress: Bytes!
 
-  " the start of the redemption period "
-  redemptionStart: BigInt!
+  " the start of the pro rata redemption period "
+  preRataRedemptionStart: BigInt!
 
-  " the end of the redemption period "
-  redemptionExpiry: BigInt!
+  " the start of the open redemption period "
+  openRedemptionStart: BigInt!
+
+  " the end of the pro rata redemption period "
+  proRataRedemptionExpiry: BigInt!
+
+  " the end of the open redemption period "
+  openRedemptionExpiry: BigInt!
 }
 
 type DepositDealTokens @entity {
@@ -164,6 +203,20 @@ type WithdrawUnderlyingDealTokens @entity {
   underlyingDealTokenAmount: BigInt!
 }
 
+type Transfer @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the sender "
+  from: Bytes!
+
+  " the recipient "
+  to: Bytes!
+
+  " the amount sent "
+  value: BigInt!
+}
+
 type ClaimedUnderlyingDealTokens @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
@@ -171,10 +224,7 @@ type ClaimedUnderlyingDealTokens @entity {
   " the address of the underlying deal token "
   underlyingDealTokenAddress: Bytes!
 
-  " address of the claimant "
-  fromAddress: Bytes!
-
-  " address of the recipient - will generally just be the claimant but does not have to be "
+  " address of the claim recipient. when sending deal tokens, both the sender and recipient need to claim their vested tokens; gas fees are paid by the sender "
   recipient: Bytes!
 
   " the number of underlying deal tokens claimed "
