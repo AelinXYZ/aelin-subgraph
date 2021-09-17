@@ -8,19 +8,19 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "purchaser",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "poolAddress",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "dealAddress",
         "type": "address"
@@ -29,6 +29,24 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "poolTokenAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sponsorFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "aelinFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "underlyingToHolderAmt",
         "type": "uint256"
       }
     ],
@@ -53,7 +71,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "value",
         "type": "uint256"
       }
     ],
@@ -76,13 +94,38 @@
         "type": "string"
       },
       {
-        "indexed": false,
+        "indexed": true,
+        "internalType": "address",
+        "name": "sponsor",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "poolAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "dealContract",
+        "type": "address"
+      }
+    ],
+    "name": "CreateDeal",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "dealContract",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "underlyingDealToken",
         "type": "address"
@@ -90,7 +133,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "dealPurchaseTokenTotal",
+        "name": "purchaseTokenTotalForDeal",
         "type": "uint256"
       },
       {
@@ -114,36 +157,36 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "redemptionPeriod",
+        "name": "proRataRedemptionPeriod",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "holder",
-        "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "poolTokenMaxPurchaseAmount",
+        "name": "openRedemptionPeriod",
         "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "holder",
+        "type": "address"
       }
     ],
-    "name": "CreateDeal",
+    "name": "DealDetails",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "purchaser",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "poolAddress",
         "type": "address"
@@ -170,6 +213,19 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "sponsor",
+        "type": "address"
+      }
+    ],
+    "name": "SetSponsor",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -182,7 +238,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "value",
         "type": "uint256"
       }
     ],
@@ -193,13 +249,13 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "purchaser",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "poolAddress",
         "type": "address"
@@ -221,123 +277,14 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "AELIN_DEAL",
-    "outputs": [
-      {
-        "internalType": "contract AelinDeal",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PRO_RATA_CONVERSION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PURCHASE_TOKEN",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PURCHASE_TOKEN_CAP",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PURCHASE_TOKEN_DECIMALS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SPONSOR",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SPONSOR_FEE",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "pool_token_amount",
+        "name": "poolTokenAmount",
         "type": "uint256"
       }
     ],
     "name": "acceptDealTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "pool_token_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "acceptDealTokensAndAllocate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -350,16 +297,73 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "acceptSponsor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "aelinDealLogicAddress",
+    "outputs": [
       {
         "internalType": "address",
-        "name": "recipient",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "acceptMaxDealTokensAndAllocate",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "aelinDealStorageProxy",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "aelinRewardsAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      }
+    ],
+    "name": "allowance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -368,14 +372,9 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
-    "name": "allowance",
+    "name": "amountAccepted",
     "outputs": [
       {
         "internalType": "uint256",
@@ -414,7 +413,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "account",
         "type": "address"
       }
     ],
@@ -430,35 +429,53 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "calledInitialize",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "_underlying_deal_token",
+        "name": "_underlyingDealToken",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_deal_purchase_token_total",
+        "name": "_purchaseTokenTotalForDeal",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_underlying_deal_token_total",
+        "name": "_underlyingDealTokenTotal",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_vesting_period",
+        "name": "_vestingPeriod",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_vesting_cliff",
+        "name": "_vestingCliff",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_redemption_period",
+        "name": "_proRataRedemptionPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_openRedemptionPeriod",
         "type": "uint256"
       },
       {
@@ -480,12 +497,62 @@
   },
   {
     "inputs": [],
+    "name": "dealCreated",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "decimals",
     "outputs": [
       {
         "internalType": "uint8",
         "name": "",
         "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "subtractedValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "decreaseAllowance",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "futureSponsor",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -507,6 +574,30 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "spender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "addedValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "increaseAllowance",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "_name",
         "type": "string"
@@ -518,12 +609,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "_purchase_token_cap",
+        "name": "_purchaseTokenCap",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "_purchase_token",
+        "name": "_purchaseToken",
         "type": "address"
       },
       {
@@ -533,7 +624,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_sponsor_fee",
+        "name": "_sponsorFee",
         "type": "uint256"
       },
       {
@@ -543,8 +634,18 @@
       },
       {
         "internalType": "uint256",
-        "name": "_purchase_expiry",
+        "name": "_purchaseExpiry",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_aelinDealLogicAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_aelinRewardsAddress",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -556,11 +657,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "pool_token_owner",
+        "name": "purchaser",
         "type": "address"
       }
     ],
-    "name": "maxAcceptDealTokens",
+    "name": "maxDealAccept",
     "outputs": [
       {
         "internalType": "uint256",
@@ -573,7 +674,26 @@
   },
   {
     "inputs": [],
-    "name": "maxPurchase",
+    "name": "maxPoolPurchase",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "purchaser",
+        "type": "address"
+      }
+    ],
+    "name": "maxProRataAvail",
     "outputs": [
       {
         "internalType": "uint256",
@@ -598,8 +718,53 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "openPeriodEligible",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "pool_expiry",
+    "name": "poolExpiry",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proRataConversion",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "purchaseExpiry",
     "outputs": [
       {
         "internalType": "uint256",
@@ -614,7 +779,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "purchase_token_amount",
+        "name": "_purchaseTokenAmount",
         "type": "uint256"
       }
     ],
@@ -626,24 +791,32 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
-        "name": "purchase_token_amount",
+        "name": "_purchaseTokenAmount",
         "type": "uint256"
       }
     ],
-    "name": "purchasePoolTokensAndAllocate",
+    "name": "purchasePoolTokensUpToAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "purchase_expiry",
+    "name": "purchaseToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "purchaseTokenCap",
     "outputs": [
       {
         "internalType": "uint256",
@@ -656,20 +829,7 @@
   },
   {
     "inputs": [],
-    "name": "redemption_expiry",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "redemption_start",
+    "name": "purchaseTokenDecimals",
     "outputs": [
       {
         "internalType": "uint256",
@@ -683,14 +843,40 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_sponsor",
+        "type": "address"
+      }
+    ],
+    "name": "setSponsor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sponsor",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sponsorFee",
+    "outputs": [
+      {
         "internalType": "uint256",
-        "name": "period",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "setRedemptionWindow",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -776,7 +962,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "pool_token_amount",
+        "name": "poolTokenAmount",
         "type": "uint256"
       }
     ],
