@@ -7,13 +7,7 @@ import {
   DealDetails,
   Transfer,
 } from "./types/schema";
-import { Transfer as TransferEvent } from "./types/Transfer/Transfer";
-import { SetSponsor as SetSponsorEvent } from "./types/SetSponsor/SetSponsor";
-import { CreateDeal as CreateDealEvent } from "./types/CreateDeal/CreateDeal";
-import { DealDetails as DealDetailsEvent } from "./types/DealDetails/DealDetails";
-import { PurchasePoolToken as PurchasePoolTokenEvent } from "./types/PurchasePoolToken/PurchasePoolToken";
-import { WithdrawFromPool as WithdrawFromPoolEvent } from "./types/WithdrawFromPool/WithdrawFromPool";
-import { AcceptDeal as AcceptDealEvent } from "./types/AcceptDeal/AcceptDeal";
+import { Transfer as TransferEvent, SetSponsor as SetSponsorEvent , CreateDeal as CreateDealEvent, DealDetails as DealDetailsEvent, PurchasePoolToken as PurchasePoolTokenEvent , WithdrawFromPool as WithdrawFromPoolEvent, AcceptDeal as AcceptDealEvent } from "./types/templates/AelinPool/AelinPool";
 import { AelinDeal } from "./types/templates";
 
 export function handleSetSponsor(event: SetSponsorEvent): void {
@@ -90,7 +84,7 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
   withdrawFromPoolEntity.save();
 }
 
-export function handleAcceptDeal(event: AcceptDealEvent) {
+export function handleAcceptDeal(event: AcceptDealEvent): void {
   let acceptDealEntity = new AcceptDeal(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );

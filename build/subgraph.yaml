@@ -1,13 +1,13 @@
 specVersion: 0.0.2
 description: Fundraising on Ethereum
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: AelinPoolFactory
     network: kovan
     source:
-      address: '0xedA0008e2afdfe87E57e5eC100269217fbd3389C'
+      address: "0xedA0008e2afdfe87E57e5eC100269217fbd3389C"
       abi: AelinPoolFactory
       startBlock: 27715377
     mapping:
@@ -18,12 +18,12 @@ dataSources:
         - PoolCreated
       abis:
         - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
+          file: AelinPoolFactory/abis/AelinPoolFactory.json
       eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256)
+        - event: CreatePool(indexed address,string,string,uint256,indexed
+            address,uint256,uint256,indexed address,uint256)
           handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
-
+      file: AelinPoolFactory/AelinPoolFactory.wasm
 templates:
   - name: AelinPool
     kind: ethereum/contract
@@ -34,7 +34,7 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
-      file: ./src/aelin-pool.ts
+      file: templates/AelinPool/AelinPool.wasm
       entities:
         - DealCreated
         - PurchasePoolToken
@@ -42,7 +42,7 @@ templates:
         - AcceptDeal
       abis:
         - name: AelinPool
-          file: ./abis/AelinPool.json
+          file: AelinPool/abis/AelinPool.json
       eventHandlers:
         - event: SetSponsor(indexed address)
           handler: handleSetSponsor
@@ -50,15 +50,16 @@ templates:
           handler: handlePurchasePoolToken
         - event: WithdrawFromPool(indexed address,indexed address,uint256,uint256)
           handler: handleWithdrawFromPool
-        - event: AcceptDeal(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256)
+        - event: AcceptDeal(indexed address,indexed address,indexed
+            address,uint256,uint256,uint256,uint256)
           handler: handleAcceptDeal
         - event: CreateDeal(string,string,indexed address,indexed address,indexed address)
           handler: handleCreateDeal
-        - event: DealDetails(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,indexed address)
+        - event: DealDetails(indexed address,indexed
+            address,uint256,uint256,uint256,uint256,uint256,uint256,indexed address)
           handler: handleDealDetails
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolTransfer
-
   - name: AelinDeal
     kind: ethereum/contract
     network: kovan
@@ -68,12 +69,12 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
-      file: ./src/aelin-deal.ts
+      file: templates/AelinDeal/AelinDeal.wasm
       entities:
         - AelinDeal
       abis:
         - name: AelinDeal
-          file: ./abis/AelinDeal.json
+          file: AelinDeal/abis/AelinDeal.json
       eventHandlers:
         - event: SetHolder(indexed address)
           handler: handleSetHolder
@@ -81,7 +82,8 @@ templates:
           handler: handleDealFullyFunded
         - event: DepositDealTokens(indexed address,indexed address,indexed address,uint256)
           handler: handleDepositDealTokens
-        - event: WithdrawUnderlyingDealTokens(indexed address,indexed address,indexed address,uint256)
+        - event: WithdrawUnderlyingDealTokens(indexed address,indexed address,indexed
+            address,uint256)
           handler: handleWithdrawUnderlyingDealTokens
         - event: ClaimedUnderlyingDealTokens(indexed address,indexed address,uint256)
           handler: handleClaimedUnderlyingDealTokens

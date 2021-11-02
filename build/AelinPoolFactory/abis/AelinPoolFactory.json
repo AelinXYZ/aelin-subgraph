@@ -82,7 +82,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name":"",
+        "name": "",
         "type": "address"
       }
     ],
@@ -95,7 +95,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name":"",
+        "name": "",
         "type": "address"
       }
     ],
@@ -144,7 +144,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name":"",
+        "name": "",
         "type": "address"
       }
     ],
