@@ -1,6 +1,17 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_aelinPoolLogic",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_aelinDealLogic",
+        "type": "address"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -71,7 +82,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name":"",
         "type": "address"
       }
     ],
@@ -84,7 +95,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name":"",
         "type": "address"
       }
     ],
@@ -133,28 +144,10 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name":"",
         "type": "address"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "pool",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "deal",
-        "type": "address"
-      }
-    ],
-    "name": "setAddressesDeleteBeforeLaunch",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   }

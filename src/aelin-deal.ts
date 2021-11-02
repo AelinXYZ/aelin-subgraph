@@ -7,13 +7,7 @@ import {
   SetHolder,
   Transfer,
 } from "./types/schema";
-import { Transfer as TransferEvent } from "./types/Transfer/Transfer";
-import { SetHolder as SetHolderEvent } from "./types/SetHolder/SetHolder";
-import { DealFullyFunded as DealFullyFundedEvent } from "./types/DealFullyFunded/DealFullyFunded";
-import { DepositDealTokens as DepositDealTokensEvent } from "./types/DepositDealTokens/DepositDealTokens";
-import { WithdrawUnderlyingDealTokens as WithdrawUnderlyingDealTokensEvent } from "./types/WithdrawUnderlyingDealTokens/WithdrawUnderlyingDealTokens";
-import { ClaimedUnderlyingDealTokens as ClaimedUnderlyingDealTokensEvent } from "./types/ClaimedUnderlyingDealTokens/ClaimedUnderlyingDealTokens";
-import { MintDealTokens as MintDealTokensEvent } from "./types/MintDealTokens/MintDealTokens";
+import { Transfer as TransferEvent, SetHolder as SetHolderEvent , DealFullyFunded as DealFullyFundedEvent, DepositDealTokens as DepositDealTokensEvent, WithdrawUnderlyingDealTokens as WithdrawUnderlyingDealTokensEvent, ClaimedUnderlyingDealTokens as ClaimedUnderlyingDealTokensEvent, MintDealTokens as MintDealTokensEvent } from "./types/templates/AelinDeal/AelinDeal";
 
 export function handleSetHolder(event: SetHolderEvent): void {
   let setHolderEntity = new SetHolder(
@@ -69,9 +63,10 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
     event.params.dealAddress.toHex()
   );
   dealFullyFundedEntity.poolAddress = event.params.poolAddress;
-  dealFullyFundedEntity.redemptionStart = event.params.redemptionStart;
-  dealFullyFundedEntity.redemptionExpiry = event.params.redemptionExpiry;
-
+  dealFullyFundedEntity.proRataRedemptionExpiry = event.params.proRataRedemptionExpiry;
+  dealFullyFundedEntity.proRataRedemptionStart = event.params.proRataRedemptionStart;
+  dealFullyFundedEntity.openRedemptionExpiry = event.params.openRedemptionExpiry;
+  dealFullyFundedEntity.openRedemptionStart = event.params.openRedemptionStart;
   dealFullyFundedEntity.save();
 }
 

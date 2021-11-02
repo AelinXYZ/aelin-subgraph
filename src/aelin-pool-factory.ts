@@ -1,5 +1,5 @@
 import { PoolCreated } from "./types/schema";
-import { CreatePool as CreatePoolEvent } from "./types/CreatePool/CreatePool";
+import { CreatePool as CreatePoolEvent } from "./types/AelinPoolFactory/AelinPoolFactory";
 import { AelinPool } from "./types/templates";
 
 export function handleCreatePool(event: CreatePoolEvent): void {

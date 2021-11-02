@@ -87,7 +87,7 @@ type AcceptDeal @entity {
   underlyingToHolderAmt: BigInt!
 }
 
-type CreateDeal @entity {
+type DealCreated @entity {
   " the address of the deal "
   id: ID!
 
@@ -157,7 +157,7 @@ type DealFullyFunded @entity {
   poolAddress: Bytes!
 
   " the start of the pro rata redemption period "
-  preRataRedemptionStart: BigInt!
+  proRataRedemptionStart: BigInt!
 
   " the start of the open redemption period "
   openRedemptionStart: BigInt!
