@@ -25,6 +25,9 @@ type PoolCreated @entity {
 
   " the amount of time after which a pool is created during which a pool token can be purchased. After which the purchase period is locked. "
   purchaseExpiry: BigInt!
+
+  " the block timestamp when the pool was created"
+  timestamp: BigInt!
 }
 
 type PurchasePoolToken @entity {
