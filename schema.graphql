@@ -30,6 +30,14 @@ type PoolCreated @entity {
   timestamp: BigInt!
 }
 
+type TotalPoolsCreated @entity {
+  " the id is always just 1 "
+  id: ID!
+
+  " the number of pools created - we use this for pagination "
+  count: BigInt!
+}
+
 type PurchasePoolToken @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
