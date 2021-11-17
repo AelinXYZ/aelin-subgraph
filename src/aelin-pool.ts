@@ -7,7 +7,15 @@ import {
   DealDetails,
   Transfer,
 } from "./types/schema";
-import { Transfer as TransferEvent, SetSponsor as SetSponsorEvent , CreateDeal as CreateDealEvent, DealDetails as DealDetailsEvent, PurchasePoolToken as PurchasePoolTokenEvent , WithdrawFromPool as WithdrawFromPoolEvent, AcceptDeal as AcceptDealEvent } from "./types/templates/AelinPool/AelinPool";
+import {
+  Transfer as TransferEvent,
+  SetSponsor as SetSponsorEvent,
+  CreateDeal as CreateDealEvent,
+  DealDetails as DealDetailsEvent,
+  PurchasePoolToken as PurchasePoolTokenEvent,
+  WithdrawFromPool as WithdrawFromPoolEvent,
+  AcceptDeal as AcceptDealEvent,
+} from "./types/templates/AelinPool/AelinPool";
 import { AelinDeal } from "./types/templates";
 
 export function handleSetSponsor(event: SetSponsorEvent): void {
@@ -33,7 +41,7 @@ export function handleCreateDeal(event: CreateDealEvent): void {
   dealCreatedEntity.name = event.params.name;
   dealCreatedEntity.symbol = event.params.symbol;
   dealCreatedEntity.sponsor = event.params.sponsor;
-  dealCreatedEntity.poolAddress = event.params.poolAddress;
+  dealCreatedEntity.poolAddress = event.address;
   dealCreatedEntity.save();
 }
 
@@ -50,6 +58,9 @@ export function handleDealDetails(event: DealDetailsEvent): void {
     event.params.proRataRedemptionPeriod;
   dealDetailsEntity.openRedemptionPeriod = event.params.openRedemptionPeriod;
   dealDetailsEntity.holder = event.params.holder;
+  dealDetailsEntity.holderFundingDuration = event.params.holderFundingDuration;
+  dealDetailsEntity.holderFundingExpiration =
+    event.params.holderFundingDuration.plus(event.block.timestamp);
 
   dealDetailsEntity.save();
 
@@ -64,7 +75,7 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
   purchasePoolTokenEntity.purchaser = event.params.purchaser;
-  purchasePoolTokenEntity.poolAddress = event.params.poolAddress;
+  purchasePoolTokenEntity.poolAddress = event.address;
   purchasePoolTokenEntity.purchaseTokenAmount =
     event.params.purchaseTokenAmount;
   purchasePoolTokenEntity.poolTokenAmount = event.params.poolTokenAmount;
@@ -77,7 +88,7 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
   withdrawFromPoolEntity.purchaser = event.params.purchaser;
-  withdrawFromPoolEntity.poolAddress = event.params.poolAddress;
+  withdrawFromPoolEntity.poolAddress = event.address;
   withdrawFromPoolEntity.purchaseTokenAmount = event.params.purchaseTokenAmount;
   withdrawFromPoolEntity.poolTokenAmount = event.params.poolTokenAmount;
 
@@ -89,7 +100,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
   acceptDealEntity.purchaser = event.params.purchaser;
-  acceptDealEntity.poolAddress = event.params.poolAddress;
+  acceptDealEntity.poolAddress = event.address;
   acceptDealEntity.dealAddress = event.params.dealAddress;
   acceptDealEntity.poolTokenAmount = event.params.poolTokenAmount;
   acceptDealEntity.underlyingToHolderAmt = event.params.underlyingToHolderAmt;

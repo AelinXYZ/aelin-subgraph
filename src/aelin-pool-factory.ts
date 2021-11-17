@@ -21,7 +21,10 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   poolCreatedEntity.duration = event.params.duration;
   poolCreatedEntity.sponsorFee = event.params.sponsorFee;
   poolCreatedEntity.sponsor = event.params.sponsor;
-  poolCreatedEntity.purchaseExpiry = event.params.purchaseExpiry;
+  poolCreatedEntity.purchaseDuration = event.params.purchaseDuration;
+  poolCreatedEntity.purchaseExpiry = event.params.purchaseDuration.plus(
+    event.block.timestamp
+  );
   poolCreatedEntity.timestamp = event.block.timestamp;
 
   poolCreatedEntity.save();

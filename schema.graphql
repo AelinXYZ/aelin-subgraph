@@ -23,7 +23,10 @@ type PoolCreated @entity {
   " the address of the sponsor for fee payments. only the msg.sender of the createPool method can be the sponsor "
   sponsor: Bytes!
 
-  " the amount of time after which a pool is created during which a pool token can be purchased. After which the purchase period is locked. "
+  " the amount of time a purchaser gets to enter. After which the purchase period is locked. "
+  purchaseDuration: BigInt!
+
+  " the timestamp a purchaser can no longer enter the pool. After which the purchase period is locked. "
   purchaseExpiry: BigInt!
 
   " the block timestamp when the pool was created"
@@ -142,6 +145,12 @@ type DealDetails @entity {
 
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
   holder: Bytes!
+
+  " the exipration of the holder funding period "
+  holderFundingExpiration: BigInt!
+
+  " the duration of the holder funding period "
+  holderFundingDuration: BigInt!
 }
 
 type SetSponsor @entity {
@@ -240,18 +249,4 @@ type ClaimedUnderlyingDealTokens @entity {
 
   " the number of underlying deal tokens claimed "
   underlyingDealTokensClaimed: BigInt!
-}
-
-type MintDealTokens @entity {
-  " the transaction hash + event log index of the purchase event "
-  id: ID!
-
-  " the address of the deal contract "
-  dealContract: Bytes!
-
-  " the address of the recipient "
-  recipient: Bytes!
-
-  " the amount of deal tokens minted "
-  dealTokenAmount: BigInt!
 }
