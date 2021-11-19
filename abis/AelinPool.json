@@ -16,12 +16,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "poolAddress",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "dealAddress",
         "type": "address"
       },
@@ -41,12 +35,6 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "aelinFee",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "underlyingToHolderAmt",
         "type": "uint256"
       }
     ],
@@ -97,12 +85,6 @@
         "indexed": true,
         "internalType": "address",
         "name": "sponsor",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "poolAddress",
         "type": "address"
       },
       {
@@ -171,6 +153,12 @@
         "internalType": "address",
         "name": "holder",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "holderFundingDuration",
+        "type": "uint256"
       }
     ],
     "name": "DealDetails",
@@ -186,21 +174,9 @@
         "type": "address"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "poolAddress",
-        "type": "address"
-      },
-      {
         "indexed": false,
         "internalType": "uint256",
         "name": "purchaseTokenAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "poolTokenAmount",
         "type": "uint256"
       }
     ],
@@ -255,21 +231,9 @@
         "type": "address"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "poolAddress",
-        "type": "address"
-      },
-      {
         "indexed": false,
         "internalType": "uint256",
         "name": "purchaseTokenAmount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "poolTokenAmount",
         "type": "uint256"
       }
     ],
@@ -305,10 +269,10 @@
   },
   {
     "inputs": [],
-    "name": "aelinDealLogicAddress",
+    "name": "aelinDeal",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract AelinDeal",
         "name": "",
         "type": "address"
       }
@@ -318,7 +282,7 @@
   },
   {
     "inputs": [],
-    "name": "aelinDealStorageProxy",
+    "name": "aelinDealLogicAddress",
     "outputs": [
       {
         "internalType": "address",
@@ -337,6 +301,25 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "allowList",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -482,6 +465,11 @@
         "internalType": "address",
         "name": "_holder",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_holderFundingDuration",
+        "type": "uint256"
       }
     ],
     "name": "createDeal",
@@ -493,19 +481,6 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "dealCreated",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -560,12 +535,38 @@
   },
   {
     "inputs": [],
+    "name": "hasAllowList",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "holder",
     "outputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "holderFundingExpiry",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -634,7 +635,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_purchaseExpiry",
+        "name": "_purchaseDuration",
         "type": "uint256"
       },
       {
@@ -662,19 +663,6 @@
       }
     ],
     "name": "maxDealAccept",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "maxPoolPurchase",
     "outputs": [
       {
         "internalType": "uint256",
@@ -751,6 +739,19 @@
   },
   {
     "inputs": [],
+    "name": "poolFactory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "proRataConversion",
     "outputs": [
       {
@@ -789,19 +790,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_purchaseTokenAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "purchasePoolTokensUpToAmount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "purchaseToken",
     "outputs": [
@@ -830,6 +818,19 @@
   {
     "inputs": [],
     "name": "purchaseTokenDecimals",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "purchaseTokenTotalForDeal",
     "outputs": [
       {
         "internalType": "uint256",
@@ -887,6 +888,19 @@
         "internalType": "string",
         "name": "",
         "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalAmountAccepted",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -961,8 +975,26 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "_allowList",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_allowListAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "updateAllowList",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
-        "name": "poolTokenAmount",
+        "name": "purchaseTokenAmount",
         "type": "uint256"
       }
     ],

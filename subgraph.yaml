@@ -20,7 +20,7 @@ dataSources:
         - name: AelinPoolFactory
           file: ./abis/AelinPoolFactory.json
       eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256)
+        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,boolean)
           handler: handleCreatePool
       file: ./src/aelin-pool-factory.ts
 

@@ -26,6 +26,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
     event.block.timestamp
   );
   poolCreatedEntity.timestamp = event.block.timestamp;
+  poolCreatedEntity.hasAllowList = event.params.hasAllowList;
 
   poolCreatedEntity.save();
 
