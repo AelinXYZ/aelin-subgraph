@@ -6,18 +6,20 @@
     "create-local": "graph create aelin/aelin-mega --node http://127.0.0.1:8020",
     "codegen": "graph codegen --debug --output-dir src/types/",
     "build": "graph build --debug",
+    "auth-hosted": "graph auth --product hosted-service $AELIN_GRAPH_ACCESS_TOKEN",
+    "deploy-hosted": "graph deploy --product hosted-service aelin-xyz/aelin",
     "deploy": "graph deploy aelin/aelin-mega --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy aelin/aelin-mega --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
-    "@graphprotocol/graph-ts": "0.20.0",
-    "@graphprotocol/graph-cli": "0.21.1"
+    "@graphprotocol/graph-ts": "0.24.0",
+    "@graphprotocol/graph-cli": "0.24.0"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "babel-register": "^6.26.0",
-    "truffle": "^5.0.4",
-    "truffle-contract": "^4.0.5",
-    "truffle-hdwallet-provider": "^1.0.4"
+    "babel-polyfill": "6.26.0",
+    "babel-register": "6.26.0",
+    "truffle": "5.4.22",
+    "truffle-contract": "4.0.31",
+    "truffle-hdwallet-provider": "1.0.17"
   }
 }

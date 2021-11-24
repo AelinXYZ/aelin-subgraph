@@ -3,11 +3,17 @@ import {
   DepositDealTokens,
   WithdrawUnderlyingDealTokens,
   ClaimedUnderlyingDealTokens,
-  MintDealTokens,
   SetHolder,
   Transfer,
 } from "./types/schema";
-import { Transfer as TransferEvent, SetHolder as SetHolderEvent , DealFullyFunded as DealFullyFundedEvent, DepositDealTokens as DepositDealTokensEvent, WithdrawUnderlyingDealTokens as WithdrawUnderlyingDealTokensEvent, ClaimedUnderlyingDealTokens as ClaimedUnderlyingDealTokensEvent, MintDealTokens as MintDealTokensEvent } from "./types/templates/AelinDeal/AelinDeal";
+import {
+  Transfer as TransferEvent,
+  SetHolder as SetHolderEvent,
+  DealFullyFunded as DealFullyFundedEvent,
+  DepositDealTokens as DepositDealTokensEvent,
+  WithdrawUnderlyingDealTokens as WithdrawUnderlyingDealTokensEvent,
+  ClaimedUnderlyingDealTokens as ClaimedUnderlyingDealTokensEvent,
+} from "./types/templates/AelinDeal/AelinDeal";
 
 export function handleSetHolder(event: SetHolderEvent): void {
   let setHolderEntity = new SetHolder(
@@ -51,7 +57,7 @@ export function handleWithdrawUnderlyingDealTokens(
   withdrawEntity.underlyingDealTokenAddress =
     event.params.underlyingDealTokenAddress;
   withdrawEntity.depositor = event.params.depositor;
-  withdrawEntity.dealContract = event.params.dealContract;
+  withdrawEntity.dealContract = event.address;
   withdrawEntity.underlyingDealTokenAmount =
     event.params.underlyingDealTokenAmount;
 
@@ -59,13 +65,14 @@ export function handleWithdrawUnderlyingDealTokens(
 }
 
 export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
-  let dealFullyFundedEntity = new DealFullyFunded(
-    event.params.dealAddress.toHex()
-  );
+  let dealFullyFundedEntity = new DealFullyFunded(event.address.toHex());
   dealFullyFundedEntity.poolAddress = event.params.poolAddress;
-  dealFullyFundedEntity.proRataRedemptionExpiry = event.params.proRataRedemptionExpiry;
-  dealFullyFundedEntity.proRataRedemptionStart = event.params.proRataRedemptionStart;
-  dealFullyFundedEntity.openRedemptionExpiry = event.params.openRedemptionExpiry;
+  dealFullyFundedEntity.proRataRedemptionExpiry =
+    event.params.proRataRedemptionExpiry;
+  dealFullyFundedEntity.proRataRedemptionStart =
+    event.params.proRataRedemptionStart;
+  dealFullyFundedEntity.openRedemptionExpiry =
+    event.params.openRedemptionExpiry;
   dealFullyFundedEntity.openRedemptionStart = event.params.openRedemptionStart;
   dealFullyFundedEntity.save();
 }
@@ -77,20 +84,9 @@ export function handleDepositDealTokens(event: DepositDealTokensEvent): void {
   depositDealTokensEntity.underlyingDealTokenAddress =
     event.params.underlyingDealTokenAddress;
   depositDealTokensEntity.depositor = event.params.depositor;
-  depositDealTokensEntity.dealContract = event.params.dealContract;
+  depositDealTokensEntity.dealContract = event.address;
   depositDealTokensEntity.underlyingDealTokenAmount =
     event.params.underlyingDealTokenAmount;
 
   depositDealTokensEntity.save();
-}
-
-export function handleMintDealTokens(event: MintDealTokensEvent): void {
-  let mintDealTokensEntity = new MintDealTokens(
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
-  );
-  mintDealTokensEntity.dealContract = event.params.dealContract;
-  mintDealTokensEntity.recipient = event.params.recipient;
-  mintDealTokensEntity.dealTokenAmount = event.params.dealTokenAmount;
-
-  mintDealTokensEntity.save();
 }
