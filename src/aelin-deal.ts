@@ -5,7 +5,9 @@ import {
   ClaimedUnderlyingDealTokens,
   SetHolder,
   Transfer,
+  PoolCreated,
 } from "./types/schema";
+import { PoolStatus } from "./enum";
 import {
   Transfer as TransferEvent,
   SetHolder as SetHolderEvent,
@@ -14,6 +16,7 @@ import {
   WithdrawUnderlyingDealTokens as WithdrawUnderlyingDealTokensEvent,
   ClaimedUnderlyingDealTokens as ClaimedUnderlyingDealTokensEvent,
 } from "./types/templates/AelinDeal/AelinDeal";
+import { log } from "@graphprotocol/graph-ts";
 
 export function handleSetHolder(event: SetHolderEvent): void {
   let setHolderEntity = new SetHolder(
@@ -74,6 +77,15 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
   dealFullyFundedEntity.openRedemptionExpiry =
     event.params.openRedemptionExpiry;
   dealFullyFundedEntity.openRedemptionStart = event.params.openRedemptionStart;
+  let poolCreatedEntity = PoolCreated.load(event.params.poolAddress.toHex());
+  if (poolCreatedEntity == null) {
+    log.error("trying to find pool not saved with address: {}", [
+      event.address.toHex(),
+    ]);
+    return;
+  }
+  poolCreatedEntity.poolStatus = PoolStatus.DealOpen;
+  poolCreatedEntity.save();
   dealFullyFundedEntity.save();
 }
 

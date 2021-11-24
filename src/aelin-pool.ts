@@ -6,7 +6,9 @@ import {
   SetSponsor,
   DealDetails,
   Transfer,
+  PoolCreated,
 } from "./types/schema";
+import { PoolStatus } from "./enum";
 import {
   Transfer as TransferEvent,
   SetSponsor as SetSponsorEvent,
@@ -17,6 +19,7 @@ import {
   AcceptDeal as AcceptDealEvent,
 } from "./types/templates/AelinPool/AelinPool";
 import { AelinDeal } from "./types/templates";
+import { log } from "@graphprotocol/graph-ts";
 
 export function handleSetSponsor(event: SetSponsorEvent): void {
   let setSponsorEntity = new SetSponsor(
@@ -42,6 +45,15 @@ export function handleCreateDeal(event: CreateDealEvent): void {
   dealCreatedEntity.symbol = event.params.symbol;
   dealCreatedEntity.sponsor = event.params.sponsor;
   dealCreatedEntity.poolAddress = event.address;
+  let poolCreatedEntity = PoolCreated.load(event.address.toHex());
+  if (poolCreatedEntity == null) {
+    log.error("trying to find pool not saved with address: {}", [
+      event.address.toHex(),
+    ]);
+    return;
+  }
+  poolCreatedEntity.poolStatus = PoolStatus.FundingDeal;
+  poolCreatedEntity.save();
   dealCreatedEntity.save();
 }
 

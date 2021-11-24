@@ -27,6 +27,7 @@ export class PoolCreated extends Entity {
     this.set("purchaseExpiry", Value.fromBigInt(BigInt.zero()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("hasAllowList", Value.fromBoolean(false));
+    this.set("poolStatus", Value.fromString(""));
   }
 
   save(): void {
@@ -152,6 +153,15 @@ export class PoolCreated extends Entity {
 
   set hasAllowList(value: boolean) {
     this.set("hasAllowList", Value.fromBoolean(value));
+  }
+
+  get poolStatus(): string {
+    let value = this.get("poolStatus");
+    return value!.toString();
+  }
+
+  set poolStatus(value: string) {
+    this.set("poolStatus", Value.fromString(value));
   }
 }
 

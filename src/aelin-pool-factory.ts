@@ -2,6 +2,7 @@ import { PoolCreated, TotalPoolsCreated } from "./types/schema";
 import { CreatePool as CreatePoolEvent } from "./types/AelinPoolFactory/AelinPoolFactory";
 import { AelinPool } from "./types/templates";
 import { ONE } from "./helpers";
+import { PoolStatus } from "./enum";
 
 export function handleCreatePool(event: CreatePoolEvent): void {
   let totalPoolsCreatedEntity = TotalPoolsCreated.load("1");
@@ -27,6 +28,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   );
   poolCreatedEntity.timestamp = event.block.timestamp;
   poolCreatedEntity.hasAllowList = event.params.hasAllowList;
+  poolCreatedEntity.poolStatus = PoolStatus.PoolOpen;
 
   poolCreatedEntity.save();
 
