@@ -43,6 +43,9 @@ type PoolCreated @entity {
 
   " the current status of the pool "
   poolStatus: PoolStatus!
+
+  " the total amount of contributions to the pool "
+  contributions: BigInt!
 }
 
 type TotalPoolsCreated @entity {

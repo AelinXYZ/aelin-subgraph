@@ -1,3 +1,4 @@
+import { BigInt } from "@graphprotocol/graph-ts";
 import { PoolCreated, TotalPoolsCreated } from "./types/schema";
 import { CreatePool as CreatePoolEvent } from "./types/AelinPoolFactory/AelinPoolFactory";
 import { AelinPool } from "./types/templates";
@@ -29,6 +30,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   poolCreatedEntity.timestamp = event.block.timestamp;
   poolCreatedEntity.hasAllowList = event.params.hasAllowList;
   poolCreatedEntity.poolStatus = PoolStatus.PoolOpen;
+  poolCreatedEntity.contributions = BigInt.fromI32(0);
 
   poolCreatedEntity.save();
 
