@@ -91,6 +91,17 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
   purchasePoolTokenEntity.poolAddress = event.address;
   purchasePoolTokenEntity.purchaseTokenAmount =
     event.params.purchaseTokenAmount;
+  let poolCreatedEntity = PoolCreated.load(event.address.toHex());
+  if (poolCreatedEntity == null) {
+    log.error("trying to find pool not saved with address: {}", [
+      event.address.toHex(),
+    ]);
+    return;
+  }
+  poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
+    event.params.purchaseTokenAmount
+  );
+  poolCreatedEntity.save();
 
   purchasePoolTokenEntity.save();
 }

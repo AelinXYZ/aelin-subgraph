@@ -28,6 +28,7 @@ export class PoolCreated extends Entity {
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("hasAllowList", Value.fromBoolean(false));
     this.set("poolStatus", Value.fromString(""));
+    this.set("contributions", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -162,6 +163,15 @@ export class PoolCreated extends Entity {
 
   set poolStatus(value: string) {
     this.set("poolStatus", Value.fromString(value));
+  }
+
+  get contributions(): BigInt {
+    let value = this.get("contributions");
+    return value!.toBigInt();
+  }
+
+  set contributions(value: BigInt) {
+    this.set("contributions", Value.fromBigInt(value));
   }
 }
 
