@@ -1,3 +1,9 @@
+enum PoolStatus {
+  PoolOpen
+  FundingDeal
+  DealOpen
+}
+
 type PoolCreated @entity {
   " the address of the pool "
   id: ID!
@@ -34,6 +40,9 @@ type PoolCreated @entity {
 
   " if there is an allow list on the pool "
   hasAllowList: Boolean!
+
+  " the current status of the pool "
+  poolStatus: PoolStatus!
 }
 
 type TotalPoolsCreated @entity {
