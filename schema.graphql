@@ -31,6 +31,9 @@ type PoolCreated @entity {
 
   " the block timestamp when the pool was created"
   timestamp: BigInt!
+
+  " if there is an allow list on the pool "
+  hasAllowList: Boolean!
 }
 
 type TotalPoolsCreated @entity {
