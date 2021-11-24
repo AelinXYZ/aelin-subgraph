@@ -53,9 +53,6 @@ type PurchasePoolToken @entity {
 
   " the amount of purchase tokens spent "
   purchaseTokenAmount: BigInt!
-
-  " the amount of pool tokens received "
-  poolTokenAmount: BigInt!
 }
 
 type WithdrawFromPool @entity {
@@ -70,9 +67,6 @@ type WithdrawFromPool @entity {
 
   " the amount of purchase tokens spent "
   purchaseTokenAmount: BigInt!
-
-  " the amount of pool tokens received "
-  poolTokenAmount: BigInt!
 }
 
 type AcceptDeal @entity {
@@ -96,9 +90,6 @@ type AcceptDeal @entity {
 
   " the amount of pool tokens spent. will also equal the amount of deal tokens received "
   poolTokenAmount: BigInt!
-
-  " the amount of underlying purchase tokens sent to the holder when the purchaser acccepts "
-  underlyingToHolderAmt: BigInt!
 }
 
 type DealCreated @entity {

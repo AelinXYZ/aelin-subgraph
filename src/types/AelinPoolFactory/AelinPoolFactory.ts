@@ -55,8 +55,12 @@ export class CreatePool__Params {
     return this._event.parameters[7].value.toAddress();
   }
 
-  get purchaseExpiry(): BigInt {
+  get purchaseDuration(): BigInt {
     return this._event.parameters[8].value.toBigInt();
+  }
+
+  get hasAllowList(): boolean {
+    return this._event.parameters[9].value.toBoolean();
   }
 }
 
@@ -111,6 +115,25 @@ export class AelinPoolFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  AELIN_REWARDS(): Address {
+    let result = super.call("AELIN_REWARDS", "AELIN_REWARDS():(address)", []);
+
+    return result[0].toAddress();
+  }
+
+  try_AELIN_REWARDS(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "AELIN_REWARDS",
+      "AELIN_REWARDS():(address)",
+      []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
   createPool(
     _name: string,
     _symbol: string,
@@ -118,11 +141,13 @@ export class AelinPoolFactory extends ethereum.SmartContract {
     _purchaseToken: Address,
     _duration: BigInt,
     _sponsorFee: BigInt,
-    _purchaseExpiry: BigInt
+    _purchaseDuration: BigInt,
+    _allowList: Array<Address>,
+    _allowListAmounts: Array<BigInt>
   ): Address {
     let result = super.call(
       "createPool",
-      "createPool(string,string,uint256,address,uint256,uint256,uint256):(address)",
+      "createPool(string,string,uint256,address,uint256,uint256,uint256,address[],uint256[]):(address)",
       [
         ethereum.Value.fromString(_name),
         ethereum.Value.fromString(_symbol),
@@ -130,7 +155,9 @@ export class AelinPoolFactory extends ethereum.SmartContract {
         ethereum.Value.fromAddress(_purchaseToken),
         ethereum.Value.fromUnsignedBigInt(_duration),
         ethereum.Value.fromUnsignedBigInt(_sponsorFee),
-        ethereum.Value.fromUnsignedBigInt(_purchaseExpiry)
+        ethereum.Value.fromUnsignedBigInt(_purchaseDuration),
+        ethereum.Value.fromAddressArray(_allowList),
+        ethereum.Value.fromUnsignedBigIntArray(_allowListAmounts)
       ]
     );
 
@@ -144,11 +171,13 @@ export class AelinPoolFactory extends ethereum.SmartContract {
     _purchaseToken: Address,
     _duration: BigInt,
     _sponsorFee: BigInt,
-    _purchaseExpiry: BigInt
+    _purchaseDuration: BigInt,
+    _allowList: Array<Address>,
+    _allowListAmounts: Array<BigInt>
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       "createPool",
-      "createPool(string,string,uint256,address,uint256,uint256,uint256):(address)",
+      "createPool(string,string,uint256,address,uint256,uint256,uint256,address[],uint256[]):(address)",
       [
         ethereum.Value.fromString(_name),
         ethereum.Value.fromString(_symbol),
@@ -156,7 +185,9 @@ export class AelinPoolFactory extends ethereum.SmartContract {
         ethereum.Value.fromAddress(_purchaseToken),
         ethereum.Value.fromUnsignedBigInt(_duration),
         ethereum.Value.fromUnsignedBigInt(_sponsorFee),
-        ethereum.Value.fromUnsignedBigInt(_purchaseExpiry)
+        ethereum.Value.fromUnsignedBigInt(_purchaseDuration),
+        ethereum.Value.fromAddressArray(_allowList),
+        ethereum.Value.fromUnsignedBigIntArray(_allowListAmounts)
       ]
     );
     if (result.reverted) {
@@ -190,6 +221,10 @@ export class ConstructorCall__Inputs {
 
   get _aelinDealLogic(): Address {
     return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _aelinRewards(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 
@@ -242,8 +277,16 @@ export class CreatePoolCall__Inputs {
     return this._call.inputValues[5].value.toBigInt();
   }
 
-  get _purchaseExpiry(): BigInt {
+  get _purchaseDuration(): BigInt {
     return this._call.inputValues[6].value.toBigInt();
+  }
+
+  get _allowList(): Array<Address> {
+    return this._call.inputValues[7].value.toAddressArray();
+  }
+
+  get _allowListAmounts(): Array<BigInt> {
+    return this._call.inputValues[8].value.toBigIntArray();
   }
 }
 

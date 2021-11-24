@@ -7,12 +7,12 @@ dataSources:
     name: AelinPoolFactory
     network: kovan
     source:
-      address: "0xedA0008e2afdfe87E57e5eC100269217fbd3389C"
+      address: "0xb38766658dc08B360287E7b3255bCDb657F5F965"
       abi: AelinPoolFactory
       startBlock: 27715377
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - PoolCreated
@@ -20,7 +20,7 @@ dataSources:
         - name: AelinPoolFactory
           file: ./abis/AelinPoolFactory.json
       eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,boolean)
+        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
           handler: handleCreatePool
       file: ./src/aelin-pool-factory.ts
 
@@ -32,7 +32,7 @@ templates:
       abi: AelinPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/aelin-pool.ts
       entities:
@@ -46,11 +46,11 @@ templates:
       eventHandlers:
         - event: SetSponsor(indexed address)
           handler: handleSetSponsor
-        - event: PurchasePoolToken(indexed address,uint256,uint256)
+        - event: PurchasePoolToken(indexed address,uint256)
           handler: handlePurchasePoolToken
-        - event: WithdrawFromPool(indexed address,uint256,uint256)
+        - event: WithdrawFromPool(indexed address,uint256)
           handler: handleWithdrawFromPool
-        - event: AcceptDeal(indexed address,indexed address,uint256,uint256,uint256,uint256)
+        - event: AcceptDeal(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleAcceptDeal
         - event: CreateDeal(string,string,indexed address,indexed address)
           handler: handleCreateDeal
@@ -66,7 +66,7 @@ templates:
       abi: AelinDeal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/aelin-deal.ts
       entities:
