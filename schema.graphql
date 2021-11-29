@@ -71,6 +71,9 @@ type PurchasePoolToken @entity {
 
   " the amount of purchase tokens spent "
   purchaseTokenAmount: BigInt!
+
+  " the timestamp the purchase was made "
+  timestamp: BigInt!
 }
 
 type WithdrawFromPool @entity {
