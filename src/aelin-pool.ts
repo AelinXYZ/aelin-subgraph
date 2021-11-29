@@ -88,6 +88,7 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
   let purchasePoolTokenEntity = new PurchasePoolToken(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
+  purchasePoolTokenEntity.timestamp = event.block.timestamp;
   purchasePoolTokenEntity.purchaser = event.params.purchaser;
   purchasePoolTokenEntity.poolAddress = event.address;
   purchasePoolTokenEntity.purchaseTokenAmount =
