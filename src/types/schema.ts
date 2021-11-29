@@ -173,6 +173,23 @@ export class PoolCreated extends Entity {
   set contributions(value: BigInt) {
     this.set("contributions", Value.fromBigInt(value));
   }
+
+  get dealAddress(): Bytes | null {
+    let value = this.get("dealAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set dealAddress(value: Bytes | null) {
+    if (!value) {
+      this.unset("dealAddress");
+    } else {
+      this.set("dealAddress", Value.fromBytes(<Bytes>value));
+    }
+  }
 }
 
 export class TotalPoolsCreated extends Entity {
