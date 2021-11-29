@@ -46,6 +46,9 @@ type PoolCreated @entity {
 
   " the total amount of contributions to the pool "
   contributions: BigInt!
+
+  " the address of the current proposed deal on the pool "
+  dealAddress: Bytes
 }
 
 type TotalPoolsCreated @entity {
