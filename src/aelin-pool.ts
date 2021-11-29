@@ -53,6 +53,7 @@ export function handleCreateDeal(event: CreateDealEvent): void {
     return;
   }
   poolCreatedEntity.poolStatus = PoolStatus.FundingDeal;
+  poolCreatedEntity.dealAddress = event.params.dealContract;
   poolCreatedEntity.save();
   dealCreatedEntity.save();
 }
