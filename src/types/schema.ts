@@ -25,6 +25,7 @@ export class PoolCreated extends Entity {
     this.set("sponsor", Value.fromBytes(Bytes.empty()));
     this.set("purchaseDuration", Value.fromBigInt(BigInt.zero()));
     this.set("purchaseExpiry", Value.fromBigInt(BigInt.zero()));
+    this.set("purchaseTokenDecimals", Value.fromI32(0));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("hasAllowList", Value.fromBoolean(false));
     this.set("poolStatus", Value.fromString(""));
@@ -136,6 +137,15 @@ export class PoolCreated extends Entity {
 
   set purchaseExpiry(value: BigInt) {
     this.set("purchaseExpiry", Value.fromBigInt(value));
+  }
+
+  get purchaseTokenDecimals(): i32 {
+    let value = this.get("purchaseTokenDecimals");
+    return value!.toI32();
+  }
+
+  set purchaseTokenDecimals(value: i32) {
+    this.set("purchaseTokenDecimals", Value.fromI32(value));
   }
 
   get timestamp(): BigInt {
@@ -767,6 +777,70 @@ export class SetHolder extends Entity {
 
   set holder(value: Bytes) {
     this.set("holder", Value.fromBytes(value));
+  }
+}
+
+export class AelinToken extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("name", Value.fromString(""));
+    this.set("symbol", Value.fromString(""));
+    this.set("decimals", Value.fromI32(0));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save AelinToken entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save AelinToken entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("AelinToken", id.toString(), this);
+    }
+  }
+
+  static load(id: string): AelinToken | null {
+    return changetype<AelinToken | null>(store.get("AelinToken", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
+  }
+
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
+  }
+
+  get symbol(): string {
+    let value = this.get("symbol");
+    return value!.toString();
+  }
+
+  set symbol(value: string) {
+    this.set("symbol", Value.fromString(value));
+  }
+
+  get decimals(): i32 {
+    let value = this.get("decimals");
+    return value!.toI32();
+  }
+
+  set decimals(value: i32) {
+    this.set("decimals", Value.fromI32(value));
   }
 }
 
