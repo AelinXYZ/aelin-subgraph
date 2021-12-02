@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { PoolCreated, TotalPoolsCreated } from "./types/schema";
+import { PoolCreated, TotalPoolsCreated, AelinToken } from "./types/schema";
 import { CreatePool as CreatePoolEvent } from "./types/AelinPoolFactory/AelinPoolFactory";
 import { AelinPool } from "./types/templates";
 import { ONE } from "./helpers";
@@ -28,6 +28,10 @@ export function handleCreatePool(event: CreatePoolEvent): void {
     event.block.timestamp
   );
   poolCreatedEntity.timestamp = event.block.timestamp;
+  let aelinPoolTokenEntity = AelinToken.load(event.params.poolAddress.toHex());
+  if (aelinPoolTokenEntity != null) {
+    poolCreatedEntity.purchaseTokenDecimals = aelinPoolTokenEntity.decimals;
+  }
   poolCreatedEntity.hasAllowList = event.params.hasAllowList;
   poolCreatedEntity.poolStatus = PoolStatus.PoolOpen;
   poolCreatedEntity.contributions = BigInt.fromI32(0);

@@ -44,6 +44,32 @@ export class AcceptDeal__Params {
   }
 }
 
+export class AelinToken extends ethereum.Event {
+  get params(): AelinToken__Params {
+    return new AelinToken__Params(this);
+  }
+}
+
+export class AelinToken__Params {
+  _event: AelinToken;
+
+  constructor(event: AelinToken) {
+    this._event = event;
+  }
+
+  get name(): string {
+    return this._event.parameters[0].value.toString();
+  }
+
+  get symbol(): string {
+    return this._event.parameters[1].value.toString();
+  }
+
+  get decimals(): i32 {
+    return this._event.parameters[2].value.toI32();
+  }
+}
+
 export class Approval extends ethereum.Event {
   get params(): Approval__Params {
     return new Approval__Params(this);

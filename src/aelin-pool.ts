@@ -7,6 +7,7 @@ import {
   DealDetails,
   Transfer,
   PoolCreated,
+  AelinToken,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -17,9 +18,23 @@ import {
   PurchasePoolToken as PurchasePoolTokenEvent,
   WithdrawFromPool as WithdrawFromPoolEvent,
   AcceptDeal as AcceptDealEvent,
+  AelinToken as AelinTokenEvent,
 } from "./types/templates/AelinPool/AelinPool";
 import { AelinDeal } from "./types/templates";
 import { log } from "@graphprotocol/graph-ts";
+
+export function handleAelinPoolToken(event: AelinTokenEvent): void {
+  let aelinPoolTokenEntity = new AelinToken(event.address.toHex());
+  aelinPoolTokenEntity.decimals = event.params.decimals;
+  aelinPoolTokenEntity.name = event.params.name;
+  aelinPoolTokenEntity.symbol = event.params.symbol;
+  let poolCreatedEntity = PoolCreated.load(event.address.toHex());
+  if (poolCreatedEntity != null) {
+    poolCreatedEntity.purchaseTokenDecimals = event.params.decimals;
+    poolCreatedEntity.save();
+  }
+  aelinPoolTokenEntity.save();
+}
 
 export function handleSetSponsor(event: SetSponsorEvent): void {
   let setSponsorEntity = new SetSponsor(

@@ -35,6 +35,9 @@ type PoolCreated @entity {
   " the timestamp a purchaser can no longer enter the pool. After which the purchase period is locked. "
   purchaseExpiry: BigInt!
 
+  " the number of decimals on the purchase token "
+  purchaseTokenDecimals: Int
+
   " the block timestamp when the pool was created"
   timestamp: BigInt!
 
@@ -179,6 +182,20 @@ type SetHolder @entity {
 
   " the address of the new holder "
   holder: Bytes!
+}
+
+type AelinToken @entity {
+  " the address the token "
+  id: ID!
+
+  " the name of the token "
+  name: String!
+
+  " the symbol of the token "
+  symbol: String!
+
+  " the number of decimals of the token "
+  decimals: Int!
 }
 
 type DealFullyFunded @entity {

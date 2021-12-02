@@ -58,6 +58,8 @@ templates:
           handler: handleDealDetails
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolTransfer
+        - event: AelinToken(string,string,uint8)
+          handler: handleAelinPoolToken
 
   - name: AelinDeal
     kind: ethereum/contract
