@@ -155,11 +155,17 @@ type DealDetails @entity {
   " the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
   proRataRedemptionPeriod: BigInt!
 
+  " the timestamp when the pro rata redemption period starts "
+  proRataRedemptionPeriodStart: BigInt
+
   " after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
   openRedemptionPeriod: BigInt!
 
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
   holder: Bytes!
+
+  " is the deal fully funded "
+  isDealFunded: Boolean!
 
   " the exipration of the holder funding period "
   holderFundingExpiration: BigInt!

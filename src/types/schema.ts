@@ -571,6 +571,7 @@ export class DealDetails extends Entity {
     this.set("proRataRedemptionPeriod", Value.fromBigInt(BigInt.zero()));
     this.set("openRedemptionPeriod", Value.fromBigInt(BigInt.zero()));
     this.set("holder", Value.fromBytes(Bytes.empty()));
+    this.set("isDealFunded", Value.fromBoolean(false));
     this.set("holderFundingExpiration", Value.fromBigInt(BigInt.zero()));
     this.set("holderFundingDuration", Value.fromBigInt(BigInt.zero()));
   }
@@ -655,6 +656,23 @@ export class DealDetails extends Entity {
     this.set("proRataRedemptionPeriod", Value.fromBigInt(value));
   }
 
+  get proRataRedemptionPeriodStart(): BigInt | null {
+    let value = this.get("proRataRedemptionPeriodStart");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set proRataRedemptionPeriodStart(value: BigInt | null) {
+    if (!value) {
+      this.unset("proRataRedemptionPeriodStart");
+    } else {
+      this.set("proRataRedemptionPeriodStart", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
   get openRedemptionPeriod(): BigInt {
     let value = this.get("openRedemptionPeriod");
     return value!.toBigInt();
@@ -671,6 +689,15 @@ export class DealDetails extends Entity {
 
   set holder(value: Bytes) {
     this.set("holder", Value.fromBytes(value));
+  }
+
+  get isDealFunded(): boolean {
+    let value = this.get("isDealFunded");
+    return value!.toBoolean();
+  }
+
+  set isDealFunded(value: boolean) {
+    this.set("isDealFunded", Value.fromBoolean(value));
   }
 
   get holderFundingExpiration(): BigInt {

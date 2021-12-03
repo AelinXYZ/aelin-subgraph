@@ -90,6 +90,7 @@ export function handleDealDetails(event: DealDetailsEvent): void {
   dealDetailsEntity.holderFundingExpiration = event.params.holderFundingDuration.plus(
     event.block.timestamp
   );
+  dealDetailsEntity.isDealFunded = false;
 
   dealDetailsEntity.save();
 
