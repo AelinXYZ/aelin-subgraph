@@ -43,6 +43,7 @@ export function handleClaimedUnderlyingDealTokens(
   let claimedEntity = new ClaimedUnderlyingDealTokens(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
+  claimedEntity.dealAddress = event.address;
   claimedEntity.underlyingDealTokenAddress =
     event.params.underlyingDealTokenAddress;
   claimedEntity.recipient = event.params.recipient;

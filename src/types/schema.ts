@@ -1182,6 +1182,7 @@ export class ClaimedUnderlyingDealTokens extends Entity {
     this.set("underlyingDealTokenAddress", Value.fromBytes(Bytes.empty()));
     this.set("recipient", Value.fromBytes(Bytes.empty()));
     this.set("underlyingDealTokensClaimed", Value.fromBigInt(BigInt.zero()));
+    this.set("dealAddress", Value.fromBytes(Bytes.empty()));
   }
 
   save(): void {
@@ -1240,5 +1241,14 @@ export class ClaimedUnderlyingDealTokens extends Entity {
 
   set underlyingDealTokensClaimed(value: BigInt) {
     this.set("underlyingDealTokensClaimed", Value.fromBigInt(value));
+  }
+
+  get dealAddress(): Bytes {
+    let value = this.get("dealAddress");
+    return value!.toBytes();
+  }
+
+  set dealAddress(value: Bytes) {
+    this.set("dealAddress", Value.fromBytes(value));
   }
 }

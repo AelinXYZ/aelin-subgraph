@@ -284,4 +284,7 @@ type ClaimedUnderlyingDealTokens @entity {
 
   " the number of underlying deal tokens claimed "
   underlyingDealTokensClaimed: BigInt!
+
+  " the address of the deal contract "
+  dealAddress: Bytes!
 }
