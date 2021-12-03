@@ -6,6 +6,7 @@ import {
   SetHolder,
   Transfer,
   PoolCreated,
+  DealDetails,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -80,12 +81,24 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
   let poolCreatedEntity = PoolCreated.load(event.params.poolAddress.toHex());
   if (poolCreatedEntity == null) {
     log.error("trying to find pool not saved with address: {}", [
-      event.address.toHex(),
+      event.params.poolAddress.toHex(),
     ]);
     return;
   }
   poolCreatedEntity.poolStatus = PoolStatus.DealOpen;
   poolCreatedEntity.save();
+
+  let dealDetailsEntity = DealDetails.load(event.address.toHex());
+  if (dealDetailsEntity == null) {
+    log.error("trying to find deal not saved with address: {}", [
+      event.address.toHex(),
+    ]);
+    return;
+  }
+  dealDetailsEntity.proRataRedemptionPeriodStart = event.block.timestamp;
+  dealDetailsEntity.isDealFunded = true;
+  dealDetailsEntity.save();
+
   dealFullyFundedEntity.save();
 }
 
