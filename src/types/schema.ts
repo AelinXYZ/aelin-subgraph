@@ -558,7 +558,7 @@ export class DealCreated extends Entity {
   }
 }
 
-export class DealDetails extends Entity {
+export class DealDetail extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -578,19 +578,19 @@ export class DealDetails extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save DealDetails entity without an ID");
+    assert(id != null, "Cannot save DealDetail entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save DealDetails entity with non-string ID. " +
+        "Cannot save DealDetail entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("DealDetails", id.toString(), this);
+      store.set("DealDetail", id.toString(), this);
     }
   }
 
-  static load(id: string): DealDetails | null {
-    return changetype<DealDetails | null>(store.get("DealDetails", id));
+  static load(id: string): DealDetail | null {
+    return changetype<DealDetail | null>(store.get("DealDetail", id));
   }
 
   get id(): string {
@@ -955,7 +955,7 @@ export class DealFullyFunded extends Entity {
   }
 }
 
-export class DepositDealTokens extends Entity {
+export class DepositDealToken extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -968,20 +968,20 @@ export class DepositDealTokens extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save DepositDealTokens entity without an ID");
+    assert(id != null, "Cannot save DepositDealToken entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save DepositDealTokens entity with non-string ID. " +
+        "Cannot save DepositDealToken entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("DepositDealTokens", id.toString(), this);
+      store.set("DepositDealToken", id.toString(), this);
     }
   }
 
-  static load(id: string): DepositDealTokens | null {
-    return changetype<DepositDealTokens | null>(
-      store.get("DepositDealTokens", id)
+  static load(id: string): DepositDealToken | null {
+    return changetype<DepositDealToken | null>(
+      store.get("DepositDealToken", id)
     );
   }
 
@@ -1031,7 +1031,7 @@ export class DepositDealTokens extends Entity {
   }
 }
 
-export class WithdrawUnderlyingDealTokens extends Entity {
+export class WithdrawUnderlyingDealToken extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -1046,21 +1046,21 @@ export class WithdrawUnderlyingDealTokens extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save WithdrawUnderlyingDealTokens entity without an ID"
+      "Cannot save WithdrawUnderlyingDealToken entity without an ID"
     );
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save WithdrawUnderlyingDealTokens entity with non-string ID. " +
+        "Cannot save WithdrawUnderlyingDealToken entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("WithdrawUnderlyingDealTokens", id.toString(), this);
+      store.set("WithdrawUnderlyingDealToken", id.toString(), this);
     }
   }
 
-  static load(id: string): WithdrawUnderlyingDealTokens | null {
-    return changetype<WithdrawUnderlyingDealTokens | null>(
-      store.get("WithdrawUnderlyingDealTokens", id)
+  static load(id: string): WithdrawUnderlyingDealToken | null {
+    return changetype<WithdrawUnderlyingDealToken | null>(
+      store.get("WithdrawUnderlyingDealToken", id)
     );
   }
 
@@ -1174,7 +1174,7 @@ export class Transfer extends Entity {
   }
 }
 
-export class ClaimedUnderlyingDealTokens extends Entity {
+export class ClaimedUnderlyingDealToken extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -1189,21 +1189,21 @@ export class ClaimedUnderlyingDealTokens extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save ClaimedUnderlyingDealTokens entity without an ID"
+      "Cannot save ClaimedUnderlyingDealToken entity without an ID"
     );
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save ClaimedUnderlyingDealTokens entity with non-string ID. " +
+        "Cannot save ClaimedUnderlyingDealToken entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("ClaimedUnderlyingDealTokens", id.toString(), this);
+      store.set("ClaimedUnderlyingDealToken", id.toString(), this);
     }
   }
 
-  static load(id: string): ClaimedUnderlyingDealTokens | null {
-    return changetype<ClaimedUnderlyingDealTokens | null>(
-      store.get("ClaimedUnderlyingDealTokens", id)
+  static load(id: string): ClaimedUnderlyingDealToken | null {
+    return changetype<ClaimedUnderlyingDealToken | null>(
+      store.get("ClaimedUnderlyingDealToken", id)
     );
   }
 

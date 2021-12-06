@@ -4,7 +4,7 @@ import {
   WithdrawFromPool,
   AcceptDeal,
   SetSponsor,
-  DealDetails,
+  DealDetail,
   Transfer,
   PoolCreated,
   AelinToken,
@@ -14,7 +14,7 @@ import {
   Transfer as TransferEvent,
   SetSponsor as SetSponsorEvent,
   CreateDeal as CreateDealEvent,
-  DealDetails as DealDetailsEvent,
+  DealDetail as DealDetailEvent,
   PurchasePoolToken as PurchasePoolTokenEvent,
   WithdrawFromPool as WithdrawFromPoolEvent,
   AcceptDeal as AcceptDealEvent,
@@ -73,26 +73,26 @@ export function handleCreateDeal(event: CreateDealEvent): void {
   dealCreatedEntity.save();
 }
 
-export function handleDealDetails(event: DealDetailsEvent): void {
-  let dealDetailsEntity = new DealDetails(event.params.dealContract.toHex());
-  dealDetailsEntity.underlyingDealToken = event.params.underlyingDealToken;
-  dealDetailsEntity.purchaseTokenTotalForDeal =
+export function handleDealDetail(event: DealDetailEvent): void {
+  let dealDetailEntity = new DealDetail(event.params.dealContract.toHex());
+  dealDetailEntity.underlyingDealToken = event.params.underlyingDealToken;
+  dealDetailEntity.purchaseTokenTotalForDeal =
     event.params.purchaseTokenTotalForDeal;
-  dealDetailsEntity.underlyingDealTokenTotal =
+  dealDetailEntity.underlyingDealTokenTotal =
     event.params.underlyingDealTokenTotal;
-  dealDetailsEntity.vestingPeriod = event.params.vestingPeriod;
-  dealDetailsEntity.vestingCliff = event.params.vestingCliff;
-  dealDetailsEntity.proRataRedemptionPeriod =
+  dealDetailEntity.vestingPeriod = event.params.vestingPeriod;
+  dealDetailEntity.vestingCliff = event.params.vestingCliff;
+  dealDetailEntity.proRataRedemptionPeriod =
     event.params.proRataRedemptionPeriod;
-  dealDetailsEntity.openRedemptionPeriod = event.params.openRedemptionPeriod;
-  dealDetailsEntity.holder = event.params.holder;
-  dealDetailsEntity.holderFundingDuration = event.params.holderFundingDuration;
-  dealDetailsEntity.holderFundingExpiration = event.params.holderFundingDuration.plus(
+  dealDetailEntity.openRedemptionPeriod = event.params.openRedemptionPeriod;
+  dealDetailEntity.holder = event.params.holder;
+  dealDetailEntity.holderFundingDuration = event.params.holderFundingDuration;
+  dealDetailEntity.holderFundingExpiration = event.params.holderFundingDuration.plus(
     event.block.timestamp
   );
-  dealDetailsEntity.isDealFunded = false;
+  dealDetailEntity.isDealFunded = false;
 
-  dealDetailsEntity.save();
+  dealDetailEntity.save();
 
   // use templates to create a new deal to track events
   AelinDeal.create(event.params.dealContract);
