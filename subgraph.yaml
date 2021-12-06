@@ -7,9 +7,9 @@ dataSources:
     name: AelinPoolFactory
     network: kovan
     source:
-      address: "0x37C1803e1D63515f0a9806030e887b55A6A344b3"
+      address: "0x8659F2b2ae99395d15D65ae512b656651305826f"
       abi: AelinPoolFactory
-      startBlock: 28608673
+      startBlock: 28654468
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -54,8 +54,8 @@ templates:
           handler: handleAcceptDeal
         - event: CreateDeal(string,string,indexed address,indexed address)
           handler: handleCreateDeal
-        - event: DealDetails(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,indexed address,uint256)
-          handler: handleDealDetails
+        - event: DealDetail(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleDealDetail
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolTransfer
         - event: AelinToken(string,string,uint8)
@@ -81,11 +81,11 @@ templates:
           handler: handleSetHolder
         - event: DealFullyFunded(indexed address,uint256,uint256,uint256,uint256)
           handler: handleDealFullyFunded
-        - event: DepositDealTokens(indexed address,indexed address,uint256)
-          handler: handleDepositDealTokens
-        - event: WithdrawUnderlyingDealTokens(indexed address,indexed address,uint256)
-          handler: handleWithdrawUnderlyingDealTokens
-        - event: ClaimedUnderlyingDealTokens(indexed address,indexed address,uint256)
-          handler: handleClaimedUnderlyingDealTokens
+        - event: DepositDealToken(indexed address,indexed address,uint256)
+          handler: handleDepositDealToken
+        - event: WithdrawUnderlyingDealToken(indexed address,indexed address,uint256)
+          handler: handleWithdrawUnderlyingDealToken
+        - event: ClaimedUnderlyingDealToken(indexed address,indexed address,uint256)
+          handler: handleClaimedUnderlyingDealToken
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleDealTransfer

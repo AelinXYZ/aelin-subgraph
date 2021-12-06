@@ -126,16 +126,16 @@ export class CreateDeal__Params {
   }
 }
 
-export class DealDetails extends ethereum.Event {
-  get params(): DealDetails__Params {
-    return new DealDetails__Params(this);
+export class DealDetail extends ethereum.Event {
+  get params(): DealDetail__Params {
+    return new DealDetail__Params(this);
   }
 }
 
-export class DealDetails__Params {
-  _event: DealDetails;
+export class DealDetail__Params {
+  _event: DealDetail;
 
-  constructor(event: DealDetails) {
+  constructor(event: DealDetail) {
     this._event = event;
   }
 

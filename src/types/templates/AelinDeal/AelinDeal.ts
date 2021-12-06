@@ -62,16 +62,16 @@ export class Approval__Params {
   }
 }
 
-export class ClaimedUnderlyingDealTokens extends ethereum.Event {
-  get params(): ClaimedUnderlyingDealTokens__Params {
-    return new ClaimedUnderlyingDealTokens__Params(this);
+export class ClaimedUnderlyingDealToken extends ethereum.Event {
+  get params(): ClaimedUnderlyingDealToken__Params {
+    return new ClaimedUnderlyingDealToken__Params(this);
   }
 }
 
-export class ClaimedUnderlyingDealTokens__Params {
-  _event: ClaimedUnderlyingDealTokens;
+export class ClaimedUnderlyingDealToken__Params {
+  _event: ClaimedUnderlyingDealToken;
 
-  constructor(event: ClaimedUnderlyingDealTokens) {
+  constructor(event: ClaimedUnderlyingDealToken) {
     this._event = event;
   }
 
@@ -122,16 +122,16 @@ export class DealFullyFunded__Params {
   }
 }
 
-export class DepositDealTokens extends ethereum.Event {
-  get params(): DepositDealTokens__Params {
-    return new DepositDealTokens__Params(this);
+export class DepositDealToken extends ethereum.Event {
+  get params(): DepositDealToken__Params {
+    return new DepositDealToken__Params(this);
   }
 }
 
-export class DepositDealTokens__Params {
-  _event: DepositDealTokens;
+export class DepositDealToken__Params {
+  _event: DepositDealToken;
 
-  constructor(event: DepositDealTokens) {
+  constructor(event: DepositDealToken) {
     this._event = event;
   }
 
@@ -192,16 +192,16 @@ export class Transfer__Params {
   }
 }
 
-export class WithdrawUnderlyingDealTokens extends ethereum.Event {
-  get params(): WithdrawUnderlyingDealTokens__Params {
-    return new WithdrawUnderlyingDealTokens__Params(this);
+export class WithdrawUnderlyingDealToken extends ethereum.Event {
+  get params(): WithdrawUnderlyingDealToken__Params {
+    return new WithdrawUnderlyingDealToken__Params(this);
   }
 }
 
-export class WithdrawUnderlyingDealTokens__Params {
-  _event: WithdrawUnderlyingDealTokens;
+export class WithdrawUnderlyingDealToken__Params {
+  _event: WithdrawUnderlyingDealToken;
 
-  constructor(event: WithdrawUnderlyingDealTokens) {
+  constructor(event: WithdrawUnderlyingDealToken) {
     this._event = event;
   }
 

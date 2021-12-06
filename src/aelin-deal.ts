@@ -1,21 +1,21 @@
 import {
   DealFullyFunded,
-  DepositDealTokens,
-  WithdrawUnderlyingDealTokens,
-  ClaimedUnderlyingDealTokens,
+  DepositDealToken,
+  WithdrawUnderlyingDealToken,
+  ClaimedUnderlyingDealToken,
   SetHolder,
   Transfer,
   PoolCreated,
-  DealDetails,
+  DealDetail,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
   Transfer as TransferEvent,
   SetHolder as SetHolderEvent,
   DealFullyFunded as DealFullyFundedEvent,
-  DepositDealTokens as DepositDealTokensEvent,
-  WithdrawUnderlyingDealTokens as WithdrawUnderlyingDealTokensEvent,
-  ClaimedUnderlyingDealTokens as ClaimedUnderlyingDealTokensEvent,
+  DepositDealToken as DepositDealTokenEvent,
+  WithdrawUnderlyingDealToken as WithdrawUnderlyingDealTokenEvent,
+  ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from "./types/templates/AelinDeal/AelinDeal";
 import { log } from "@graphprotocol/graph-ts";
 
@@ -37,10 +37,10 @@ export function handleDealTransfer(event: TransferEvent): void {
   tranferEntity.save();
 }
 
-export function handleClaimedUnderlyingDealTokens(
-  event: ClaimedUnderlyingDealTokensEvent
+export function handleClaimedUnderlyingDealToken(
+  event: ClaimedUnderlyingDealTokenEvent
 ): void {
-  let claimedEntity = new ClaimedUnderlyingDealTokens(
+  let claimedEntity = new ClaimedUnderlyingDealToken(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
   claimedEntity.dealAddress = event.address;
@@ -53,10 +53,10 @@ export function handleClaimedUnderlyingDealTokens(
   claimedEntity.save();
 }
 
-export function handleWithdrawUnderlyingDealTokens(
-  event: WithdrawUnderlyingDealTokensEvent
+export function handleWithdrawUnderlyingDealToken(
+  event: WithdrawUnderlyingDealTokenEvent
 ): void {
-  let withdrawEntity = new WithdrawUnderlyingDealTokens(
+  let withdrawEntity = new WithdrawUnderlyingDealToken(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
   withdrawEntity.underlyingDealTokenAddress =
@@ -89,30 +89,30 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
   poolCreatedEntity.poolStatus = PoolStatus.DealOpen;
   poolCreatedEntity.save();
 
-  let dealDetailsEntity = DealDetails.load(event.address.toHex());
-  if (dealDetailsEntity == null) {
+  let dealDetailEntity = DealDetail.load(event.address.toHex());
+  if (dealDetailEntity == null) {
     log.error("trying to find deal not saved with address: {}", [
       event.address.toHex(),
     ]);
     return;
   }
-  dealDetailsEntity.proRataRedemptionPeriodStart = event.block.timestamp;
-  dealDetailsEntity.isDealFunded = true;
-  dealDetailsEntity.save();
+  dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp;
+  dealDetailEntity.isDealFunded = true;
+  dealDetailEntity.save();
 
   dealFullyFundedEntity.save();
 }
 
-export function handleDepositDealTokens(event: DepositDealTokensEvent): void {
-  let depositDealTokensEntity = new DepositDealTokens(
+export function handleDepositDealToken(event: DepositDealTokenEvent): void {
+  let depositDealTokenEntity = new DepositDealToken(
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   );
-  depositDealTokensEntity.underlyingDealTokenAddress =
+  depositDealTokenEntity.underlyingDealTokenAddress =
     event.params.underlyingDealTokenAddress;
-  depositDealTokensEntity.depositor = event.params.depositor;
-  depositDealTokensEntity.dealContract = event.address;
-  depositDealTokensEntity.underlyingDealTokenAmount =
+  depositDealTokenEntity.depositor = event.params.depositor;
+  depositDealTokenEntity.dealContract = event.address;
+  depositDealTokenEntity.underlyingDealTokenAmount =
     event.params.underlyingDealTokenAmount;
 
-  depositDealTokensEntity.save();
+  depositDealTokenEntity.save();
 }

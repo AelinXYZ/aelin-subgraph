@@ -133,7 +133,7 @@ type DealCreated @entity {
   sponsor: Bytes!
 }
 
-type DealDetails @entity {
+type DealDetail @entity {
   " the address of the deal "
   id: ID!
 
@@ -224,7 +224,7 @@ type DealFullyFunded @entity {
   openRedemptionExpiry: BigInt!
 }
 
-type DepositDealTokens @entity {
+type DepositDealToken @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
 
@@ -241,7 +241,7 @@ type DepositDealTokens @entity {
   underlyingDealTokenAmount: BigInt!
 }
 
-type WithdrawUnderlyingDealTokens @entity {
+type WithdrawUnderlyingDealToken @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
 
@@ -272,7 +272,7 @@ type Transfer @entity {
   value: BigInt!
 }
 
-type ClaimedUnderlyingDealTokens @entity {
+type ClaimedUnderlyingDealToken @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
 
