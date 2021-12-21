@@ -7,7 +7,8 @@
     "codegen": "graph codegen --debug --output-dir src/types/",
     "build": "graph build --debug",
     "auth-hosted": "graph auth --product hosted-service $AELIN_GRAPH_ACCESS_TOKEN",
-    "deploy-hosted": "graph deploy --product hosted-service aelin-xyz/aelin",
+    "deploy-hosted-mainnet": "graph deploy --product hosted-service aelin-xyz/aelin",
+    "deploy-hosted-optimism": "graph deploy --product hosted-service aelin-xyz/optimism",
     "deploy": "graph deploy aelin/aelin-mega --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy aelin/aelin-mega --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
