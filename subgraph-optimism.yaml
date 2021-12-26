@@ -22,6 +22,25 @@ dataSources:
         - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
           handler: handleCreatePool
       file: ./src/aelin-pool-factory.ts
+  - kind: ethereum/contract
+    name: AelinPoolFactory_v2
+    network: optimism
+    source:
+      address: "0xCC2A483d21c5Eb783ecA41b0933042Ad9CCdE6A8"
+      abi: AelinPoolFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - PoolCreated
+      abis:
+        - name: AelinPoolFactory
+          file: ./abis/AelinPoolFactory.json
+      eventHandlers:
+        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+          handler: handleCreatePool
+      file: ./src/aelin-pool-factory.ts
 
 templates:
   - name: AelinPool
