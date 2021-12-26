@@ -7,7 +7,7 @@ dataSources:
     name: AelinPoolFactory
     network: kovan
     source:
-      address: "0x1bFd9e41A8B4F1Cb0002b2b40e82C85CaE19fCc6"
+      address: "0x6ec97223e3808eAee2581e55F84CF639963B5961"
       abi: AelinPoolFactory
     mapping:
       kind: ethereum/events
