@@ -26,7 +26,7 @@ dataSources:
     name: AelinPoolFactory_v2
     network: optimism
     source:
-      address: "0xCC2A483d21c5Eb783ecA41b0933042Ad9CCdE6A8"
+      address: "0x914FfC8dc0678911AAE77f51B8489d6e214Da20F"
       abi: AelinPoolFactory
     mapping:
       kind: ethereum/events
