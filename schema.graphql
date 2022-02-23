@@ -20,6 +20,9 @@ type PoolCreated @entity {
   " the address of the purchase token "
   purchaseToken: Bytes!
 
+  " the symbol of the purchase token "
+  purchaseTokenSymbol: String!
+
   " the duration of the pool assuming no deal is presented when purchasers can withdraw all of their locked funds "
   duration: BigInt!
 
@@ -139,6 +142,12 @@ type DealDetail @entity {
 
   " the underlying deal token address "
   underlyingDealToken: Bytes!
+
+  " the underlying deal token symbol "
+  underlyingDealTokenSymbol: String!
+
+  " the underlying deal token decimals "
+  underlyingDealTokenDecimals: Int!
 
   " the total amount of purchse tokens for the deal "
   purchaseTokenTotalForDeal: BigInt!

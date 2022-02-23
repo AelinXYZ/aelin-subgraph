@@ -1,0 +1,20 @@
+{
+    "network": "optimism",
+    "dataSources": [
+        {
+            "name": "AelinPoolFactory",
+            "address": "0x87525307974a312AF13a78041F88B0BAe23ebb10",
+            "startBlock": 1487918
+        },
+        {
+            "name": "AelinPoolFactory_v2",
+            "address": "0x914FfC8dc0678911AAE77f51B8489d6e214Da20F",
+            "startBlock": 1971285
+        },
+        {
+            "name": "AelinPoolFactory_v3",
+            "address": "0x9219f9f65B007Fd3bA0b53762861f54062531a31",
+            "startBlock": 2266169
+        }
+    ]
+}

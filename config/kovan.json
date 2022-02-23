@@ -1,0 +1,10 @@
+{
+    "network": "kovan",
+    "dataSources": [
+        {
+            "name": "AelinPoolFactory",
+            "address": "0x3347b7C7F491B4cD665656796614A729036Ff220",
+            "startBlock": 29236924
+        }
+    ]
+}
