@@ -20,6 +20,7 @@ export class PoolCreated extends Entity {
     this.set("symbol", Value.fromString(""));
     this.set("purchaseTokenCap", Value.fromBigInt(BigInt.zero()));
     this.set("purchaseToken", Value.fromBytes(Bytes.empty()));
+    this.set("purchaseTokenSymbol", Value.fromString(""));
     this.set("duration", Value.fromBigInt(BigInt.zero()));
     this.set("sponsorFee", Value.fromBigInt(BigInt.zero()));
     this.set("sponsor", Value.fromBytes(Bytes.empty()));
@@ -92,6 +93,15 @@ export class PoolCreated extends Entity {
 
   set purchaseToken(value: Bytes) {
     this.set("purchaseToken", Value.fromBytes(value));
+  }
+
+  get purchaseTokenSymbol(): string {
+    let value = this.get("purchaseTokenSymbol");
+    return value!.toString();
+  }
+
+  set purchaseTokenSymbol(value: string) {
+    this.set("purchaseTokenSymbol", Value.fromString(value));
   }
 
   get duration(): BigInt {
@@ -564,6 +574,8 @@ export class DealDetail extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("underlyingDealToken", Value.fromBytes(Bytes.empty()));
+    this.set("underlyingDealTokenSymbol", Value.fromString(""));
+    this.set("underlyingDealTokenDecimals", Value.fromI32(0));
     this.set("purchaseTokenTotalForDeal", Value.fromBigInt(BigInt.zero()));
     this.set("underlyingDealTokenTotal", Value.fromBigInt(BigInt.zero()));
     this.set("vestingPeriod", Value.fromBigInt(BigInt.zero()));
@@ -609,6 +621,24 @@ export class DealDetail extends Entity {
 
   set underlyingDealToken(value: Bytes) {
     this.set("underlyingDealToken", Value.fromBytes(value));
+  }
+
+  get underlyingDealTokenSymbol(): string {
+    let value = this.get("underlyingDealTokenSymbol");
+    return value!.toString();
+  }
+
+  set underlyingDealTokenSymbol(value: string) {
+    this.set("underlyingDealTokenSymbol", Value.fromString(value));
+  }
+
+  get underlyingDealTokenDecimals(): i32 {
+    let value = this.get("underlyingDealTokenDecimals");
+    return value!.toI32();
+  }
+
+  set underlyingDealTokenDecimals(value: i32) {
+    this.set("underlyingDealTokenDecimals", Value.fromI32(value));
   }
 
   get purchaseTokenTotalForDeal(): BigInt {

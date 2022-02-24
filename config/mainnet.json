@@ -1,0 +1,20 @@
+{
+    "network": "mainnet",
+    "dataSources": [
+        {
+            "name": "AelinPoolFactory",
+            "address": "0x5541DA82549D732878c4104C9887c408790397AF",
+            "startBlock": 13846412
+        },
+        {
+            "name": "AelinPoolFactory_v2",
+            "address": "0x91fCeA33D02d11621b7f90ebd5E44eD393eD7b5e",
+            "startBlock": 13948162
+        },
+        {
+            "name": "AelinPoolFactory_v3",
+            "address": "0x2C0979B0de5F99c2bde1E698AeCA13b55695951E",
+            "startBlock": 13996006
+        }
+    ]
+}
