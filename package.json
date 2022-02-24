@@ -14,11 +14,7 @@
     "deploy-local": "graph deploy aelin/aelin-mega --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
     "prepare:optimism": "mustache config/optimism.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "prepare:kovan": "mustache config/kovan.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "deploy:kovan:linus": "npm run prepare:kovan && graph deploy --node https://api.thegraph.com/deploy/ 0xlinus/aelin-kovan",
-    "deploy:optimism:linus": "npm run prepare:optimism && graph deploy --node https://api.thegraph.com/deploy/ 0xlinus/aelin-optimism",
-    "deploy:mainnet:linus": "npm run prepare:mainnet && graph deploy --node https://api.thegraph.com/deploy/ 0xlinus/aelin-mainnet",
-    "deploy:all:linus": "npm run deploy:kovan:linus && npm run deploy:mainnet:linus && npm run deploy:optimism:linus"
+    "prepare:kovan": "mustache config/kovan.json subgraph.template.yaml > subgraph.yaml && npm run codegen"
   },
   "devDependencies": {
     "@graphprotocol/graph-ts": "0.24.0",
@@ -27,7 +23,7 @@
   "dependencies": {
     "babel-polyfill": "6.26.0",
     "babel-register": "6.26.0",
-    "mustache": "^4.2.0",
+    "mustache": "4.2.0",
     "truffle": "5.4.22",
     "truffle-contract": "4.0.31",
     "truffle-hdwallet-provider": "1.0.17"

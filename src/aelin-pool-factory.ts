@@ -37,10 +37,9 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	poolCreatedEntity.poolStatus = PoolStatus.PoolOpen;
 	poolCreatedEntity.contributions = BigInt.fromI32(0);
 
-	//get purchaseToken symbol and decimals
+	//get purchaseToken symbol
 	const purchaseToken = ERC20.bind(event.params.purchaseToken);
 	poolCreatedEntity.purchaseTokenSymbol = purchaseToken.symbol();
-	// poolCreatedEntity.purchaseTokenDecimals = purchaseToken.decimals();
 
 	poolCreatedEntity.save();
 
