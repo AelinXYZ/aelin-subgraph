@@ -2,7 +2,6 @@ import { BigInt } from '@graphprotocol/graph-ts';
 import { PoolCreated, TotalPoolsCreated, AelinToken } from './types/schema';
 import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory/AelinPoolFactory';
 import { AelinPool } from './types/templates';
-import { ERC20 } from './types/AelinPoolFactory/ERC20';
 import { ONE } from './helpers';
 import { PoolStatus } from './enum';
 
@@ -36,10 +35,6 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	poolCreatedEntity.hasAllowList = event.params.hasAllowList;
 	poolCreatedEntity.poolStatus = PoolStatus.PoolOpen;
 	poolCreatedEntity.contributions = BigInt.fromI32(0);
-
-	//get purchaseToken symbol
-	const purchaseToken = ERC20.bind(event.params.purchaseToken);
-	poolCreatedEntity.purchaseTokenSymbol = purchaseToken.symbol();
 
 	poolCreatedEntity.save();
 

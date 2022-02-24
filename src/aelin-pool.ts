@@ -20,7 +20,7 @@ import {
   AcceptDeal as AcceptDealEvent,
   AelinToken as AelinTokenEvent,
 } from "./types/templates/AelinPool/AelinPool";
-import { ERC20 } from './types/templates/AelinPool/ERC20'
+import { ERC20 } from "./types/templates/AelinPool/ERC20";
 import { AelinDeal } from "./types/templates";
 import { log } from "@graphprotocol/graph-ts";
 
@@ -94,9 +94,9 @@ export function handleDealDetail(event: DealDetailEvent): void {
   dealDetailEntity.isDealFunded = false;
 
   //get underlyingDealToken symbol and decimals
-	const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken);
-	dealDetailEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol();
-	dealDetailEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals();
+  const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken);
+  dealDetailEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol();
+  dealDetailEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals();
 
   dealDetailEntity.save();
 
