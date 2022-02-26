@@ -31,6 +31,7 @@ export class PoolCreated extends Entity {
     this.set("hasAllowList", Value.fromBoolean(false));
     this.set("poolStatus", Value.fromString(""));
     this.set("contributions", Value.fromBigInt(BigInt.zero()));
+    this.set("totalSupply", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -192,6 +193,15 @@ export class PoolCreated extends Entity {
 
   set contributions(value: BigInt) {
     this.set("contributions", Value.fromBigInt(value));
+  }
+
+  get totalSupply(): BigInt {
+    let value = this.get("totalSupply");
+    return value!.toBigInt();
+  }
+
+  set totalSupply(value: BigInt) {
+    this.set("totalSupply", Value.fromBigInt(value));
   }
 
   get dealAddress(): Bytes | null {

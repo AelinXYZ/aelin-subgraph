@@ -23,6 +23,7 @@ import {
 import { ERC20 } from "./types/templates/AelinPool/ERC20";
 import { AelinDeal } from "./types/templates";
 import { log } from "@graphprotocol/graph-ts";
+import { ZERO_ADDRESS } from "./helpers";
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
   let aelinPoolTokenEntity = new AelinToken(event.address.toHex());
@@ -53,6 +54,24 @@ export function handlePoolTransfer(event: TransferEvent): void {
   tranferEntity.to = event.params.to;
   tranferEntity.value = event.params.value;
   tranferEntity.save();
+  let poolCreatedEntity = PoolCreated.load(event.address.toHex());
+  if (poolCreatedEntity == null) {
+    log.error("trying to find pool not saved with address: {}", [
+      event.address.toHex(),
+    ]);
+    return;
+  }
+  if (event.params.from.toHex() == ZERO_ADDRESS.toHex()) {
+    poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.plus(
+      event.params.value
+    );
+  }
+  if (event.params.to.toHex() == ZERO_ADDRESS.toHex()) {
+    poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.minus(
+      event.params.value
+    );
+  }
+  poolCreatedEntity.save();
 }
 
 export function handleCreateDeal(event: CreateDealEvent): void {
