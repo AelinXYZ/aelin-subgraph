@@ -586,6 +586,7 @@ export class DealDetail extends Entity {
     this.set("underlyingDealToken", Value.fromBytes(Bytes.empty()));
     this.set("underlyingDealTokenSymbol", Value.fromString(""));
     this.set("underlyingDealTokenDecimals", Value.fromI32(0));
+    this.set("underlyingDealTokenTotalSupply", Value.fromBigInt(BigInt.zero()));
     this.set("purchaseTokenTotalForDeal", Value.fromBigInt(BigInt.zero()));
     this.set("underlyingDealTokenTotal", Value.fromBigInt(BigInt.zero()));
     this.set("vestingPeriod", Value.fromBigInt(BigInt.zero()));
@@ -649,6 +650,15 @@ export class DealDetail extends Entity {
 
   set underlyingDealTokenDecimals(value: i32) {
     this.set("underlyingDealTokenDecimals", Value.fromI32(value));
+  }
+
+  get underlyingDealTokenTotalSupply(): BigInt {
+    let value = this.get("underlyingDealTokenTotalSupply");
+    return value!.toBigInt();
+  }
+
+  set underlyingDealTokenTotalSupply(value: BigInt) {
+    this.set("underlyingDealTokenTotalSupply", Value.fromBigInt(value));
   }
 
   get purchaseTokenTotalForDeal(): BigInt {

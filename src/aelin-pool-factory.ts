@@ -31,8 +31,8 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	poolCreatedEntity.timestamp = event.block.timestamp;
 	
 	const purchaseToken = ERC20.bind(event.params.purchaseToken);
-  poolCreatedEntity.purchaseTokenSymbol = purchaseToken.symbol();
-  poolCreatedEntity.purchaseTokenDecimals = purchaseToken.decimals();
+	poolCreatedEntity.purchaseTokenSymbol = purchaseToken.symbol();
+	poolCreatedEntity.purchaseTokenDecimals = purchaseToken.decimals();
 
 	poolCreatedEntity.hasAllowList = event.params.hasAllowList;
 	poolCreatedEntity.poolStatus = PoolStatus.PoolOpen;

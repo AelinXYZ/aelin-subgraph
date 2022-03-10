@@ -152,6 +152,9 @@ type DealDetail @entity {
   " the underlying deal token decimals "
   underlyingDealTokenDecimals: Int!
 
+  " the underlying deal token totalSupply "
+  underlyingDealTokenTotalSupply: BigInt!
+
   " the total amount of purchse tokens for the deal "
   purchaseTokenTotalForDeal: BigInt!
 
