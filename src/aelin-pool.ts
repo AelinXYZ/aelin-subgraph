@@ -116,6 +116,7 @@ export function handleDealDetail(event: DealDetailEvent): void {
   const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken);
   dealDetailEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol();
   dealDetailEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals();
+  dealDetailEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply();  
 
   dealDetailEntity.save();
 
