@@ -1,3 +1,9 @@
+enum PoolStatus {
+  PoolOpen
+  FundingDeal
+  DealOpen
+}
+
 type PoolCreated @entity {
   " the address of the pool "
   id: ID!
@@ -14,6 +20,9 @@ type PoolCreated @entity {
   " the address of the purchase token "
   purchaseToken: Bytes!
 
+  " the symbol of the purchase token "
+  purchaseTokenSymbol: String!
+
   " the duration of the pool assuming no deal is presented when purchasers can withdraw all of their locked funds "
   duration: BigInt!
 
@@ -23,11 +32,40 @@ type PoolCreated @entity {
   " the address of the sponsor for fee payments. only the msg.sender of the createPool method can be the sponsor "
   sponsor: Bytes!
 
-  " the amount of time after which a pool is created during which a pool token can be purchased. After which the purchase period is locked. "
+  " the amount of time a purchaser gets to enter. After which the purchase period is locked. "
+  purchaseDuration: BigInt!
+
+  " the timestamp a purchaser can no longer enter the pool. After which the purchase period is locked. "
   purchaseExpiry: BigInt!
+
+  " the number of decimals on the purchase token "
+  purchaseTokenDecimals: Int
 
   " the block timestamp when the pool was created"
   timestamp: BigInt!
+
+  " if there is an allow list on the pool "
+  hasAllowList: Boolean!
+
+  " the current status of the pool "
+  poolStatus: PoolStatus!
+
+  " the total amount of contributions to the pool "
+  contributions: BigInt!
+
+  " the total supply of pool tokens "
+  totalSupply: BigInt!
+
+  " the address of the current proposed deal on the pool "
+  dealAddress: Bytes
+}
+
+type TotalPoolsCreated @entity {
+  " the id is always just 1 "
+  id: ID!
+
+  " the number of pools created - we use this for pagination "
+  count: BigInt!
 }
 
 type PurchasePoolToken @entity {
@@ -43,8 +81,8 @@ type PurchasePoolToken @entity {
   " the amount of purchase tokens spent "
   purchaseTokenAmount: BigInt!
 
-  " the amount of pool tokens received "
-  poolTokenAmount: BigInt!
+  " the timestamp the purchase was made "
+  timestamp: BigInt!
 }
 
 type WithdrawFromPool @entity {
@@ -59,9 +97,6 @@ type WithdrawFromPool @entity {
 
   " the amount of purchase tokens spent "
   purchaseTokenAmount: BigInt!
-
-  " the amount of pool tokens received "
-  poolTokenAmount: BigInt!
 }
 
 type AcceptDeal @entity {
@@ -85,9 +120,6 @@ type AcceptDeal @entity {
 
   " the amount of pool tokens spent. will also equal the amount of deal tokens received "
   poolTokenAmount: BigInt!
-
-  " the amount of underlying purchase tokens sent to the holder when the purchaser acccepts "
-  underlyingToHolderAmt: BigInt!
 }
 
 type DealCreated @entity {
@@ -107,12 +139,21 @@ type DealCreated @entity {
   sponsor: Bytes!
 }
 
-type DealDetails @entity {
+type DealDetail @entity {
   " the address of the deal "
   id: ID!
 
   " the underlying deal token address "
   underlyingDealToken: Bytes!
+
+  " the underlying deal token symbol "
+  underlyingDealTokenSymbol: String!
+
+  " the underlying deal token decimals "
+  underlyingDealTokenDecimals: Int!
+
+  " the underlying deal token totalSupply "
+  underlyingDealTokenTotalSupply: BigInt!
 
   " the total amount of purchse tokens for the deal "
   purchaseTokenTotalForDeal: BigInt!
@@ -129,11 +170,23 @@ type DealDetails @entity {
   " the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
   proRataRedemptionPeriod: BigInt!
 
+  " the timestamp when the pro rata redemption period starts "
+  proRataRedemptionPeriodStart: BigInt
+
   " after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
   openRedemptionPeriod: BigInt!
 
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
   holder: Bytes!
+
+  " is the deal fully funded "
+  isDealFunded: Boolean!
+
+  " the exipration of the holder funding period "
+  holderFundingExpiration: BigInt!
+
+  " the duration of the holder funding period "
+  holderFundingDuration: BigInt!
 }
 
 type SetSponsor @entity {
@@ -150,6 +203,20 @@ type SetHolder @entity {
 
   " the address of the new holder "
   holder: Bytes!
+}
+
+type AelinToken @entity {
+  " the address the token "
+  id: ID!
+
+  " the name of the token "
+  name: String!
+
+  " the symbol of the token "
+  symbol: String!
+
+  " the number of decimals of the token "
+  decimals: Int!
 }
 
 type DealFullyFunded @entity {
@@ -172,7 +239,7 @@ type DealFullyFunded @entity {
   openRedemptionExpiry: BigInt!
 }
 
-type DepositDealTokens @entity {
+type DepositDealToken @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
 
@@ -189,7 +256,7 @@ type DepositDealTokens @entity {
   underlyingDealTokenAmount: BigInt!
 }
 
-type WithdrawUnderlyingDealTokens @entity {
+type WithdrawUnderlyingDealToken @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
 
@@ -220,7 +287,7 @@ type Transfer @entity {
   value: BigInt!
 }
 
-type ClaimedUnderlyingDealTokens @entity {
+type ClaimedUnderlyingDealToken @entity {
   " the transaction hash + event log index of the purchase event "
   id: ID!
 
@@ -232,18 +299,7 @@ type ClaimedUnderlyingDealTokens @entity {
 
   " the number of underlying deal tokens claimed "
   underlyingDealTokensClaimed: BigInt!
-}
-
-type MintDealTokens @entity {
-  " the transaction hash + event log index of the purchase event "
-  id: ID!
 
   " the address of the deal contract "
-  dealContract: Bytes!
-
-  " the address of the recipient "
-  recipient: Bytes!
-
-  " the amount of deal tokens minted "
-  dealTokenAmount: BigInt!
+  dealAddress: Bytes!
 }

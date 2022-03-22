@@ -2,6 +2,10 @@
 
 A Aelin subgraph for [The Graph](https://thegraph.com). Aelin is a fundraising protocol built on Ethereum.
 
+## NOTE on OPTIMISM vs MAINNET
+
+we need to change the subgraph.yaml file to the right network before running the right deployment command the subgraph has to be pointing to the right network
+
 ## Brief Description of The Graph Node Setup
 
 A Graph Node can run multiple subgraphs, and in this case it can have a subgraph for Ropsten, Mainnet and Kovan. The subgraph ingests event data by calling to Infura through http. It can also connect to any geth node or parity node that accepts RPC calls. Fast synced geth nodes work. To use parity, the `--no-warp` flag must be used. Setting up a local Ethereum node is more reliable and faster, but Infura is the easiest way to get started.
@@ -53,7 +57,7 @@ We have provided a quick guide on how to start up the Aelin-Subgraph graph node.
 
 ```
 
-6.  d) Or a Kovan local node which was started with `parity --chain=kovan --no-warp --jsonrpc-apis="all" `:
+6.  d) Or a Kovan local node which was started with `parity --chain=kovan --no-warp --jsonrpc-apis="all"`:
 
 ```
   cargo run -p graph-node --release -- \
