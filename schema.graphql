@@ -331,3 +331,11 @@ type VestingDeal @entity {
 
   investorAddress: Bytes!
 }
+
+type TotalDealsBySponsor @entity {
+  " sponsor address "
+  id: ID!
+
+  " number of deals created "
+  count: Int!
+}
