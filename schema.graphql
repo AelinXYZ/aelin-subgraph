@@ -310,3 +310,25 @@ type ClaimedUnderlyingDealToken @entity {
   " the address of the deal contract "
   dealAddress: Bytes!
 }
+
+
+type VestingDeal @entity {
+  " userAddress - dealAddress "
+  id: ID!
+
+  poolName: String!
+
+  tokenToVest: Bytes!
+
+  dealTotal: BigInt!
+  
+  amountToVest: BigInt!
+  
+  totalVested: BigInt!
+  
+  vestingPeriodEnds: BigInt!
+  
+  investorAddress: Bytes!
+
+  purchaseTokenDecimals: Int!
+}

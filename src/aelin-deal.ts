@@ -7,6 +7,7 @@ import {
   Transfer,
   PoolCreated,
   DealDetail,
+  VestingDeal,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -50,6 +51,18 @@ export function handleClaimedUnderlyingDealToken(
   claimedEntity.underlyingDealTokensClaimed =
     event.params.underlyingDealTokensClaimed;
 
+  let vestingDeal = VestingDeal.load(event.params.recipient.toHex() + "-" + event.address.toHex());
+  if(vestingDeal === null) {
+    log.error("trying to find a vestingDeal not saved with address: {}", [
+      event.params.recipient.toHex() + "-" + event.address.toHex(),
+    ]);
+    return;
+  }
+
+  vestingDeal.amountToVest = vestingDeal.amountToVest.minus(event.params.underlyingDealTokensClaimed);
+  vestingDeal.totalVested = vestingDeal.totalVested.plus(event.params.underlyingDealTokensClaimed);
+
+  vestingDeal.save();
   claimedEntity.save();
 }
 

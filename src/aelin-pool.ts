@@ -8,6 +8,7 @@ import {
   Transfer,
   PoolCreated,
   AelinToken,
+	VestingDeal,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -201,5 +202,34 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
       dealDetailEntity.save();
   }
 
+	let vestingDeal = VestingDeal.load(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
+	if(vestingDeal === null) {
+		let poolCreated = PoolCreated.load(event.address.toHex());
+		if(poolCreated === null) {
+			log.error("trying to find a pool not saved with address: {}", [
+				event.address.toHex(),
+			]);
+			return;
+		}
+		let dealDetail = DealDetail.load(event.params.dealAddress.toHex());
+		if(dealDetail === null) {
+			log.error("trying to find a deal not saved with address: {}", [
+				event.params.dealAddress.toHex()
+			]);
+			return;
+		}
+
+		vestingDeal = new VestingDeal(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
+		vestingDeal.poolName = poolCreated.name;
+		vestingDeal.tokenToVest = dealDetail.underlyingDealToken;
+		vestingDeal.dealTotal = dealDetail.underlyingDealTokenTotal;
+		vestingDeal.amountToVest = dealDetail.underlyingDealTokenTotal;
+		vestingDeal.totalVested = BigInt.fromI32(0);
+		vestingDeal.vestingPeriodEnds = dealDetail.vestingPeriod;
+		vestingDeal.investorAddress = event.params.purchaser;
+		vestingDeal.purchaseTokenDecimals = poolCreated.purchaseTokenDecimals;
+	}
+
+	vestingDeal.save();
   acceptDealEntity.save();
 }
