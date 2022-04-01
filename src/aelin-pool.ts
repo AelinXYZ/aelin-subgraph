@@ -8,7 +8,7 @@ import {
   Transfer,
   PoolCreated,
   AelinToken,
-	VestingDeal,
+  VestingDeal,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -24,7 +24,11 @@ import {
 import { ERC20 } from "./types/templates/AelinPool/ERC20";
 import { AelinDeal } from "./types/templates";
 import { BigInt, log } from "@graphprotocol/graph-ts";
+<<<<<<< HEAD
 import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS } from "./helpers";
+=======
+import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS } from "./helpers";
+>>>>>>> update vesting deal entity
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
   let aelinPoolTokenEntity = new AelinToken(event.address.toHex());
@@ -119,7 +123,7 @@ export function handleDealDetail(event: DealDetailEvent): void {
   const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken);
   dealDetailEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol();
   dealDetailEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals();
-  dealDetailEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply();  
+  dealDetailEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply();
 
   let dealCreatedEntity = getDealCreated(event.params.dealContract.toHex());
   if(dealCreatedEntity != null) {
@@ -199,37 +203,48 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex());
   if(dealDetailEntity != null) {
       dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(event.params.poolTokenAmount);
-      dealDetailEntity.save();
+      dealDetailEntity.save(); 
+  }
+  
+  let vestingDeal = VestingDeal.load(
+    event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex()
+  );
+  if (vestingDeal === null) {
+    let poolCreated = PoolCreated.load(event.address.toHex());
+    if (poolCreated === null) {
+      log.error("trying to find a pool not saved with address: {}", [
+        event.address.toHex(),
+      ]);
+      return;
+    }
+    let dealDetail = DealDetail.load(event.params.dealAddress.toHex());
+    if (dealDetail === null) {
+      log.error("trying to find a deal not saved with address: {}", [
+        event.params.dealAddress.toHex(),
+      ]);
+      return;
+    }
+    let dealTokenAmount = event.params.poolTokenAmount.times(BigInt.fromI32(10).pow(DEAL_WRAPPER_DECIMALS - poolCreated.purchaseTokenDecimals));
+    let aelinDeal = AelinDeal.bind(event.params.dealAddress);
+    let underlyingPerDealExchangeRate = aelinDeal.underlyingPerDealExchangeRate();
+    let vestingExpiry = aelinDeal.vestingExpiry();
+    let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate);
+    
+    dealDetail.underlyingDealTokenDecimals
+
+    vestingDeal = new VestingDeal(
+      event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex()
+    );
+    vestingDeal.poolName = poolCreated.name;
+    vestingDeal.tokenToVest = dealDetail.underlyingDealToken;
+    vestingDeal.tokenToVestSymbol = dealDetail.underlyingDealTokenSymbol;
+    vestingDeal.investorDealTotal = investorDealTotal;
+    vestingDeal.amountToVest = dealDetail.underlyingDealTokenTotal;
+    vestingDeal.totalVested = BigInt.fromI32(0);
+    vestingDeal.vestingPeriodEnds = vestingExpiry; // timestamp of when the vesting period ends after all the other periods
+    vestingDeal.investorAddress = event.params.purchaser;
   }
 
-	let vestingDeal = VestingDeal.load(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
-	if(vestingDeal === null) {
-		let poolCreated = PoolCreated.load(event.address.toHex());
-		if(poolCreated === null) {
-			log.error("trying to find a pool not saved with address: {}", [
-				event.address.toHex(),
-			]);
-			return;
-		}
-		let dealDetail = DealDetail.load(event.params.dealAddress.toHex());
-		if(dealDetail === null) {
-			log.error("trying to find a deal not saved with address: {}", [
-				event.params.dealAddress.toHex()
-			]);
-			return;
-		}
-
-		vestingDeal = new VestingDeal(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
-		vestingDeal.poolName = poolCreated.name;
-		vestingDeal.tokenToVest = dealDetail.underlyingDealToken;
-		vestingDeal.dealTotal = dealDetail.underlyingDealTokenTotal;
-		vestingDeal.amountToVest = dealDetail.underlyingDealTokenTotal;
-		vestingDeal.totalVested = BigInt.fromI32(0);
-		vestingDeal.vestingPeriodEnds = dealDetail.vestingPeriod;
-		vestingDeal.investorAddress = event.params.purchaser;
-		vestingDeal.purchaseTokenDecimals = poolCreated.purchaseTokenDecimals;
-	}
-
-	vestingDeal.save();
+  vestingDeal.save();
   acceptDealEntity.save();
 }

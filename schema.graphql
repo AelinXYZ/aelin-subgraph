@@ -311,7 +311,6 @@ type ClaimedUnderlyingDealToken @entity {
   dealAddress: Bytes!
 }
 
-
 type VestingDeal @entity {
   " userAddress - dealAddress "
   id: ID!
@@ -320,15 +319,15 @@ type VestingDeal @entity {
 
   tokenToVest: Bytes!
 
-  dealTotal: BigInt!
-  
-  amountToVest: BigInt!
-  
-  totalVested: BigInt!
-  
-  vestingPeriodEnds: BigInt!
-  
-  investorAddress: Bytes!
+  tokenToVestSymbol: String!
 
-  purchaseTokenDecimals: Int!
+  investorDealTotal: BigInt!
+
+  amountToVest: BigInt!
+
+  totalVested: BigInt!
+
+  vestingPeriodEnds: BigInt!
+
+  investorAddress: Bytes!
 }
