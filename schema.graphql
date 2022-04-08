@@ -4,6 +4,12 @@ enum PoolStatus {
   DealOpen
 }
 
+enum NotificationType {
+  DealTokensVested
+  DealTokensVestingBegun
+  VestingCliffBegun
+}
+
 type PoolCreated @entity {
   " the address of the pool "
   id: ID!
@@ -302,4 +308,15 @@ type ClaimedUnderlyingDealToken @entity {
 
   " the address of the deal contract "
   dealAddress: Bytes!
+}
+
+type Notification @entity {
+  " poolAddress  + NotificationType "
+  id: ID!
+
+  type: NotificationType!
+
+  pool: Bytes!
+
+  triggerTime: BigInt!
 }

@@ -24,6 +24,7 @@ import { ERC20 } from "./types/templates/AelinPool/ERC20";
 import { AelinDeal } from "./types/templates";
 import { log } from "@graphprotocol/graph-ts";
 import { ZERO_ADDRESS } from "./helpers";
+import { createDealTokensVestingBegunNotification, createVestingCliffBegunNotification, removeDealTokensVestingBegunNotification } from "./notification";
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
   let aelinPoolTokenEntity = new AelinToken(event.address.toHex());
@@ -118,8 +119,16 @@ export function handleDealDetail(event: DealDetailEvent): void {
   dealDetailEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals();
   dealDetailEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply();  
 
-  dealDetailEntity.save();
+    dealDetailEntity.save();
 
+  
+  createDealTokensVestingBegunNotification(event)
+  createVestingCliffBegunNotification(event)
+
+  // Test the notification removal. We should not see DealTokensVestingBegunNotification when 
+  // query all Notification since we create it and immediately delete it afterwards
+  removeDealTokensVestingBegunNotification(event)
+  
   // use templates to create a new deal to track events
   AelinDeal.create(event.params.dealContract);
 }
