@@ -5,7 +5,7 @@ export let ONE = BigInt.fromI32(1);
 
 export let ZERO_ADDRESS = Address.fromHexString("0x0000000000000000000000000000000000000000");
 
-export let DEAL_WRAPPER_DECIMALS = 18;
+export let DEAL_WRAPPER_DECIMALS = BigInt.fromI32(18);
 
 export function getDealCreated(address:string): DealCreated | null {
   let dealCreatedEntity = DealCreated.load(address)

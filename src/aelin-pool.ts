@@ -22,13 +22,10 @@ import {
   AelinToken as AelinTokenEvent,
 } from "./types/templates/AelinPool/AelinPool";
 import { ERC20 } from "./types/templates/AelinPool/ERC20";
-import { AelinDeal } from "./types/templates";
 import { BigInt, log } from "@graphprotocol/graph-ts";
-<<<<<<< HEAD
-import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS } from "./helpers";
-=======
-import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS } from "./helpers";
->>>>>>> update vesting deal entity
+import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS } from "./helpers";
+import { AelinDeal } from "./types/templates";
+import { AelinDeal as AelinDealContract } from "./types/templates/AelinDeal/AelinDeal";
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
   let aelinPoolTokenEntity = new AelinToken(event.address.toHex());
@@ -224,12 +221,14 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
       ]);
       return;
     }
-    let dealTokenAmount = event.params.poolTokenAmount.times(BigInt.fromI32(10).pow(DEAL_WRAPPER_DECIMALS - poolCreated.purchaseTokenDecimals));
-    let aelinDeal = AelinDeal.bind(event.params.dealAddress);
+
+    let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreated.purchaseTokenDecimals))
+    // @ts-ignore 
+    let dealTokenAmount = event.params.poolTokenAmount.times(BigInt.fromI32(10).pow(<u8>exp.toI32()));
+    let aelinDeal = AelinDealContract.bind(event.params.dealAddress);
     let underlyingPerDealExchangeRate = aelinDeal.underlyingPerDealExchangeRate();
     let vestingExpiry = aelinDeal.vestingExpiry();
     let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate);
-    
     dealDetail.underlyingDealTokenDecimals
 
     vestingDeal = new VestingDeal(
@@ -238,7 +237,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     vestingDeal.poolName = poolCreated.name;
     vestingDeal.tokenToVest = dealDetail.underlyingDealToken;
     vestingDeal.tokenToVestSymbol = dealDetail.underlyingDealTokenSymbol;
-    vestingDeal.investorDealTotal = investorDealTotal;
+    vestingDeal.investorDealTotal = investorDealTotal.div(BigInt.fromI32(10).pow(18));  
     vestingDeal.amountToVest = dealDetail.underlyingDealTokenTotal;
     vestingDeal.totalVested = BigInt.fromI32(0);
     vestingDeal.vestingPeriodEnds = vestingExpiry; // timestamp of when the vesting period ends after all the other periods
