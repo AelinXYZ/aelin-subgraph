@@ -1302,3 +1302,117 @@ export class ClaimedUnderlyingDealToken extends Entity {
     this.set("dealAddress", Value.fromBytes(value));
   }
 }
+
+export class VestingDeal extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("poolName", Value.fromString(""));
+    this.set("tokenToVest", Value.fromBytes(Bytes.empty()));
+    this.set("dealTotal", Value.fromBigInt(BigInt.zero()));
+    this.set("amountToVest", Value.fromBigInt(BigInt.zero()));
+    this.set("totalVested", Value.fromBigInt(BigInt.zero()));
+    this.set("vestingPeriodEnds", Value.fromBigInt(BigInt.zero()));
+    this.set("investorAddress", Value.fromBytes(Bytes.empty()));
+    this.set("purchaseTokenDecimals", Value.fromI32(0));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save VestingDeal entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save VestingDeal entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("VestingDeal", id.toString(), this);
+    }
+  }
+
+  static load(id: string): VestingDeal | null {
+    return changetype<VestingDeal | null>(store.get("VestingDeal", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get poolName(): string {
+    let value = this.get("poolName");
+    return value!.toString();
+  }
+
+  set poolName(value: string) {
+    this.set("poolName", Value.fromString(value));
+  }
+
+  get tokenToVest(): Bytes {
+    let value = this.get("tokenToVest");
+    return value!.toBytes();
+  }
+
+  set tokenToVest(value: Bytes) {
+    this.set("tokenToVest", Value.fromBytes(value));
+  }
+
+  get dealTotal(): BigInt {
+    let value = this.get("dealTotal");
+    return value!.toBigInt();
+  }
+
+  set dealTotal(value: BigInt) {
+    this.set("dealTotal", Value.fromBigInt(value));
+  }
+
+  get amountToVest(): BigInt {
+    let value = this.get("amountToVest");
+    return value!.toBigInt();
+  }
+
+  set amountToVest(value: BigInt) {
+    this.set("amountToVest", Value.fromBigInt(value));
+  }
+
+  get totalVested(): BigInt {
+    let value = this.get("totalVested");
+    return value!.toBigInt();
+  }
+
+  set totalVested(value: BigInt) {
+    this.set("totalVested", Value.fromBigInt(value));
+  }
+
+  get vestingPeriodEnds(): BigInt {
+    let value = this.get("vestingPeriodEnds");
+    return value!.toBigInt();
+  }
+
+  set vestingPeriodEnds(value: BigInt) {
+    this.set("vestingPeriodEnds", Value.fromBigInt(value));
+  }
+
+  get investorAddress(): Bytes {
+    let value = this.get("investorAddress");
+    return value!.toBytes();
+  }
+
+  set investorAddress(value: Bytes) {
+    this.set("investorAddress", Value.fromBytes(value));
+  }
+
+  get purchaseTokenDecimals(): i32 {
+    let value = this.get("purchaseTokenDecimals");
+    return value!.toI32();
+  }
+
+  set purchaseTokenDecimals(value: i32) {
+    this.set("purchaseTokenDecimals", Value.fromI32(value));
+  }
+}

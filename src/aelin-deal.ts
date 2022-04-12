@@ -6,7 +6,7 @@ import {
   SetHolder,
   Transfer,
   PoolCreated,
-  DealDetail,
+  DealDetail
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -18,6 +18,7 @@ import {
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from "./types/templates/AelinDeal/AelinDeal";
 import { log } from "@graphprotocol/graph-ts";
+import { getVestingDeal } from "./helpers";
 
 export function handleSetHolder(event: SetHolderEvent): void {
   let setHolderEntity = new SetHolder(
@@ -49,6 +50,14 @@ export function handleClaimedUnderlyingDealToken(
   claimedEntity.recipient = event.params.recipient;
   claimedEntity.underlyingDealTokensClaimed =
     event.params.underlyingDealTokensClaimed;
+
+  let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + "-" + event.address.toHex())
+  if(vestingDealEntity != null) {
+    vestingDealEntity.amountToVest = vestingDealEntity.amountToVest.minus(event.params.underlyingDealTokensClaimed);
+    vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(event.params.underlyingDealTokensClaimed);
+  
+    vestingDealEntity.save();
+  }
 
   claimedEntity.save();
 }

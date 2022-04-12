@@ -1,10 +1,11 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
-import { DealCreated, DealDetail, PoolCreated } from "./types/schema";
+import { DealCreated, DealDetail, PoolCreated, VestingDeal } from "./types/schema";
 
 export let ONE = BigInt.fromI32(1);
 
 export let ZERO_ADDRESS = Address.fromHexString("0x0000000000000000000000000000000000000000");
 
+export let DEAL_WRAPPER_DECIMALS = BigInt.fromI32(18);
 
 export function getDealCreated(address:string): DealCreated | null {
   let dealCreatedEntity = DealCreated.load(address)
@@ -41,3 +42,15 @@ export function getPoolCreated(address:string): PoolCreated | null {
   
     return poolCreatedEntity
   }
+
+export function getVestingDeal(address:string): VestingDeal | null {
+  let vestingDealEntity = VestingDeal.load(address);
+  if(vestingDealEntity == null) {
+    log.error("trying to find a vestingDeal not saved with address: {}", [
+      address,
+    ]);
+    return null;
+  }
+
+  return vestingDealEntity
+}
