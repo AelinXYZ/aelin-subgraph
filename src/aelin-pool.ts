@@ -9,6 +9,7 @@ import {
   PoolCreated,
   AelinToken,
   VestingDeal,
+	TotalDealsBySponsor,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -91,6 +92,15 @@ export function handleCreateDeal(event: CreateDealEvent): void {
   }
   poolCreatedEntity.poolStatus = PoolStatus.FundingDeal;
   poolCreatedEntity.dealAddress = event.params.dealContract;
+
+  let totalDealsBySponsorEntity = TotalDealsBySponsor.load(event.params.sponsor.toHexString());
+  if (totalDealsBySponsorEntity == null) {
+    totalDealsBySponsorEntity = new TotalDealsBySponsor(event.params.sponsor.toHexString());
+    totalDealsBySponsorEntity.count = 0;
+  }
+  totalDealsBySponsorEntity.count++;
+
+	totalDealsBySponsorEntity.save();
   poolCreatedEntity.save();
   dealCreatedEntity.save();
 }
