@@ -121,9 +121,9 @@ export function handleDealDetail(event: DealDetailEvent): void {
   dealDetailEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply();  
 
   let dealCreatedEntity = getDealCreated(event.params.dealContract.toHex());
-  if(dealCreatedEntity) {
+  if(dealCreatedEntity != null) {
     let poolCreatedEntity = getPoolCreated(dealCreatedEntity.poolAddress.toHex());
-    if (poolCreatedEntity) {
+    if (poolCreatedEntity != null) {
       poolCreatedEntity.deal = event.params.dealContract.toHex();
       poolCreatedEntity.save();
     }      
@@ -170,11 +170,11 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
   withdrawFromPoolEntity.purchaseTokenAmount = event.params.purchaseTokenAmount;
 
   let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if(poolCreatedEntity) {
+  if(poolCreatedEntity != null) {
       let dealAddress = poolCreatedEntity.dealAddress
       if(dealAddress) {
         let dealDetailEntity = getDealDetails(dealAddress.toHex());
-        if(dealDetailEntity) {
+        if(dealDetailEntity != null) {
           dealDetailEntity.totalWithdrawn = (dealDetailEntity.totalWithdrawn as BigInt).plus(event.params.purchaseTokenAmount);
           dealDetailEntity.save();
         }
@@ -196,7 +196,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   acceptDealEntity.sponsorFee = event.params.sponsorFee;
 
   let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex());
-  if(dealDetailEntity) {
+  if(dealDetailEntity != null) {
       dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(event.params.poolTokenAmount);
       dealDetailEntity.save();
   }
