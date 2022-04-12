@@ -47,6 +47,8 @@ templates:
       abis:
         - name: AelinPool
           file: ./abis/AelinPool.json
+        - name: AelinDeal
+          file: ./abis/AelinDeal.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
