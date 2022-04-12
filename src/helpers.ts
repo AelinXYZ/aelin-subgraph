@@ -1,5 +1,5 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
-import { DealCreated, DealDetail, PoolCreated } from "./types/schema";
+import { DealCreated, DealDetail, PoolCreated, VestingDeal } from "./types/schema";
 
 export let ONE = BigInt.fromI32(1);
 
@@ -42,3 +42,15 @@ export function getPoolCreated(address:string): PoolCreated | null {
   
     return poolCreatedEntity
   }
+
+export function getVestingDeal(address:string): VestingDeal | null {
+  let vestingDealEntity = VestingDeal.load(address);
+  if(vestingDealEntity == null) {
+    log.error("trying to find a vestingDeal not saved with address: {}", [
+      address,
+    ]);
+    return null;
+  }
+
+  return vestingDealEntity
+}

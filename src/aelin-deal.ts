@@ -6,8 +6,7 @@ import {
   SetHolder,
   Transfer,
   PoolCreated,
-  DealDetail,
-  VestingDeal,
+  DealDetail
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -19,6 +18,7 @@ import {
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from "./types/templates/AelinDeal/AelinDeal";
 import { log } from "@graphprotocol/graph-ts";
+import { getVestingDeal } from "./helpers";
 
 export function handleSetHolder(event: SetHolderEvent): void {
   let setHolderEntity = new SetHolder(
@@ -51,18 +51,14 @@ export function handleClaimedUnderlyingDealToken(
   claimedEntity.underlyingDealTokensClaimed =
     event.params.underlyingDealTokensClaimed;
 
-  let vestingDeal = VestingDeal.load(event.params.recipient.toHex() + "-" + event.address.toHex());
-  if(vestingDeal === null) {
-    log.error("trying to find a vestingDeal not saved with address: {}", [
-      event.params.recipient.toHex() + "-" + event.address.toHex(),
-    ]);
-    return;
+  let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + "-" + event.address.toHex())
+  if(vestingDealEntity != null) {
+    vestingDealEntity.amountToVest = vestingDealEntity.amountToVest.minus(event.params.underlyingDealTokensClaimed);
+    vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(event.params.underlyingDealTokensClaimed);
+  
+    vestingDealEntity.save();
   }
 
-  vestingDeal.amountToVest = vestingDeal.amountToVest.minus(event.params.underlyingDealTokensClaimed);
-  vestingDeal.totalVested = vestingDeal.totalVested.plus(event.params.underlyingDealTokensClaimed);
-
-  vestingDeal.save();
   claimedEntity.save();
 }
 
