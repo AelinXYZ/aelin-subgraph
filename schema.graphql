@@ -58,6 +58,9 @@ type PoolCreated @entity {
 
   " the address of the current proposed deal on the pool "
   dealAddress: Bytes
+
+  " details of the created deal "
+  deal: DealDetail
 }
 
 type TotalPoolsCreated @entity {
@@ -187,6 +190,10 @@ type DealDetail @entity {
 
   " the duration of the holder funding period "
   holderFundingDuration: BigInt!
+
+  totalAmountAccepted: BigInt
+
+  totalWithdrawn: BigInt
 }
 
 type SetSponsor @entity {

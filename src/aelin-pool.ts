@@ -22,8 +22,8 @@ import {
 } from "./types/templates/AelinPool/AelinPool";
 import { ERC20 } from "./types/templates/AelinPool/ERC20";
 import { AelinDeal } from "./types/templates";
-import { log } from "@graphprotocol/graph-ts";
-import { ZERO_ADDRESS } from "./helpers";
+import { BigInt, log } from "@graphprotocol/graph-ts";
+import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS } from "./helpers";
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
   let aelinPoolTokenEntity = new AelinToken(event.address.toHex());
@@ -111,12 +111,23 @@ export function handleDealDetail(event: DealDetailEvent): void {
     event.block.timestamp
   );
   dealDetailEntity.isDealFunded = false;
+  dealDetailEntity.totalAmountAccepted = BigInt.fromI32(0);
+  dealDetailEntity.totalWithdrawn = BigInt.fromI32(0);
 
   //get underlyingDealToken symbol and decimals
   const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken);
   dealDetailEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol();
   dealDetailEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals();
   dealDetailEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply();  
+
+  let dealCreatedEntity = getDealCreated(event.params.dealContract.toHex());
+  if(dealCreatedEntity != null) {
+    let poolCreatedEntity = getPoolCreated(dealCreatedEntity.poolAddress.toHex());
+    if (poolCreatedEntity != null) {
+      poolCreatedEntity.deal = event.params.dealContract.toHex();
+      poolCreatedEntity.save();
+    }      
+  }
 
   dealDetailEntity.save();
 
@@ -158,6 +169,18 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
   withdrawFromPoolEntity.poolAddress = event.address;
   withdrawFromPoolEntity.purchaseTokenAmount = event.params.purchaseTokenAmount;
 
+  let poolCreatedEntity = getPoolCreated(event.address.toHex());
+  if(poolCreatedEntity != null) {
+      let dealAddress = poolCreatedEntity.dealAddress
+      if(dealAddress) {
+        let dealDetailEntity = getDealDetails(dealAddress.toHex());
+        if(dealDetailEntity != null) {
+          dealDetailEntity.totalWithdrawn = (dealDetailEntity.totalWithdrawn as BigInt).plus(event.params.purchaseTokenAmount);
+          dealDetailEntity.save();
+        }
+      }
+  }
+
   withdrawFromPoolEntity.save();
 }
 
@@ -171,6 +194,12 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   acceptDealEntity.poolTokenAmount = event.params.poolTokenAmount;
   acceptDealEntity.aelinFee = event.params.aelinFee;
   acceptDealEntity.sponsorFee = event.params.sponsorFee;
+
+  let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex());
+  if(dealDetailEntity != null) {
+      dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(event.params.poolTokenAmount);
+      dealDetailEntity.save();
+  }
 
   acceptDealEntity.save();
 }
