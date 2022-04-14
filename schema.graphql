@@ -198,8 +198,11 @@ type DealDetail @entity {
   holderFundingDuration: BigInt!
 
   totalAmountAccepted: BigInt!
+<<<<<<< HEAD
 
   totalAmountFunded: BigInt!
+=======
+>>>>>>> added UserAllocationStat entity
 
   totalWithdrawn: BigInt!
 }

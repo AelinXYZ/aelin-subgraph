@@ -219,7 +219,6 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
             userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
             userAllocationStatEntity.save();
           }
-
           dealDetailEntity.save();
         }
       }
