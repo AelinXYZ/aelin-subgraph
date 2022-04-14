@@ -11,7 +11,8 @@ import {
   VestingDeal,
 	TotalDealsBySponsor,
   Deposit,
-  UserAllocationStat
+  UserAllocationStat,
+  Withdraw
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -172,13 +173,11 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
   );
 
   let depositEntity = new Deposit(
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString() + "d"
-  )
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+  );
 
   depositEntity.userAddress = event.params.purchaser;
   depositEntity.timestamp = event.block.timestamp;
-  depositEntity.poolName = poolCreatedEntity.name;
-  depositEntity.sponsor = poolCreatedEntity.sponsor;
   depositEntity.amountDeposited = event.params.purchaseTokenAmount;
   depositEntity.pool = event.address.toHex();
 
@@ -212,6 +211,16 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
       }
   }
 
+  let withdrawEntity = new Withdraw(
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+  );
+
+  withdrawEntity.userAddress = event.params.purchaser;
+  withdrawEntity.timestamp = event.block.timestamp;
+  withdrawEntity.amountWithdrawn = event.params.purchaseTokenAmount;
+  withdrawEntity.pool = event.address.toHex();
+
+  withdrawEntity.save();
   withdrawFromPoolEntity.save();
 }
 
