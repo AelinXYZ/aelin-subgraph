@@ -371,7 +371,6 @@ type Deposit @entity {
 	pool: PoolCreated!
 }
 
-<<<<<<< HEAD
 type UserAllocationStat @entity {
 	" userAddress - dealAddress "
 	id: ID!
@@ -449,12 +448,12 @@ type Vest @entity {
 }
 
 type DealFunded @entity {
-  " the transaction hash + event log index "
+  " the transaction hash + event log index of the purchase event "
   id: ID!
-
-  holder: Bytes!
-
-  timestamp: BigInt!
+  
+	holder: Bytes!
+  
+	timestamp: BigInt!
 
   poolName: String!
 
@@ -485,24 +484,3 @@ type Withdraw @entity {
 
 	pool: PoolCreated!
 }
-=======
-type DealAccepted @entity {
-  " the transaction hash + event log index of the purchase event "
-	id: ID!
-
-  " the address of user accepting the deal "
-	userAddress: Bytes!
-
-  " the block timestamp when the user deposited"
-	timestamp: BigInt!
-
-  " amount of purchase tokens invested "
-	investmentAmount: BigInt!
-
-  " amount of deal tokens "
-	dealTokenAmount: BigInt!
-
-  " pool where the funds are deposited "
-	pool: PoolCreated!
-}
->>>>>>> added DealsAccepted entity and some refactoring
