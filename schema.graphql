@@ -374,23 +374,6 @@ type UserAllocationStat @entity {
   totalAccepted: BigInt!
 }
 
-type Withdraw @entity {
-	" the transaction hash + event log index of the WithdrawFromPoolEvent event "
-	id: ID!
-
-  " the address of user withdrawing "
-	userAddress: Bytes!
-
-  " the block timestamp when the user withdrew"
-	timestamp: BigInt!
-
-  " withdrawn amount of purchase tokens "
-	amountWithdrawn: BigInt!
-
-  " pool where the funds are withdrawn "
-	pool: PoolCreated!
-}
-
 type DealAccepted @entity {
 	" the transaction hash + event log index of the purchase event "
 	id: ID!
@@ -412,8 +395,6 @@ type DealAccepted @entity {
 	" pool where the funds are deposited "
 	pool: PoolCreated!
 }
-
-
 
 type DealSponsored @entity {
 	" poolAddress + sponsorAddress"
@@ -471,3 +452,19 @@ type DealFunded @entity {
   pool: PoolCreated!
 }
 
+type Withdraw @entity {
+	" the transaction hash + event log index of the WithdrawFromPoolEvent event "
+	id: ID!
+
+  " the address of user withdrawing "
+	userAddress: Bytes!
+
+  " the block timestamp when the user withdrew"
+	timestamp: BigInt!
+
+  " withdrawn amount of purchase tokens "
+	amountWithdrawn: BigInt!
+
+  " pool where the funds are withdrawn "
+	pool: PoolCreated!
+}
