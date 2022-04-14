@@ -28,7 +28,7 @@ import {
 } from "./types/templates/AelinPool/AelinPool";
 import { ERC20 } from "./types/templates/AelinPool/ERC20";
 import { BigInt, log } from "@graphprotocol/graph-ts";
-import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, getUserAllocationStat } from "./helpers";
+import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, getUserAllocationStat, getDealFunded } from "./helpers";
 import { AelinDeal } from "./types/templates";
 import { AelinDeal as AelinDealContract } from "./types/templates/AelinDeal/AelinDeal";
 
@@ -202,12 +202,13 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
       if(dealAddress) {
         let dealDetailEntity = getDealDetails(dealAddress.toHex());
         if(dealDetailEntity != null) {
-          dealDetailEntity.totalWithdrawn = (dealDetailEntity.totalWithdrawn as BigInt).plus(event.params.purchaseTokenAmount);
+          dealDetailEntity.totalWithdrawn = dealDetailEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
           let userAllocationStatEntity = getUserAllocationStat(event.params.purchaser.toHex() + "-" + dealAddress.toHex());
           if(userAllocationStatEntity != null) {
             userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
             userAllocationStatEntity.save();
           }
+
           dealDetailEntity.save();
         }
       }
@@ -240,23 +241,31 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   let poolCreatedEntity = getPoolCreated(event.address.toHex());
   let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex());
 
-  if(dealDetailEntity != null) {
-      dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(event.params.poolTokenAmount);
-      let userAllocationStatEntity = UserAllocationStat.load(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
-      if(userAllocationStatEntity == null) {
-        userAllocationStatEntity = new UserAllocationStat(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
-        userAllocationStatEntity.totalWithdrawn = BigInt.fromI32(0);
-        userAllocationStatEntity.totalAccepted = BigInt.fromI32(0);
-      }
-      userAllocationStatEntity.totalAccepted = userAllocationStatEntity.totalAccepted.plus(event.params.poolTokenAmount);
-      
-      dealDetailEntity.save(); 
-      userAllocationStatEntity.save();
-  }
-
-  if(poolCreatedEntity == null) {
+  if(poolCreatedEntity == null || dealDetailEntity == null) {
     return;
   }
+
+  dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(event.params.poolTokenAmount);
+  dealDetailEntity.save();
+
+  let dealFundedEntity = getDealFunded(event.params.dealAddress.toHex() + "-" + poolCreatedEntity.sponsor.toHex())
+  if(dealFundedEntity != null) {
+    dealFundedEntity.amountRaised = dealFundedEntity.amountRaised.plus(event.params.poolTokenAmount) 
+    dealFundedEntity.save()
+  }
+
+  let userAllocationStatEntity = getUserAllocationStat(
+		event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
+	)
+
+  if(userAllocationStatEntity == null) {
+    userAllocationStatEntity = new UserAllocationStat(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
+    userAllocationStatEntity.totalWithdrawn = BigInt.fromI32(0);
+    userAllocationStatEntity.totalAccepted = BigInt.fromI32(0);
+  }
+
+  userAllocationStatEntity.totalAccepted = userAllocationStatEntity.totalAccepted.plus(event.params.poolTokenAmount);
+  userAllocationStatEntity.save();
 
   let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
   // @ts-ignore 
@@ -268,7 +277,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   let vestingDealEntity = VestingDeal.load(
     event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex()
   );
-  if (vestingDealEntity === null && dealDetailEntity !== null) {
+  if (vestingDealEntity === null) {
     vestingDealEntity = new VestingDeal(
       event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex()
     );

@@ -108,17 +108,17 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
     return;
   }
 
-  poolCreatedEntity.poolStatus = PoolStatus.DealOpen;  
+  poolCreatedEntity.poolStatus = PoolStatus.DealOpen;
   dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp;
   dealDetailEntity.isDealFunded = true;
-  
-  let dealFundedEntity = new DealFunded(event.transaction.hash.toHex() + "-" + event.logIndex.toString());
-  dealFundedEntity.userAddress = dealDetailEntity.holder;
+
+  let dealFundedEntity = new DealFunded(event.address.toHex() + "-" + poolCreatedEntity.sponsor.toHex());
+  dealFundedEntity.holder = dealDetailEntity.holder;
+  dealFundedEntity.poolName = poolCreatedEntity.name;
   dealFundedEntity.timestamp = event.block.timestamp;
-  dealFundedEntity.amountRaised = dealDetailEntity.totalAmountAccepted;
   dealFundedEntity.amountFunded = dealDetailEntity.totalAmountFunded;
   dealFundedEntity.pool = event.params.poolAddress.toHex();
-  
+
   poolCreatedEntity.save();
   dealDetailEntity.save();
   dealFullyFundedEntity.save();
