@@ -402,3 +402,18 @@ type DealAccepted @entity {
   " pool where the funds are deposited "
 	pool: PoolCreated!
 }
+
+type Vest @entity {
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
+
+  " the address of user depositing "
+	userAddress: Bytes!
+
+  " the block timestamp when the user deposited"
+	timestamp: BigInt!
+
+  amountVested: BigInt!
+
+	pool: PoolCreated!
+}
