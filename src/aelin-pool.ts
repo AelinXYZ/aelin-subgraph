@@ -11,14 +11,10 @@ import {
   VestingDeal,
 	TotalDealsBySponsor,
   Deposit,
-<<<<<<< HEAD
   UserAllocationStat,
   Withdraw,
   DealAccepted,
   DealSponsored
-=======
-  DealSponsored,
->>>>>>> added DealSponsored entity
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -33,11 +29,7 @@ import {
 } from "./types/templates/AelinPool/AelinPool";
 import { ERC20 } from "./types/templates/AelinPool/ERC20";
 import { BigInt, log } from "@graphprotocol/graph-ts";
-<<<<<<< HEAD
 import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, getUserAllocationStat, getDealFunded, getDealSponsored } from "./helpers";
-=======
-import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, getDealSponsored } from "./helpers";
->>>>>>> added DealSponsored entity
 import { AelinDeal } from "./types/templates";
 import { AelinDeal as AelinDealContract } from "./types/templates/AelinDeal/AelinDeal";
 
@@ -114,11 +106,7 @@ export function handleCreateDeal(event: CreateDealEvent): void {
   totalDealsBySponsorEntity.count++;
 
   let dealSponsoredEntity = new DealSponsored(event.address.toHex() + "-" + event.params.sponsor.toHex());
-<<<<<<< HEAD
   dealSponsoredEntity.sponsor = event.params.sponsor;
-=======
-  dealSponsoredEntity.userAddress = event.params.sponsor;
->>>>>>> added DealSponsored entity
   dealSponsoredEntity.timestamp = event.block.timestamp;
   dealSponsoredEntity.poolName = poolCreatedEntity.name;
   dealSponsoredEntity.amountEarned = BigInt.fromI32(0);
@@ -322,14 +310,14 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   dealAcceptedEntity.userAddress = event.params.purchaser;
   dealAcceptedEntity.timestamp = event.block.timestamp;
   dealAcceptedEntity.investmentAmount = event.params.poolTokenAmount;
-  dealAcceptedEntity.dealTokenAmount = dealTokenAmount.times(underlyingPerDealExchangeRate);
+  dealAcceptedEntity.dealTokenAmount = dealTokenAmount.times(underlyingPerDealExchangeRate).div(BigInt.fromI32(10).pow(18));
   dealAcceptedEntity.pool = event.address.toHex();
 
   let dealSponsoredEntity = getDealSponsored(event.address.toHex() + "-" + poolCreatedEntity.sponsor.toHex());
   if(dealSponsoredEntity != null) {
     dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(event.params.poolTokenAmount);
     dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(event.params.poolTokenAmount.times(event.params.sponsorFee));
-    dealSponsoredEntity.totalInvested = vestingDealEntity.investorDealTotal
+    dealSponsoredEntity.totalInvested = investorDealTotal.div(BigInt.fromI32(10).pow(18));
   
     dealSponsoredEntity.save();
   }
