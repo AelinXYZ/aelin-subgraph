@@ -5,8 +5,6 @@ import {
   ClaimedUnderlyingDealToken,
   SetHolder,
   Transfer,
-  PoolCreated,
-  DealDetail,
   Vest,
   DealFunded
 } from "./types/schema";
