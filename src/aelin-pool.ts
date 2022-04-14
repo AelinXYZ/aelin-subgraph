@@ -129,6 +129,7 @@ export function handleDealDetail(event: DealDetailEvent): void {
   dealDetailEntity.isDealFunded = false;
   dealDetailEntity.totalAmountAccepted = BigInt.fromI32(0);
   dealDetailEntity.totalWithdrawn = BigInt.fromI32(0);
+  dealDetailEntity.totalAmountFunded = BigInt.fromI32(0);
 
   //get underlyingDealToken symbol and decimals
   const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken);
