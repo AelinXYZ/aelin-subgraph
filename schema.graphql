@@ -191,9 +191,9 @@ type DealDetail @entity {
   " the duration of the holder funding period "
   holderFundingDuration: BigInt!
 
-  totalAmountAccepted: BigInt
+  totalAmountAccepted: BigInt!
 
-  totalWithdrawn: BigInt
+  totalWithdrawn: BigInt!
 }
 
 type SetSponsor @entity {
@@ -360,4 +360,13 @@ type Deposit @entity {
 
   " pool where the funds are deposited "
 	pool: PoolCreated!
+}
+
+type UserAllocationStat @entity {
+  " userAddress - dealAddress "
+  id: ID!
+
+  totalWithdrawn: BigInt!
+
+  totalAccepted: BigInt!
 }
