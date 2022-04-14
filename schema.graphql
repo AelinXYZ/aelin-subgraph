@@ -339,3 +339,25 @@ type TotalDealsBySponsor @entity {
   " number of deals created "
   count: Int!
 }
+type Deposit @entity {
+	" event log index of the deposit event + userAddress + d"
+	id: ID!
+
+  " the address of user depositing "
+	userAddress: Bytes!
+
+  " the block timestamp when the user deposited"
+	timestamp: BigInt!
+
+  " represents the pool token name `aePool-${name}` "
+	poolName: String!
+
+  " the address of the sponsor for fee payments. "
+	sponsor: Bytes!
+
+  " amount of purchase tokens deposited "
+	amountDeposited: BigInt!
+
+  " pool where the funds are deposited "
+	pool: PoolCreated!
+}

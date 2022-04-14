@@ -10,6 +10,7 @@ import {
   AelinToken,
   VestingDeal,
 	TotalDealsBySponsor,
+  Deposit,
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -168,9 +169,21 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
   poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
     event.params.purchaseTokenAmount
   );
-  poolCreatedEntity.save();
 
+  let depositEntity = new Deposit(
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString() + "d"
+  )
+
+  depositEntity.userAddress = event.params.purchaser;
+  depositEntity.timestamp = event.block.timestamp;
+  depositEntity.poolName = poolCreatedEntity.name;
+  depositEntity.sponsor = poolCreatedEntity.sponsor;
+  depositEntity.amountDeposited = event.params.purchaseTokenAmount;
+  depositEntity.pool = event.address.toHex();
+
+  poolCreatedEntity.save();
   purchasePoolTokenEntity.save();
+  depositEntity.save();
 }
 
 export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
