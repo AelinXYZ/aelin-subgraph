@@ -448,7 +448,7 @@ type Vest @entity {
 }
 
 type DealFunded @entity {
-  " the transaction hash + event log index of the purchase event "
+  " the transaction hash + event log index "
   id: ID!
   
 	holder: Bytes!
