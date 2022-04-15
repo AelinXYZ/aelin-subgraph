@@ -1,234 +1,286 @@
-import { PoolStatus } from "./enum";
+import { PoolStatus } from './enum'
 import {
-  Transfer as TransferEvent,
-  SetSponsor as SetSponsorEvent,
-  CreateDeal as CreateDealEvent,
-  DealDetail as DealDetailEvent,
-  PurchasePoolToken as PurchasePoolTokenEvent,
-  WithdrawFromPool as WithdrawFromPoolEvent,
-  AcceptDeal as AcceptDealEvent,
-  AelinToken as AelinTokenEvent,
-} from "./types/templates/AelinPool/AelinPool";
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { getDealCreated, getDealDetails, getPoolCreated, ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, getDealFunded, getDealSponsored, getUserAllocationStat, getVestingDeal, getTotalDealsBySponsor } from "./helpers";
-import { AelinDeal } from "./types/templates";
-import { AelinDeal as AelinDealContract } from "./types/templates/AelinDeal/AelinDeal";
-import { AelinPool as AelinPoolContract } from "./types/templates/AelinPool/AelinPool";
-import { createEntity, Entity } from "./services/entities";
+	Transfer as TransferEvent,
+	SetSponsor as SetSponsorEvent,
+	CreateDeal as CreateDealEvent,
+	DealDetail as DealDetailEvent,
+	PurchasePoolToken as PurchasePoolTokenEvent,
+	WithdrawFromPool as WithdrawFromPoolEvent,
+	AcceptDeal as AcceptDealEvent,
+	AelinToken as AelinTokenEvent
+} from './types/templates/AelinPool/AelinPool'
+import { Address, BigInt } from '@graphprotocol/graph-ts'
+import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS } from './helpers'
+import { AelinDeal } from './types/templates'
+import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
+import { AelinPool as AelinPoolContract } from './types/templates/AelinPool/AelinPool'
+import {
+	createEntity,
+	Entity,
+	getDealCreated,
+	getDealDetails,
+	getDealFunded,
+	getDealSponsored,
+	getPoolCreated,
+	getTotalDealsBySponsor,
+	getUserAllocationStat,
+	getVestingDeal
+} from './services/entities'
 
-export function handleAelinPoolToken(event: AelinTokenEvent): void { 
-  createEntity(Entity.AelinToken, event);
+export function handleAelinPoolToken(event: AelinTokenEvent): void {
+	createEntity(Entity.AelinToken, event)
 
-  /** 
-   * Update PoolCreated entity
-   */
-  let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if (poolCreatedEntity != null) {
-    poolCreatedEntity.purchaseTokenDecimals = event.params.decimals;
-    poolCreatedEntity.save();
-  }
+	/**
+	 * Update PoolCreated entity
+	 */
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity != null) {
+		poolCreatedEntity.purchaseTokenDecimals = event.params.decimals
+		poolCreatedEntity.save()
+	}
 }
 
 export function handleSetSponsor(event: SetSponsorEvent): void {
-  createEntity(Entity.SetSponsor, event);
+	createEntity(Entity.SetSponsor, event)
 }
 
 export function handlePoolTransfer(event: TransferEvent): void {
-  createEntity(Entity.Transfer, event);
+	createEntity(Entity.Transfer, event)
 
-  /** 
-   * Update PoolCreated entity
-   */
-  let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if (poolCreatedEntity == null) {
-    return;
-  }
+	/**
+	 * Update PoolCreated entity
+	 */
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity == null) {
+		return
+	}
 
-  if (event.params.from.toHex() == ZERO_ADDRESS.toHex()) {
-    poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.plus(
-      event.params.value
-    );
-  }
-  if (event.params.to.toHex() == ZERO_ADDRESS.toHex()) {
-    poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.minus(
-      event.params.value
-    );
-  }
-  poolCreatedEntity.save();
+	if (event.params.from.toHex() == ZERO_ADDRESS.toHex()) {
+		poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.plus(
+			event.params.value
+		)
+	}
+	if (event.params.to.toHex() == ZERO_ADDRESS.toHex()) {
+		poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.minus(
+			event.params.value
+		)
+	}
+	poolCreatedEntity.save()
 }
 
 export function handleCreateDeal(event: CreateDealEvent): void {
-  createEntity(Entity.DealCreated, event);
-  createEntity(Entity.DealSponsored, event);
+	createEntity(Entity.DealCreated, event)
+	createEntity(Entity.DealSponsored, event)
 
-  /** 
-   * Update PoolCreated entity
-   */
-  let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if(poolCreatedEntity != null) {
-    poolCreatedEntity.poolStatus = PoolStatus.FundingDeal;
-    poolCreatedEntity.dealAddress = event.params.dealContract;
-    poolCreatedEntity.save();
-  }
+	/**
+	 * Update PoolCreated entity
+	 */
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity != null) {
+		poolCreatedEntity.poolStatus = PoolStatus.FundingDeal
+		poolCreatedEntity.dealAddress = event.params.dealContract
+		poolCreatedEntity.save()
+	}
 
-  /** 
-   * TotalDealsBySponsor entity
-   */
-  let totalDealsBySponsorEntity = getTotalDealsBySponsor(event.params.sponsor.toHexString());
-  if (totalDealsBySponsorEntity == null) {
-    createEntity(Entity.TotalDealsBySponsor, event)
-    totalDealsBySponsorEntity = getTotalDealsBySponsor(event.params.sponsor.toHexString());
-  }
-  if(totalDealsBySponsorEntity != null) {
-    totalDealsBySponsorEntity.count++;
-    totalDealsBySponsorEntity.save();
-  }
+	/**
+	 * TotalDealsBySponsor entity
+	 */
+	let totalDealsBySponsorEntity = getTotalDealsBySponsor(
+		event.params.sponsor.toHexString()
+	)
+	if (totalDealsBySponsorEntity == null) {
+		createEntity(Entity.TotalDealsBySponsor, event)
+		totalDealsBySponsorEntity = getTotalDealsBySponsor(
+			event.params.sponsor.toHexString()
+		)
+	}
+	if (totalDealsBySponsorEntity != null) {
+		totalDealsBySponsorEntity.count++
+		totalDealsBySponsorEntity.save()
+	}
 }
 
 export function handleDealDetail(event: DealDetailEvent): void {
-  createEntity(Entity.DealDetail, event);
+	createEntity(Entity.DealDetail, event)
 
-  /** 
-   * Update PoolCreated entity
-   */
-  let dealCreatedEntity = getDealCreated(event.params.dealContract.toHex());
-  if(dealCreatedEntity != null) {
-    let poolCreatedEntity = getPoolCreated(dealCreatedEntity.poolAddress.toHex());
-    if (poolCreatedEntity != null) {
-      poolCreatedEntity.deal = event.params.dealContract.toHex();
-      poolCreatedEntity.save();
-    }      
-  }
+	/**
+	 * Update PoolCreated entity
+	 */
+	let dealCreatedEntity = getDealCreated(event.params.dealContract.toHex())
+	if (dealCreatedEntity != null) {
+		let poolCreatedEntity = getPoolCreated(
+			dealCreatedEntity.poolAddress.toHex()
+		)
+		if (poolCreatedEntity != null) {
+			poolCreatedEntity.deal = event.params.dealContract.toHex()
+			poolCreatedEntity.save()
+		}
+	}
 
-  // use templates to create a new deal to track events
-  AelinDeal.create(event.params.dealContract);
+	// use templates to create a new deal to track events
+	AelinDeal.create(event.params.dealContract)
 }
 
 // @TODO add block or timestamp to these events????
 // @TODO look into what needs to be indexed
 export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
-  createEntity(Entity.PurchasePoolToken, event);
-  createEntity(Entity.Deposit, event);
+	createEntity(Entity.PurchasePoolToken, event)
+	createEntity(Entity.Deposit, event)
 
-  /** 
-   * Update PoolCreated entity
-   */
-  let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if (poolCreatedEntity != null) {
-    poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
-      event.params.purchaseTokenAmount
-    );
-    poolCreatedEntity.save();
-  }
-  
+	/**
+	 * Update PoolCreated entity
+	 */
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity != null) {
+		poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
+			event.params.purchaseTokenAmount
+		)
+		poolCreatedEntity.save()
+	}
 }
 
 export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
-  createEntity(Entity.WithdrawFromPool, event);
-  createEntity(Entity.Withdraw, event);
+	createEntity(Entity.WithdrawFromPool, event)
+	createEntity(Entity.Withdraw, event)
 
-  let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if (poolCreatedEntity == null) {
-    return;
-  }
-  
-  /** 
-   * Update DealDetail entity
-   */
-  let dealAddress = poolCreatedEntity.dealAddress
-  if(dealAddress) {
-    let dealDetailEntity = getDealDetails(dealAddress.toHex());
-    if(dealDetailEntity != null) {
-      dealDetailEntity.totalWithdrawn = dealDetailEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
-      let userAllocationStatEntity = getUserAllocationStat(event.params.purchaser.toHex() + "-" + dealAddress.toHex());
-      if(userAllocationStatEntity != null) {
-        userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
-        userAllocationStatEntity.save();
-      }
-      dealDetailEntity.save();
-    }
-  }
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity == null) {
+		return
+	}
 
+	/**
+	 * Update DealDetail entity
+	 */
+	let dealAddress = poolCreatedEntity.dealAddress
+	if (dealAddress) {
+		let dealDetailEntity = getDealDetails(dealAddress.toHex())
+		if (dealDetailEntity != null) {
+			dealDetailEntity.totalWithdrawn = (dealDetailEntity.totalWithdrawn as BigInt).plus(
+				event.params.purchaseTokenAmount
+			)
+			let userAllocationStatEntity = getUserAllocationStat(
+				event.params.purchaser.toHex() + '-' + dealAddress.toHex()
+			)
+			if (userAllocationStatEntity != null) {
+				userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
+					event.params.purchaseTokenAmount
+				)
+				userAllocationStatEntity.save()
+			}
+			dealDetailEntity.save()
+		}
+	}
 }
 
 export function handleAcceptDeal(event: AcceptDealEvent): void {
-  createEntity(Entity.AcceptDeal, event);
+	createEntity(Entity.AcceptDeal, event)
 
-  let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if(poolCreatedEntity == null) {
-    return;
-  }
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity == null) {
+		return
+	}
 
-  /**
-   * UserAllocationStat entity
-   */
-  let userAllocationStatEntity = getUserAllocationStat(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
-  if(userAllocationStatEntity == null) {
-    createEntity(Entity.UserAllocationStat, event);
-    userAllocationStatEntity = getUserAllocationStat(event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex());
-  }
+	/**
+	 * UserAllocationStat entity
+	 */
+	let userAllocationStatEntity = getUserAllocationStat(
+		event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
+	)
+	if (userAllocationStatEntity == null) {
+		createEntity(Entity.UserAllocationStat, event)
+		userAllocationStatEntity = getUserAllocationStat(
+			event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
+		)
+	}
 
-  if(userAllocationStatEntity != null) {
-    userAllocationStatEntity.totalAccepted = userAllocationStatEntity.totalAccepted.plus(event.params.poolTokenAmount);
-    let aelinPoolContract = AelinPoolContract.bind(Address.fromString(poolCreatedEntity.id));
-    let remainingProRataAllocation = aelinPoolContract.try_maxProRataAmount(event.params.purchaser);
-    if(remainingProRataAllocation.reverted) {
-      remainingProRataAllocation = aelinPoolContract.try_maxProRataAvail(event.params.purchaser);
-    }
-    if(!remainingProRataAllocation.reverted) {
-      userAllocationStatEntity.remainingProRataAllocation = remainingProRataAllocation.value;
-    }
-    userAllocationStatEntity.save();
-  }
-  
-  /** 
-   * Update DealDetail entity
-   */
-  let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex());
-  if(dealDetailEntity == null) {
-    return;
-  }
-  dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(event.params.poolTokenAmount);
-  dealDetailEntity.save(); 
+	if (userAllocationStatEntity != null) {
+		userAllocationStatEntity.totalAccepted = userAllocationStatEntity.totalAccepted.plus(
+			event.params.poolTokenAmount
+		)
+		let aelinPoolContract = AelinPoolContract.bind(
+			Address.fromString(poolCreatedEntity.id)
+		)
+		let remainingProRataAllocation = aelinPoolContract.try_maxProRataAmount(
+			event.params.purchaser
+		)
+		if (remainingProRataAllocation.reverted) {
+			remainingProRataAllocation = aelinPoolContract.try_maxProRataAvail(
+				event.params.purchaser
+			)
+		}
+		if (!remainingProRataAllocation.reverted) {
+			userAllocationStatEntity.remainingProRataAllocation =
+				remainingProRataAllocation.value
+		}
+		userAllocationStatEntity.save()
+	}
 
-  /** 
-   * Update DealFunded entity
-   */
-  let dealFundedEntity = getDealFunded(event.params.dealAddress.toHex() + "-" + poolCreatedEntity.sponsor.toHex());
-  if(dealFundedEntity != null) {
-    dealFundedEntity.amountRaised = dealFundedEntity.amountRaised.plus(event.params.poolTokenAmount);
-    dealFundedEntity.save();
-  }
-  
-  /** 
-   * VestingDeal entity
-   */
-  let vestingDealEntity = getVestingDeal(
-    event.params.purchaser.toHex() + "-" + event.params.dealAddress.toHex()
-  );
-  
-  if (vestingDealEntity === null) {
-    createEntity(Entity.VestingDeal, event);
-  }
+	/**
+	 * Update DealDetail entity
+	 */
+	let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex())
+	if (dealDetailEntity == null) {
+		return
+	}
+	dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(
+		event.params.poolTokenAmount
+	)
+	dealDetailEntity.save()
 
-  createEntity(Entity.DealAccepted, event);
+	/**
+	 * Update DealFunded entity
+	 */
+	let dealFundedEntity = getDealFunded(
+		event.params.dealAddress.toHex() + '-' + poolCreatedEntity.sponsor.toHex()
+	)
+	if (dealFundedEntity != null) {
+		dealFundedEntity.amountRaised = dealFundedEntity.amountRaised.plus(
+			event.params.poolTokenAmount
+		)
+		dealFundedEntity.save()
+	}
 
-  let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals));
-  // @ts-ignore 
-  let dealTokenAmount = event.params.poolTokenAmount.times(BigInt.fromI32(10).pow(<u8>exp.toI32()));
-  let aelinDealContract = AelinDealContract.bind(event.params.dealAddress);
-  let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate();
-  let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate);
+	/**
+	 * VestingDeal entity
+	 */
+	let vestingDealEntity = getVestingDeal(
+		event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
+	)
 
-  /** 
-   * Update DealSponsored entity
-   */
-  let dealSponsoredEntity = getDealSponsored(event.address.toHex() + "-" + poolCreatedEntity.sponsor.toHex());
-  if(dealSponsoredEntity != null) {
-    dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(event.params.poolTokenAmount);
-    dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(event.params.poolTokenAmount.times(event.params.sponsorFee));
-    dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(investorDealTotal.div(BigInt.fromI32(10).pow(18)));
-  
-    dealSponsoredEntity.save();
-  }
+	if (vestingDealEntity === null) {
+		createEntity(Entity.VestingDeal, event)
+	}
+
+	createEntity(Entity.DealAccepted, event)
+
+	let exp = DEAL_WRAPPER_DECIMALS.minus(
+		BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals)
+	)
+	let dealTokenAmount = event.params.poolTokenAmount.times(
+		// @ts-ignore
+		BigInt.fromI32(10).pow(<u8>exp.toI32())
+	)
+	let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
+	let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
+	let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
+
+	/**
+	 * Update DealSponsored entity
+	 */
+	let dealSponsoredEntity = getDealSponsored(
+		event.address.toHex() + '-' + poolCreatedEntity.sponsor.toHex()
+	)
+	if (dealSponsoredEntity != null) {
+		dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(
+			event.params.poolTokenAmount
+		)
+		dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
+			event.params.poolTokenAmount.times(event.params.sponsorFee)
+		)
+		dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
+			investorDealTotal.div(BigInt.fromI32(10).pow(18))
+		)
+
+		dealSponsoredEntity.save()
+	}
 }
