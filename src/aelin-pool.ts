@@ -311,6 +311,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 
   dealAcceptedEntity.userAddress = event.params.purchaser;
   dealAcceptedEntity.timestamp = event.block.timestamp;
+  dealAcceptedEntity.poolName = poolCreatedEntity.name;
   dealAcceptedEntity.investmentAmount = event.params.poolTokenAmount;
   dealAcceptedEntity.dealTokenAmount = dealTokenAmount.times(underlyingPerDealExchangeRate).div(BigInt.fromI32(10).pow(18));
   dealAcceptedEntity.pool = event.address.toHex();

@@ -1392,6 +1392,7 @@ export class VestingDeal extends Entity {
     this.set("totalVested", Value.fromBigInt(BigInt.zero()));
     this.set("vestingPeriodEnds", Value.fromBigInt(BigInt.zero()));
     this.set("investorAddress", Value.fromBytes(Bytes.empty()));
+    this.set("pool", Value.fromString(""));
   }
 
   save(): void {
@@ -1491,6 +1492,15 @@ export class VestingDeal extends Entity {
   set investorAddress(value: Bytes) {
     this.set("investorAddress", Value.fromBytes(value));
   }
+
+  get pool(): string {
+    let value = this.get("pool");
+    return value!.toString();
+  }
+
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
+  }
 }
 
 export class TotalDealsBySponsor extends Entity {
@@ -1546,6 +1556,8 @@ export class Deposit extends Entity {
 
     this.set("userAddress", Value.fromBytes(Bytes.empty()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("poolName", Value.fromString(""));
+    this.set("sponsor", Value.fromBytes(Bytes.empty()));
     this.set("amountDeposited", Value.fromBigInt(BigInt.zero()));
     this.set("pool", Value.fromString(""));
   }
@@ -1592,6 +1604,24 @@ export class Deposit extends Entity {
 
   set timestamp(value: BigInt) {
     this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get poolName(): string {
+    let value = this.get("poolName");
+    return value!.toString();
+  }
+
+  set poolName(value: string) {
+    this.set("poolName", Value.fromString(value));
+  }
+
+  get sponsor(): Bytes {
+    let value = this.get("sponsor");
+    return value!.toBytes();
+  }
+
+  set sponsor(value: Bytes) {
+    this.set("sponsor", Value.fromBytes(value));
   }
 
   get amountDeposited(): BigInt {
