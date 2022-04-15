@@ -474,5 +474,7 @@ type Withdraw @entity {
 	amountWithdrawn: BigInt!
 
   " pool where the funds are withdrawn "
+  sponsorFee: BigInt!
+
 	pool: PoolCreated!
 }

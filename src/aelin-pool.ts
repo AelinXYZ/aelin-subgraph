@@ -112,6 +112,7 @@ export function handleCreateDeal(event: CreateDealEvent): void {
   dealSponsoredEntity.amountEarned = BigInt.fromI32(0);
   dealSponsoredEntity.totalAccepted = BigInt.fromI32(0);
   dealSponsoredEntity.totalInvested = BigInt.fromI32(0);
+  dealSponsoredEntity.sponsorFee = poolCreatedEntity.sponsorFee;
   dealSponsoredEntity.pool = event.address.toHex();
 
   dealSponsoredEntity.save();
