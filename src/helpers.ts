@@ -1,5 +1,5 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
-import { DealCreated, DealDetail, PoolCreated, UserAllocationStat, VestingDeal, DealFunded, DealSponsored } from "./types/schema";
+import { DealCreated, DealDetail, DealFunded, PoolCreated, VestingDeal, DealSponsored, UserAllocationStat, TotalDealsBySponsor } from "./types/schema";
 
 export let ONE = BigInt.fromI32(1);
 
@@ -91,4 +91,16 @@ export function getDealSponsored(address:string): DealSponsored | null {
   }
 
   return dealSponsoredEntity
+}
+
+export function getTotalDealsBySponsor(address:string): TotalDealsBySponsor | null {
+  let totalDealsBySponsorEntity = TotalDealsBySponsor.load(address);
+  if(totalDealsBySponsorEntity == null) {
+    log.error("trying to find a TotalDealsBySponsor not saved with address: {}", [
+      address,
+    ]);
+    return null;
+  }
+
+  return totalDealsBySponsorEntity
 }

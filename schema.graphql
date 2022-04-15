@@ -372,12 +372,18 @@ type Deposit @entity {
 }
 
 type UserAllocationStat @entity {
-  " userAddress - dealAddress "
-  id: ID!
+	" userAddress - dealAddress "
+	id: ID!
 
-  totalWithdrawn: BigInt!
+	userAddress: Bytes!
 
-  totalAccepted: BigInt!
+	totalWithdrawn: BigInt!
+
+	totalAccepted: BigInt!
+
+	remainingProRataAllocation: BigInt!
+
+	pool: PoolCreated!
 }
 
 type DealAccepted @entity {

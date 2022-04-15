@@ -1648,8 +1648,11 @@ export class UserAllocationStat extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("userAddress", Value.fromBytes(Bytes.empty()));
     this.set("totalWithdrawn", Value.fromBigInt(BigInt.zero()));
     this.set("totalAccepted", Value.fromBigInt(BigInt.zero()));
+    this.set("remainingProRataAllocation", Value.fromBigInt(BigInt.zero()));
+    this.set("pool", Value.fromString(""));
   }
 
   save(): void {
@@ -1680,6 +1683,15 @@ export class UserAllocationStat extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get userAddress(): Bytes {
+    let value = this.get("userAddress");
+    return value!.toBytes();
+  }
+
+  set userAddress(value: Bytes) {
+    this.set("userAddress", Value.fromBytes(value));
+  }
+
   get totalWithdrawn(): BigInt {
     let value = this.get("totalWithdrawn");
     return value!.toBigInt();
@@ -1696,6 +1708,24 @@ export class UserAllocationStat extends Entity {
 
   set totalAccepted(value: BigInt) {
     this.set("totalAccepted", Value.fromBigInt(value));
+  }
+
+  get remainingProRataAllocation(): BigInt {
+    let value = this.get("remainingProRataAllocation");
+    return value!.toBigInt();
+  }
+
+  set remainingProRataAllocation(value: BigInt) {
+    this.set("remainingProRataAllocation", Value.fromBigInt(value));
+  }
+
+  get pool(): string {
+    let value = this.get("pool");
+    return value!.toString();
+  }
+
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
   }
 }
 
