@@ -300,6 +300,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     vestingDealEntity.totalVested = BigInt.fromI32(0);
     vestingDealEntity.vestingPeriodEnds = aelinDealContract.vestingExpiry();
     vestingDealEntity.investorAddress = event.params.purchaser;
+    vestingDealEntity.pool = poolCreatedEntity.id;
 
     vestingDealEntity.save();
   }
