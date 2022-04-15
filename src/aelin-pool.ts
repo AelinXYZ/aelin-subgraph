@@ -232,6 +232,7 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 
   withdrawEntity.userAddress = event.params.purchaser;
   withdrawEntity.timestamp = event.block.timestamp;
+  withdrawEntity.poolName = poolCreatedEntity.name;
   withdrawEntity.amountWithdrawn = event.params.purchaseTokenAmount;
   withdrawEntity.pool = event.address.toHex();
 

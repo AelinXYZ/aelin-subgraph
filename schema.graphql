@@ -468,6 +468,8 @@ type Withdraw @entity {
   " the block timestamp when the user withdrew"
 	timestamp: BigInt!
 
+  poolName: String!
+
   " withdrawn amount of purchase tokens "
 	amountWithdrawn: BigInt!
 
