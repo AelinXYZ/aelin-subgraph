@@ -363,6 +363,10 @@ type Deposit @entity {
   " the block timestamp when the user deposited"
 	timestamp: BigInt!
 
+  poolName: String!
+
+  sponsor: Bytes!
+
   " amount of purchase tokens deposited "
 	amountDeposited: BigInt!
 

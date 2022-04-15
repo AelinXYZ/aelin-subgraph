@@ -191,6 +191,8 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
 
   depositEntity.userAddress = event.params.purchaser;
   depositEntity.timestamp = event.block.timestamp;
+  depositEntity.poolName = poolCreatedEntity.name;
+  depositEntity.sponsor = poolCreatedEntity.sponsor;
   depositEntity.amountDeposited = event.params.purchaseTokenAmount;
   depositEntity.pool = event.address.toHex();
 
