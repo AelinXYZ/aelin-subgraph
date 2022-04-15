@@ -2082,7 +2082,9 @@ export class Withdraw extends Entity {
 
     this.set("userAddress", Value.fromBytes(Bytes.empty()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("poolName", Value.fromString(""));
     this.set("amountWithdrawn", Value.fromBigInt(BigInt.zero()));
+    this.set("sponsorFee", Value.fromBigInt(BigInt.zero()));
     this.set("pool", Value.fromString(""));
   }
 
@@ -2130,6 +2132,15 @@ export class Withdraw extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
+  get poolName(): string {
+    let value = this.get("poolName");
+    return value!.toString();
+  }
+
+  set poolName(value: string) {
+    this.set("poolName", Value.fromString(value));
+  }
+
   get amountWithdrawn(): BigInt {
     let value = this.get("amountWithdrawn");
     return value!.toBigInt();
@@ -2137,6 +2148,15 @@ export class Withdraw extends Entity {
 
   set amountWithdrawn(value: BigInt) {
     this.set("amountWithdrawn", Value.fromBigInt(value));
+  }
+
+  get sponsorFee(): BigInt {
+    let value = this.get("sponsorFee");
+    return value!.toBigInt();
+  }
+
+  set sponsorFee(value: BigInt) {
+    this.set("sponsorFee", Value.fromBigInt(value));
   }
 
   get pool(): string {

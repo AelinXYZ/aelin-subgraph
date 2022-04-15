@@ -211,20 +211,22 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
   withdrawFromPoolEntity.purchaseTokenAmount = event.params.purchaseTokenAmount;
 
   let poolCreatedEntity = getPoolCreated(event.address.toHex());
-  if(poolCreatedEntity != null) {
-      let dealAddress = poolCreatedEntity.dealAddress
-      if(dealAddress) {
-        let dealDetailEntity = getDealDetails(dealAddress.toHex());
-        if(dealDetailEntity != null) {
-          dealDetailEntity.totalWithdrawn = dealDetailEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
-          let userAllocationStatEntity = getUserAllocationStat(event.params.purchaser.toHex() + "-" + dealAddress.toHex());
-          if(userAllocationStatEntity != null) {
-            userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
-            userAllocationStatEntity.save();
-          }
-          dealDetailEntity.save();
-        }
+  if (poolCreatedEntity == null) {
+    return;
+  }
+  
+  let dealAddress = poolCreatedEntity.dealAddress
+  if(dealAddress) {
+    let dealDetailEntity = getDealDetails(dealAddress.toHex());
+    if(dealDetailEntity != null) {
+      dealDetailEntity.totalWithdrawn = dealDetailEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
+      let userAllocationStatEntity = getUserAllocationStat(event.params.purchaser.toHex() + "-" + dealAddress.toHex());
+      if(userAllocationStatEntity != null) {
+        userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(event.params.purchaseTokenAmount);
+        userAllocationStatEntity.save();
       }
+      dealDetailEntity.save();
+    }
   }
 
   let withdrawEntity = new Withdraw(
