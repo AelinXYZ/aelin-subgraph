@@ -149,25 +149,28 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 	}
 
 	/**
-	 * Update DealDetail entity
+	 * Update PoolCreated entity
 	 */
+
+	poolCreatedEntity.totalAmountWithdrawn = poolCreatedEntity.totalAmountWithdrawn.plus(
+		event.params.purchaseTokenAmount
+	)
+	poolCreatedEntity.save()
+
+	/**
+	 * Update UserAllocationStat entity
+	 */
+
 	let dealAddress = poolCreatedEntity.dealAddress
 	if (dealAddress) {
-		let dealDetailEntity = getDealDetails(dealAddress.toHex())
-		if (dealDetailEntity != null) {
-			dealDetailEntity.totalWithdrawn = (dealDetailEntity.totalWithdrawn as BigInt).plus(
+		let userAllocationStatEntity = getUserAllocationStat(
+			event.params.purchaser.toHex() + '-' + dealAddress.toHex()
+		)
+		if (userAllocationStatEntity != null) {
+			userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
 				event.params.purchaseTokenAmount
 			)
-			let userAllocationStatEntity = getUserAllocationStat(
-				event.params.purchaser.toHex() + '-' + dealAddress.toHex()
-			)
-			if (userAllocationStatEntity != null) {
-				userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
-					event.params.purchaseTokenAmount
-				)
-				userAllocationStatEntity.save()
-			}
-			dealDetailEntity.save()
+			userAllocationStatEntity.save()
 		}
 	}
 }
@@ -216,16 +219,12 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	}
 
 	/**
-	 * Update DealDetail entity
+	 * Update PoolCreated entity
 	 */
-	let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex())
-	if (dealDetailEntity == null) {
-		return
-	}
-	dealDetailEntity.totalAmountAccepted = (dealDetailEntity.totalAmountAccepted as BigInt).plus(
+	poolCreatedEntity.totalAmountAccepted = poolCreatedEntity.totalAmountAccepted.plus(
 		event.params.poolTokenAmount
 	)
-	dealDetailEntity.save()
+	poolCreatedEntity.save()
 
 	/**
 	 * Update DealFunded entity

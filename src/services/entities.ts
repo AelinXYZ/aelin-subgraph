@@ -247,7 +247,6 @@ function createDealFundedEntity(event: DealFullyFundedEvent): void {
 	dealFundedEntity.holder = dealDetailEntity.holder
 	dealFundedEntity.poolName = poolCreatedEntity.name
 	dealFundedEntity.timestamp = event.block.timestamp
-	dealFundedEntity.amountFunded = dealDetailEntity.totalAmountFunded
 	dealFundedEntity.pool = event.params.poolAddress.toHex()
 
 	dealFundedEntity.save()
@@ -563,10 +562,6 @@ function createDealDetailEntity(event: DealDetailEvent): void {
 		event.block.timestamp
 	)
 	dealDetailEntity.isDealFunded = false
-	dealDetailEntity.totalAmountAccepted = BigInt.fromI32(0)
-	dealDetailEntity.totalWithdrawn = BigInt.fromI32(0)
-	dealDetailEntity.totalAmountFunded = BigInt.fromI32(0)
-
 	//get underlyingDealToken symbol and decimals
 	const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken)
 	dealDetailEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol()

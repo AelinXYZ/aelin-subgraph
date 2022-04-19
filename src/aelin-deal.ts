@@ -82,13 +82,18 @@ export function handleDepositDealToken(event: DepositDealTokenEvent): void {
 	createEntity(Entity.DepositDealToken, event)
 
 	/**
-	 * Update DealDetail entity
+	 * Update PoolCreated entity
 	 */
-	let dealDetailEntity = getDealDetails(event.address.toHex())
-	if (dealDetailEntity != null) {
-		dealDetailEntity.totalAmountFunded = dealDetailEntity.totalAmountFunded.plus(
-			event.params.underlyingDealTokenAmount
+	let dealCreatedEntity = getDealCreated(event.address.toHex())
+	if (dealCreatedEntity != null) {
+		let poolCreatedEntity = getPoolCreated(
+			dealCreatedEntity.poolAddress.toHex()
 		)
-		dealDetailEntity.save()
+		if (poolCreatedEntity != null) {
+			poolCreatedEntity.totalAmountFunded = poolCreatedEntity.totalAmountFunded.plus(
+				event.params.underlyingDealTokenAmount
+			)
+			poolCreatedEntity.save()
+		}
 	}
 }

@@ -1,0 +1,10 @@
+{
+    "network": "goerli",
+    "dataSources": [
+        {
+            "name": "AelinPoolFactory",
+            "address": "0xCA4d64B67486867a9E867D0E38E1F1e99B718EEb",
+            "startBlock": 6457748
+        }
+    ]
+}
