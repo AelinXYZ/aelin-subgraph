@@ -10,6 +10,7 @@ import {
 import {
 	createEntity,
 	Entity,
+	getDeal,
 	getDealDetails,
 	getPoolCreated,
 	getVestingDeal
@@ -56,11 +57,17 @@ export function handleWithdrawUnderlyingDealToken(
 
 export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	createEntity(Entity.DealFullyFunded, event)
+	createEntity(Entity.Deal, event)
 
 	let poolCreatedEntity = getPoolCreated(event.params.poolAddress.toHex())
 	let dealDetailEntity = getDealDetails(event.address.toHex())
+	let dealEntity = getDeal(event.address.toHex())
 
-	if (dealDetailEntity == null || poolCreatedEntity == null) {
+	if (
+		dealDetailEntity == null ||
+		poolCreatedEntity == null ||
+		dealEntity == null
+	) {
 		return
 	}
 
@@ -72,10 +79,14 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp
 	dealDetailEntity.isDealFunded = true
 
+	dealEntity.proRataRedemptionPeriodStart = event.block.timestamp
+	dealEntity.isDealFunded = true
+
 	createEntity(Entity.DealFunded, event)
 
 	poolCreatedEntity.save()
 	dealDetailEntity.save()
+	dealEntity.save()
 }
 
 export function handleDepositDealToken(event: DepositDealTokenEvent): void {
@@ -84,10 +95,10 @@ export function handleDepositDealToken(event: DepositDealTokenEvent): void {
 	/**
 	 * Update PoolCreated entity
 	 */
-	let dealCreatedEntity = getDealCreated(event.address.toHex())
-	if (dealCreatedEntity != null) {
+	let dealEntity = getDeal(event.address.toHex())
+	if (dealEntity != null) {
 		let poolCreatedEntity = getPoolCreated(
-			dealCreatedEntity.poolAddress.toHex()
+			dealEntity.poolAddress.toHex()
 		)
 		if (poolCreatedEntity != null) {
 			poolCreatedEntity.totalAmountFunded = poolCreatedEntity.totalAmountFunded.plus(

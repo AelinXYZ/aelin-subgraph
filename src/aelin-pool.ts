@@ -18,7 +18,6 @@ import {
 	createEntity,
 	Entity,
 	getDealCreated,
-	getDealDetails,
 	getDealFunded,
 	getDealSponsored,
 	getPoolCreated,
@@ -71,6 +70,7 @@ export function handlePoolTransfer(event: TransferEvent): void {
 export function handleCreateDeal(event: CreateDealEvent): void {
 	createEntity(Entity.DealCreated, event)
 	createEntity(Entity.DealSponsored, event)
+	createEntity(Entity.Deal, event)
 
 	/**
 	 * Update PoolCreated entity
@@ -102,6 +102,7 @@ export function handleCreateDeal(event: CreateDealEvent): void {
 
 export function handleDealDetail(event: DealDetailEvent): void {
 	createEntity(Entity.DealDetail, event)
+	createEntity(Entity.Deal, event)
 
 	/**
 	 * Update PoolCreated entity
@@ -170,6 +171,23 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 			userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
 				event.params.purchaseTokenAmount
 			)
+
+			let aelinPoolContract = AelinPoolContract.bind(
+				Address.fromString(poolCreatedEntity.id)
+			)
+			let remainingProRataAllocation = aelinPoolContract.try_maxProRataAmount(
+				event.params.purchaser
+			)
+			if (remainingProRataAllocation.reverted) {
+				remainingProRataAllocation = aelinPoolContract.try_maxProRataAvail(
+					event.params.purchaser
+				)
+			}
+			if (!remainingProRataAllocation.reverted) {
+				userAllocationStatEntity.remainingProRataAllocation =
+					remainingProRataAllocation.value
+			}
+
 			userAllocationStatEntity.save()
 		}
 	}

@@ -59,11 +59,6 @@ type PoolCreated @entity {
 	" the address of the current proposed deal on the pool "
 	dealAddress: Bytes
 
-	" details of the created deal "
-	deal: DealDetail
-
-	totalAmountAccepted: BigInt!
-
   " details of the created deal "
   deal: DealDetail
 
@@ -71,7 +66,7 @@ type PoolCreated @entity {
 
   totalAmountFunded: BigInt!
 
-  totalWithdrawn: BigInt!
+  totalAmountWithdrawn: BigInt!
 }
 
 type TotalPoolsCreated @entity {
@@ -322,6 +317,8 @@ type VestingDeal @entity {
 	" userAddress - dealAddress "
 	id: ID!
 
+	user: User!
+
 	poolName: String!
 
 	tokenToVest: Bytes!
@@ -335,8 +332,6 @@ type VestingDeal @entity {
 	totalVested: BigInt!
 
 	vestingPeriodEnds: BigInt!
-
-	investorAddress: Bytes!
 
 	pool: PoolCreated!
 }
@@ -482,4 +477,98 @@ type Withdraw @entity {
   sponsorFee: BigInt!
 
 	pool: PoolCreated!
+}
+
+type Deal @entity {
+	" the address of the deal "
+	id: ID!
+
+	" the name of the deal "
+	name: String!
+
+	" the symbol of the deal "
+	symbol: String!
+
+	" the address of the pool "
+	poolAddress: Bytes!
+
+	" the underlying deal token address "
+	underlyingDealToken: Bytes!
+
+	" the underlying deal token symbol "
+	underlyingDealTokenSymbol: String!
+
+	" the underlying deal token decimals "
+	underlyingDealTokenDecimals: Int!
+
+	" the underlying deal token totalSupply "
+	underlyingDealTokenTotalSupply: BigInt!
+
+	" the total amount of purchse tokens for the deal "
+	purchaseTokenTotalForDeal: BigInt!
+
+	" the total amount of underlying deal tokens available for the deal "
+	underlyingDealTokenTotal: BigInt!
+
+	" the vesting period which is linear for all deals in v1 "
+	vestingPeriod: BigInt!
+
+	" the vesting cliff after which linear vesting starts "
+	vestingCliff: BigInt!
+
+	" the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
+	proRataRedemptionPeriod: BigInt!
+
+	" the timestamp when the pro rata redemption period starts "
+	proRataRedemptionPeriodStart: BigInt
+
+	" after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
+	openRedemptionPeriod: BigInt!
+
+	" the start of the pro rata redemption period "
+	proRataRedemptionStart: BigInt!
+
+	" the start of the open redemption period "
+	openRedemptionStart: BigInt!
+
+	" the end of the pro rata redemption period "
+	proRataRedemptionExpiry: BigInt!
+
+	" the end of the open redemption period "
+	openRedemptionExpiry: BigInt!
+
+	" the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
+	holder: Bytes!
+
+	" is the deal fully funded "
+	isDealFunded: Boolean!
+
+	" the exipration of the holder funding period "
+	holderFundingExpiration: BigInt!
+
+	" the duration of the holder funding period "
+	holderFundingDuration: BigInt!
+}
+
+type History @entity {
+	"userAddress"
+	id: ID!
+	user: User!
+	deposits: [Deposit!]!
+	dealsAccepted: [DealAccepted!]!
+	withdraws: [Withdraw!]!
+	vests: [Vest!]!
+	dealsSponsored: [DealSponsored!]!
+	dealsFunded: [DealFunded!]!
+}
+
+type User @entity {
+	"userAddress"
+	id: ID!
+	history: History! @derivedFrom(field: "user")
+	poolsInvested: [PoolCreated!]!
+	poolsSponsored: [PoolCreated!]!
+	poolsFunded: [PoolCreated!]!
+	vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
+	allocationsStat: [UserAllocationStat!]!
 }
