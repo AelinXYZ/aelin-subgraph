@@ -4,6 +4,24 @@ enum PoolStatus {
 	DealOpen
 }
 
+enum NotificationType {
+	InvestmentWindowAlert
+	InvestmentWindowEnded
+	DealProposed
+	HolderSet
+	SponsorFeesReady
+	VestingCliffBegun
+	WithdrawUnredeemed
+	DealTokensVestingBegun
+	AllDealTokensVested
+}
+
+enum NotificationTarget {
+	Investor
+	Sponsor
+	Holder
+}
+
 type PoolCreated @entity {
 	" the address of the pool "
 	id: ID!
@@ -571,4 +589,14 @@ type User @entity {
 	poolsFunded: [PoolCreated!]!
 	vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
 	allocationsStat: [UserAllocationStat!]!
+}
+
+type Notification @entity {
+	id: ID!
+	type: NotificationType
+	message: String!
+	pool: PoolCreated!
+	triggerStart: BigInt!
+	triggerEnd: BigInt!
+	target: [NotificationTarget!]!
 }

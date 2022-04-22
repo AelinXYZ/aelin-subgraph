@@ -25,6 +25,10 @@ import {
 	getUserAllocationStat,
 	getVestingDeal
 } from './services/entities'
+import {
+	createNotificationsForEvent,
+	removeNotificationsForEvent
+} from './services/notifications'
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
 	createEntity(Entity.AelinToken, event)
@@ -98,6 +102,8 @@ export function handleCreateDeal(event: CreateDealEvent): void {
 		totalDealsBySponsorEntity.count++
 		totalDealsBySponsorEntity.save()
 	}
+
+	removeNotificationsForEvent(event)
 }
 
 export function handleDealDetail(event: DealDetailEvent): void {
@@ -300,4 +306,6 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 
 		dealSponsoredEntity.save()
 	}
+
+	createNotificationsForEvent(event)
 }

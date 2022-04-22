@@ -5,6 +5,10 @@ import { AelinPool } from './types/templates'
 import { ERC20 } from './types/templates/AelinPool/ERC20'
 import { ONE } from './helpers'
 import { PoolStatus } from './enum'
+import {
+	createNotificationsForEvent,
+	NotificationType
+} from './services/notifications'
 
 export function handleCreatePool(event: CreatePoolEvent): void {
 	let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
@@ -46,4 +50,6 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 
 	// use templates to create a new pool to track events
 	AelinPool.create(event.params.poolAddress)
+
+	createNotificationsForEvent(event)
 }

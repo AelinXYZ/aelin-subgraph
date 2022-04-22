@@ -15,9 +15,17 @@ import {
 	getPoolCreated,
 	getVestingDeal
 } from './services/entities'
+import {
+	createNotificationsForEvent,
+	removeNotificationsForEvent
+} from './services/notifications'
+
+import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
+import { Address } from '@graphprotocol/graph-ts'
 
 export function handleSetHolder(event: SetHolderEvent): void {
 	createEntity(Entity.SetHolder, event)
+	createNotificationsForEvent(event)
 }
 
 export function handleDealTransfer(event: TransferEvent): void {
@@ -37,9 +45,13 @@ export function handleClaimedUnderlyingDealToken(
 		event.params.recipient.toHex() + '-' + event.address.toHex()
 	)
 	if (vestingDealEntity != null) {
-		vestingDealEntity.amountToVest = vestingDealEntity.amountToVest.minus(
-			event.params.underlyingDealTokensClaimed
+		let aelinDealContract = AelinDealContract.bind(
+			Address.fromString(event.address.toHex())
 		)
+		let claimableTokens = aelinDealContract.claimableTokens(
+			event.params.recipient
+		)
+		vestingDealEntity.amountToVest = claimableTokens.value0
 		vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(
 			event.params.underlyingDealTokensClaimed
 		)
@@ -47,6 +59,7 @@ export function handleClaimedUnderlyingDealToken(
 	}
 
 	createEntity(Entity.Vest, event)
+	removeNotificationsForEvent(event)
 }
 
 export function handleWithdrawUnderlyingDealToken(
@@ -87,6 +100,9 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	poolCreatedEntity.save()
 	dealDetailEntity.save()
 	dealEntity.save()
+
+	createNotificationsForEvent(event)
+	removeNotificationsForEvent(event)
 }
 
 export function handleDepositDealToken(event: DepositDealTokenEvent): void {
