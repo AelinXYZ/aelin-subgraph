@@ -45,6 +45,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	poolCreatedEntity.totalAmountAccepted = BigInt.fromI32(0)
 	poolCreatedEntity.totalAmountWithdrawn = BigInt.fromI32(0)
 	poolCreatedEntity.totalAmountFunded = BigInt.fromI32(0)
+	poolCreatedEntity.totalAmountEarnedBySponsor = BigInt.fromI32(0)
 
 	poolCreatedEntity.save()
 

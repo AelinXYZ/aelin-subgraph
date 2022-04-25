@@ -243,14 +243,6 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	}
 
 	/**
-	 * Update PoolCreated entity
-	 */
-	poolCreatedEntity.totalAmountAccepted = poolCreatedEntity.totalAmountAccepted.plus(
-		event.params.poolTokenAmount
-	)
-	poolCreatedEntity.save()
-
-	/**
 	 * Update DealFunded entity
 	 */
 	let dealFundedEntity = getDealFunded(
@@ -303,9 +295,17 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 		dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
 			investorDealTotal.div(BigInt.fromI32(10).pow(18))
 		)
-
 		dealSponsoredEntity.save()
 	}
+
+  /**
+	 * Update PoolCreated entity
+	 */
+	poolCreatedEntity.totalAmountAccepted = poolCreatedEntity.totalAmountAccepted.plus(
+		event.params.poolTokenAmount
+	)
+  poolCreatedEntity.totalAmountEarnedBySponsor = poolCreatedEntity.totalAmountEarnedBySponsor.plus(event.params.poolTokenAmount.times(poolCreatedEntity.sponsorFee))
+	poolCreatedEntity.save()
 
 	createNotificationsForEvent(event)
 }

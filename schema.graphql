@@ -85,6 +85,8 @@ type PoolCreated @entity {
   totalAmountFunded: BigInt!
 
   totalAmountWithdrawn: BigInt!
+
+  totalAmountEarnedBySponsor: BigInt!
 }
 
 type TotalPoolsCreated @entity {
