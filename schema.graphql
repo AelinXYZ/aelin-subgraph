@@ -338,6 +338,8 @@ type VestingDeal @entity {
   vestingPeriodEnds: BigInt!
 
   investorAddress: Bytes!
+
+  pool: PoolCreated!
 }
 
 type TotalDealsBySponsor @entity {
@@ -358,6 +360,10 @@ type Deposit @entity {
   " the block timestamp when the user deposited"
 	timestamp: BigInt!
 
+  poolName: String!
+
+  sponsor: Bytes!
+
   " amount of purchase tokens deposited "
 	amountDeposited: BigInt!
 
@@ -366,28 +372,17 @@ type Deposit @entity {
 }
 
 type UserAllocationStat @entity {
-  " userAddress - dealAddress "
-  id: ID!
-
-  totalWithdrawn: BigInt!
-
-  totalAccepted: BigInt!
-}
-
-type Withdraw @entity {
-	" the transaction hash + event log index of the WithdrawFromPoolEvent event "
+	" userAddress - dealAddress "
 	id: ID!
 
-  " the address of user withdrawing "
 	userAddress: Bytes!
 
-  " the block timestamp when the user withdrew"
-	timestamp: BigInt!
+	totalWithdrawn: BigInt!
 
-  " withdrawn amount of purchase tokens "
-	amountWithdrawn: BigInt!
+	totalAccepted: BigInt!
 
-  " pool where the funds are withdrawn "
+	remainingProRataAllocation: BigInt!
+
 	pool: PoolCreated!
 }
 
@@ -412,8 +407,6 @@ type DealAccepted @entity {
 	" pool where the funds are deposited "
 	pool: PoolCreated!
 }
-
-
 
 type DealSponsored @entity {
 	" poolAddress + sponsorAddress"
@@ -471,3 +464,23 @@ type DealFunded @entity {
   pool: PoolCreated!
 }
 
+type Withdraw @entity {
+	" the transaction hash + event log index of the WithdrawFromPoolEvent event "
+	id: ID!
+
+  " the address of user withdrawing "
+	userAddress: Bytes!
+
+  " the block timestamp when the user withdrew"
+	timestamp: BigInt!
+
+  poolName: String!
+
+  " withdrawn amount of purchase tokens "
+	amountWithdrawn: BigInt!
+
+  " pool where the funds are withdrawn "
+  sponsorFee: BigInt!
+
+	pool: PoolCreated!
+}

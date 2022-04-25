@@ -722,6 +722,29 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  maxProRataAmount(purchaser: Address): BigInt {
+    let result = super.call(
+      "maxProRataAmount",
+      "maxProRataAmount(address):(uint256)",
+      [ethereum.Value.fromAddress(purchaser)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_maxProRataAmount(purchaser: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "maxProRataAmount",
+      "maxProRataAmount(address):(uint256)",
+      [ethereum.Value.fromAddress(purchaser)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   name(): string {
     let result = super.call("name", "name():(string)", []);
 
