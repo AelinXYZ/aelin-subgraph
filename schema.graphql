@@ -392,22 +392,50 @@ type Withdraw @entity {
 }
 
 type DealAccepted @entity {
-  " the transaction hash + event log index of the purchase event "
+	" the transaction hash + event log index of the purchase event "
 	id: ID!
 
-  " the address of user accepting the deal "
+	" the address of user accepting the deal "
 	userAddress: Bytes!
+
+	" the block timestamp when the user deposited"
+	timestamp: BigInt!
+
+	poolName: String!
+
+	" amount of purchase tokens invested "
+	investmentAmount: BigInt!
+
+	" amount of deal tokens "
+	dealTokenAmount: BigInt!
+
+	" pool where the funds are deposited "
+	pool: PoolCreated!
+}
+
+
+
+type DealSponsored @entity {
+	" poolAddress + sponsorAddress"
+	id: ID!
+
+  " the address of the sponsor "
+	sponsor: Bytes!
 
   " the block timestamp when the user deposited"
 	timestamp: BigInt!
 
-  " amount of purchase tokens invested "
-	investmentAmount: BigInt!
+  " represents the pool token name `aePool-${name}` "
+	poolName: String!
 
-  " amount of deal tokens "
-	dealTokenAmount: BigInt!
+  amountEarned: BigInt!
+  
+ 	totalAccepted: BigInt!
+ 	
+  totalInvested: BigInt!
 
-  " pool where the funds are deposited "
+  sponsorFee: BigInt!
+
 	pool: PoolCreated!
 }
 
@@ -442,3 +470,4 @@ type DealFunded @entity {
 
   pool: PoolCreated!
 }
+
