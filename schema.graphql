@@ -339,8 +339,9 @@ type TotalDealsBySponsor @entity {
   " number of deals created "
   count: Int!
 }
+
 type Deposit @entity {
-	" event log index of the deposit event + userAddress + d"
+	" the transaction hash + event log index of the PurchasePoolTokenEvent event "
 	id: ID!
 
   " the address of user depositing "
@@ -348,12 +349,6 @@ type Deposit @entity {
 
   " the block timestamp when the user deposited"
 	timestamp: BigInt!
-
-  " represents the pool token name `aePool-${name}` "
-	poolName: String!
-
-  " the address of the sponsor for fee payments. "
-	sponsor: Bytes!
 
   " amount of purchase tokens deposited "
 	amountDeposited: BigInt!
@@ -369,4 +364,21 @@ type UserAllocationStat @entity {
   totalWithdrawn: BigInt!
 
   totalAccepted: BigInt!
+}
+
+type Withdraw @entity {
+	" the transaction hash + event log index of the WithdrawFromPoolEvent event "
+	id: ID!
+
+  " the address of user withdrawing "
+	userAddress: Bytes!
+
+  " the block timestamp when the user withdrew"
+	timestamp: BigInt!
+
+  " withdrawn amount of purchase tokens "
+	amountWithdrawn: BigInt!
+
+  " pool where the funds are withdrawn "
+	pool: PoolCreated!
 }
