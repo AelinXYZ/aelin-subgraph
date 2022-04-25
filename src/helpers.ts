@@ -1,5 +1,5 @@
 import { BigInt, Address, log } from "@graphprotocol/graph-ts";
-import { DealCreated, DealDetail, PoolCreated, UserAllocationStat, VestingDeal } from "./types/schema";
+import { DealCreated, DealDetail, PoolCreated, UserAllocationStat, VestingDeal, DealFunded } from "./types/schema";
 
 export let ONE = BigInt.fromI32(1);
 
@@ -59,10 +59,24 @@ export function getUserAllocationStat(address:string): UserAllocationStat | null
   let userAllocationStatEntity = UserAllocationStat.load(address);
   if(userAllocationStatEntity == null) {
     log.error("trying to find a userAllocationStat not saved with address: {}", [
-      address,
+      address
     ]);
     return null;
   }
 
   return userAllocationStatEntity
+}
+
+
+
+export function getDealFunded(address:string): DealFunded | null {
+  let dealFundedEntity = DealFunded.load(address);
+  if(dealFundedEntity == null) {
+    log.error("trying to find a dealFunded not saved with address: {}", [
+      address,
+    ]);
+    return null;
+  }
+
+  return dealFundedEntity
 }

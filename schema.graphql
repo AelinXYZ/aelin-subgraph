@@ -61,6 +61,12 @@ type PoolCreated @entity {
 
   " details of the created deal "
   deal: DealDetail
+
+  totalAmountAccepted: BigInt!
+
+  totalAmountFunded: BigInt!
+
+  totalWithdrawn: BigInt!
 }
 
 type TotalPoolsCreated @entity {
@@ -192,6 +198,8 @@ type DealDetail @entity {
   holderFundingDuration: BigInt!
 
   totalAmountAccepted: BigInt!
+
+  totalAmountFunded: BigInt!
 
   totalWithdrawn: BigInt!
 }
@@ -416,4 +424,21 @@ type Vest @entity {
   amountVested: BigInt!
 
 	pool: PoolCreated!
+}
+
+type DealFunded @entity {
+  " the transaction hash + event log index "
+  id: ID!
+
+  holder: Bytes!
+
+  timestamp: BigInt!
+
+  poolName: String!
+
+  amountRaised: BigInt!
+
+  amountFunded: BigInt!
+
+  pool: PoolCreated!
 }

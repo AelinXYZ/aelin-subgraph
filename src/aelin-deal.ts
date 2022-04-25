@@ -7,7 +7,8 @@ import {
   Transfer,
   PoolCreated,
   DealDetail,
-  Vest
+  Vest,
+  DealFunded
 } from "./types/schema";
 import { PoolStatus } from "./enum";
 import {
@@ -18,8 +19,7 @@ import {
   WithdrawUnderlyingDealToken as WithdrawUnderlyingDealTokenEvent,
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from "./types/templates/AelinDeal/AelinDeal";
-import { log } from "@graphprotocol/graph-ts";
-import { getDealCreated, getVestingDeal } from "./helpers";
+import { getDealDetails, getPoolCreated, getVestingDeal, getDealCreated } from "./helpers";
 
 export function handleSetHolder(event: SetHolderEvent): void {
   let setHolderEntity = new SetHolder(
@@ -100,28 +100,29 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
   dealFullyFundedEntity.openRedemptionExpiry =
     event.params.openRedemptionExpiry;
   dealFullyFundedEntity.openRedemptionStart = event.params.openRedemptionStart;
-  let poolCreatedEntity = PoolCreated.load(event.params.poolAddress.toHex());
-  if (poolCreatedEntity == null) {
-    log.error("trying to find pool not saved with address: {}", [
-      event.params.poolAddress.toHex(),
-    ]);
-    return;
-  }
-  poolCreatedEntity.poolStatus = PoolStatus.DealOpen;
-  poolCreatedEntity.save();
 
-  let dealDetailEntity = DealDetail.load(event.address.toHex());
-  if (dealDetailEntity == null) {
-    log.error("trying to find deal not saved with address: {}", [
-      event.address.toHex(),
-    ]);
+  let poolCreatedEntity = getPoolCreated(event.params.poolAddress.toHex());
+  let dealDetailEntity = getDealDetails(event.address.toHex())
+
+  if(dealDetailEntity == null || poolCreatedEntity == null) {
     return;
   }
+
+  poolCreatedEntity.poolStatus = PoolStatus.DealOpen;
   dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp;
   dealDetailEntity.isDealFunded = true;
-  dealDetailEntity.save();
 
+  let dealFundedEntity = new DealFunded(event.address.toHex() + "-" + poolCreatedEntity.sponsor.toHex());
+  dealFundedEntity.holder = dealDetailEntity.holder;
+  dealFundedEntity.poolName = poolCreatedEntity.name;
+  dealFundedEntity.timestamp = event.block.timestamp;
+  dealFundedEntity.amountFunded = dealDetailEntity.totalAmountFunded;
+  dealFundedEntity.pool = event.params.poolAddress.toHex();
+
+  poolCreatedEntity.save();
+  dealDetailEntity.save();
   dealFullyFundedEntity.save();
+  dealFundedEntity.save();
 }
 
 export function handleDepositDealToken(event: DepositDealTokenEvent): void {
@@ -134,6 +135,12 @@ export function handleDepositDealToken(event: DepositDealTokenEvent): void {
   depositDealTokenEntity.dealContract = event.address;
   depositDealTokenEntity.underlyingDealTokenAmount =
     event.params.underlyingDealTokenAmount;
+
+  let dealDetailEntity = getDealDetails(event.address.toHex());
+  if(dealDetailEntity != null) {
+    dealDetailEntity.totalAmountFunded = dealDetailEntity.totalAmountFunded.plus(event.params.underlyingDealTokenAmount)
+    dealDetailEntity.save()
+  }
 
   depositDealTokenEntity.save();
 }
