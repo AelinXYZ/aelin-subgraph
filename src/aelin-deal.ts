@@ -20,8 +20,6 @@ import {
 	removeNotificationsForEvent
 } from './services/notifications'
 
-import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
-import { Address } from '@graphprotocol/graph-ts'
 
 export function handleSetHolder(event: SetHolderEvent): void {
 	createEntity(Entity.SetHolder, event)
@@ -45,13 +43,6 @@ export function handleClaimedUnderlyingDealToken(
 		event.params.recipient.toHex() + '-' + event.address.toHex()
 	)
 	if (vestingDealEntity != null) {
-		let aelinDealContract = AelinDealContract.bind(
-			Address.fromString(event.address.toHex())
-		)
-		let claimableTokens = aelinDealContract.claimableTokens(
-			event.params.recipient
-		)
-		vestingDealEntity.amountToVest = claimableTokens.value0
 		vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(
 			event.params.underlyingDealTokensClaimed
 		)

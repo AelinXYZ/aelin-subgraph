@@ -50,7 +50,7 @@ import {
 	User
 } from '../types/schema'
 
-import { DEAL_WRAPPER_DECIMALS } from '../helpers'
+import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED } from '../helpers'
 import { ERC20 } from '../types/templates/AelinPool/ERC20'
 
 export enum Entity {
@@ -326,6 +326,14 @@ function createClaimedUnderlyingDealTokenEntity(
 		event.params.underlyingDealTokensClaimed
 
 	claimedEntity.save()
+
+	let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + "-" + event.address.toHex())
+	if(vestingDealEntity) {
+		vestingDealEntity.remainingAmountToVest = vestingDealEntity.remainingAmountToVest.minus(
+			event.params.underlyingDealTokensClaimed
+		)
+		vestingDealEntity.save()
+	}
 }
 
 function createTransferDealEntity(event: TransferDealEvent): void {
@@ -425,9 +433,9 @@ function createVestingDealEntity(event: AcceptDealEvent): void {
 	)
 
 	let poolCreatedEntity = getPoolCreated(event.address.toHex())
-	let dealDetailEntity = getDealDetails(event.params.dealAddress.toHex())
+	let dealEntity = getDeal(event.params.dealAddress.toHex())
 
-	if (dealDetailEntity == null || poolCreatedEntity == null) {
+	if (dealEntity == null || poolCreatedEntity == null) {
 		return
 	}
 
@@ -441,17 +449,24 @@ function createVestingDealEntity(event: AcceptDealEvent): void {
 	let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
 	let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
 	let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
-
+	
 	vestingDealEntity.poolName = poolCreatedEntity.name
-	vestingDealEntity.tokenToVest = dealDetailEntity.underlyingDealToken
+	vestingDealEntity.poolAddress = event.address
+	vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
 	vestingDealEntity.tokenToVestSymbol =
-		dealDetailEntity.underlyingDealTokenSymbol
-	vestingDealEntity.investorDealTotal = investorDealTotal.div(
-		BigInt.fromI32(10).pow(18)
-	)
-	vestingDealEntity.amountToVest = dealDetailEntity.underlyingDealTokenTotal
+		dealEntity.underlyingDealTokenSymbol
+	
+	let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
+	vestingDealEntity.investorDealTotal = investorDealTotal
+		.div(BigInt.fromI32(10).pow(18))
+		.times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
+		.div(ONE_HUNDRED)
+	vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
 	vestingDealEntity.totalVested = BigInt.fromI32(0)
-	vestingDealEntity.vestingPeriodEnds = aelinDealContract.vestingExpiry()
+	vestingDealEntity.vestingPeriodStarts = dealEntity.vestingPeriodStarts
+	vestingDealEntity.vestingPeriodEnds = dealEntity.vestingPeriodStarts
+		.plus(dealEntity.vestingPeriod)
+	vestingDealEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
 	vestingDealEntity.user = event.params.purchaser.toHex()
 	vestingDealEntity.pool = poolCreatedEntity.id
 
@@ -675,6 +690,10 @@ function createOrUpdateDealEntity<E>(event: E): void {
 				event.params.underlyingDealTokenTotal
 			dealEntity.vestingPeriod = event.params.vestingPeriod
 			dealEntity.vestingCliff = event.params.vestingCliff
+			dealEntity.vestingPeriodStarts = event.block.timestamp
+				.plus(event.params.proRataRedemptionPeriod)
+				.plus(event.params.openRedemptionPeriod)
+				.plus(event.params.vestingCliff)
 			dealEntity.proRataRedemptionPeriod = event.params.proRataRedemptionPeriod
 			dealEntity.openRedemptionPeriod = event.params.openRedemptionPeriod
 			dealEntity.holder = event.params.holder

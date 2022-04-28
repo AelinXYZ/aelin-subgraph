@@ -77,16 +77,16 @@ type PoolCreated @entity {
 	" the address of the current proposed deal on the pool "
 	dealAddress: Bytes
 
-  " details of the created deal "
-  deal: DealDetail
+	" details of the created deal "
+	deal: Deal
 
-  totalAmountAccepted: BigInt!
+	totalAmountAccepted: BigInt!
 
-  totalAmountFunded: BigInt!
+	totalAmountFunded: BigInt!
 
-  totalAmountWithdrawn: BigInt!
+	totalAmountWithdrawn: BigInt!
 
-  totalAmountEarnedBySponsor: BigInt!
+	totalAmountEarnedBySponsor: BigInt!
 }
 
 type TotalPoolsCreated @entity {
@@ -347,11 +347,17 @@ type VestingDeal @entity {
 
 	investorDealTotal: BigInt!
 
-	amountToVest: BigInt!
+	remainingAmountToVest: BigInt!
 
 	totalVested: BigInt!
 
 	vestingPeriodEnds: BigInt!
+
+	vestingPeriodStarts: BigInt!
+
+	poolAddress: Bytes!
+
+	underlyingDealTokenDecimals: Int!
 
 	pool: PoolCreated!
 }
@@ -426,47 +432,47 @@ type DealSponsored @entity {
 	" poolAddress + sponsorAddress"
 	id: ID!
 
-  " the address of the sponsor "
+	" the address of the sponsor "
 	sponsor: Bytes!
 
-  " the block timestamp when the user deposited"
+	" the block timestamp when the user deposited"
 	timestamp: BigInt!
 
-  " represents the pool token name `aePool-${name}` "
+	" represents the pool token name `aePool-${name}` "
 	poolName: String!
 
-  amountEarned: BigInt!
-  
- 	totalAccepted: BigInt!
- 	
-  totalInvested: BigInt!
+	amountEarned: BigInt!
 
-  sponsorFee: BigInt!
+	totalAccepted: BigInt!
+
+	totalInvested: BigInt!
+
+	sponsorFee: BigInt!
 
 	pool: PoolCreated!
 }
 
 type Vest @entity {
-  " the transaction hash + event log index of the purchase event "
-  id: ID!
+	" the transaction hash + event log index of the purchase event "
+	id: ID!
 
-  " the address of user depositing "
+	" the address of user depositing "
 	userAddress: Bytes!
 
-  " the block timestamp when the user deposited"
+	" the block timestamp when the user deposited"
 	timestamp: BigInt!
 
-  amountVested: BigInt!
+	amountVested: BigInt!
 
 	pool: PoolCreated!
 }
 
 type DealFunded @entity {
-  " the transaction hash + event log index "
-  id: ID!
-  
+	" the transaction hash + event log index "
+	id: ID!
+
 	holder: Bytes!
-  
+
 	timestamp: BigInt!
 
 	poolName: String!
@@ -482,19 +488,19 @@ type Withdraw @entity {
 	" the transaction hash + event log index of the WithdrawFromPoolEvent event "
 	id: ID!
 
-  " the address of user withdrawing "
+	" the address of user withdrawing "
 	userAddress: Bytes!
 
-  " the block timestamp when the user withdrew"
+	" the block timestamp when the user withdrew"
 	timestamp: BigInt!
 
-  poolName: String!
+	poolName: String!
 
-  " withdrawn amount of purchase tokens "
+	" withdrawn amount of purchase tokens "
 	amountWithdrawn: BigInt!
 
-  " pool where the funds are withdrawn "
-  sponsorFee: BigInt!
+	" pool where the funds are withdrawn "
+	sponsorFee: BigInt!
 
 	pool: PoolCreated!
 }
@@ -535,6 +541,8 @@ type Deal @entity {
 
 	" the vesting cliff after which linear vesting starts "
 	vestingCliff: BigInt!
+
+	vestingPeriodStarts: BigInt!
 
 	" the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
 	proRataRedemptionPeriod: BigInt!

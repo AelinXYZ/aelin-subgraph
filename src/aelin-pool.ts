@@ -10,7 +10,7 @@ import {
 	AelinToken as AelinTokenEvent
 } from './types/templates/AelinPool/AelinPool'
 import { Address, BigInt } from '@graphprotocol/graph-ts'
-import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS } from './helpers'
+import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE } from './helpers'
 import { AelinDeal } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
 import { AelinPool as AelinPoolContract } from './types/templates/AelinPool/AelinPool'
@@ -255,19 +255,6 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 		dealFundedEntity.save()
 	}
 
-	/**
-	 * VestingDeal entity
-	 */
-	let vestingDealEntity = getVestingDeal(
-		event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
-	)
-
-	if (vestingDealEntity === null) {
-		createEntity(Entity.VestingDeal, event)
-	}
-
-	createEntity(Entity.DealAccepted, event)
-
 	let exp = DEAL_WRAPPER_DECIMALS.minus(
 		BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals)
 	)
@@ -280,31 +267,57 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
 
 	/**
+	 * VestingDeal entity
+	 */
+	let vestingDealEntity = getVestingDeal(
+		event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
+	)
+
+	if (vestingDealEntity === null) {
+		createEntity(Entity.VestingDeal, event)
+	} else {
+		let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
+		let dealTokens = investorDealTotal
+			.div(BigInt.fromI32(10).pow(18))
+			.times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
+			.div(ONE_HUNDRED)
+		vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal
+			.plus(dealTokens)
+		vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+		vestingDealEntity.save()
+	}
+
+	createEntity(Entity.DealAccepted, event)
+
+	/**
 	 * Update DealSponsored entity
 	 */
 	let dealSponsoredEntity = getDealSponsored(
 		event.address.toHex() + '-' + poolCreatedEntity.sponsor.toHex()
 	)
-	if (dealSponsoredEntity != null) {
-		dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(
-			event.params.poolTokenAmount
-		)
-		dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
-			event.params.poolTokenAmount.times(event.params.sponsorFee)
-		)
-		dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
-			investorDealTotal.div(BigInt.fromI32(10).pow(18))
-		)
-		dealSponsoredEntity.save()
-	}
+	if (dealSponsoredEntity == null) { 
+    return
+  }
 
+  dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(
+    event.params.poolTokenAmount
+  )
+  dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
+    event.params.poolTokenAmount.times(event.params.sponsorFee)
+  )
+  dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
+    investorDealTotal.div(BigInt.fromI32(10).pow(18))
+  )
+  dealSponsoredEntity.save()
+	
+  
   /**
-	 * Update PoolCreated entity
+   * Update PoolCreated entity
 	 */
-	poolCreatedEntity.totalAmountAccepted = poolCreatedEntity.totalAmountAccepted.plus(
-		event.params.poolTokenAmount
-	)
-  poolCreatedEntity.totalAmountEarnedBySponsor = poolCreatedEntity.totalAmountEarnedBySponsor.plus(event.params.poolTokenAmount.times(poolCreatedEntity.sponsorFee))
+  poolCreatedEntity.totalAmountAccepted = poolCreatedEntity.totalAmountAccepted.plus(
+    event.params.poolTokenAmount
+    )
+  poolCreatedEntity.totalAmountEarnedBySponsor = poolCreatedEntity.totalAmountEarnedBySponsor.plus(event.params.sponsorFee)
 	poolCreatedEntity.save()
 
 	createNotificationsForEvent(event)
