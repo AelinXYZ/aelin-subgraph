@@ -711,6 +711,12 @@ function createOrUpdateDealEntity<E>(event: E): void {
 			let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
 			dealEntity.underlyingPerDealExchangeRate = underlyingPerDealExchangeRate
 
+			let poolCreatedEntity = getPoolCreated(event.address.toHex())
+			if(poolCreatedEntity) {
+				let dealsCreated = poolCreatedEntity.dealsCreated + 1
+				poolCreatedEntity.dealsCreated = dealsCreated
+				poolCreatedEntity.save()
+			}
 			dealEntity.save()
 		}
 	} else if (event instanceof DealFullyFundedEvent) {
