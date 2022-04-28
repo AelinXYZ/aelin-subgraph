@@ -706,6 +706,11 @@ function createOrUpdateDealEntity<E>(event: E): void {
 			dealEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol()
 			dealEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals()
 			dealEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply()
+
+			let aelinDealContract = AelinDealContract.bind(event.params.dealContract)
+			let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
+			dealEntity.underlyingPerDealExchangeRate = underlyingPerDealExchangeRate
+
 			dealEntity.save()
 		}
 	} else if (event instanceof DealFullyFundedEvent) {

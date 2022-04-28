@@ -576,6 +576,8 @@ type Deal @entity {
 
 	" the duration of the holder funding period "
 	holderFundingDuration: BigInt!
+
+	underlyingPerDealExchangeRate: BigInt!
 }
 
 type History @entity {
