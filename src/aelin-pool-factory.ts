@@ -7,8 +7,8 @@ import { ONE } from './helpers'
 import { PoolStatus } from './enum'
 import {
 	createNotificationsForEvent,
-	NotificationType
 } from './services/notifications'
+import { getOrCreateUser } from './services/entities'
 
 export function handleCreatePool(event: CreatePoolEvent): void {
 	let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
@@ -49,6 +49,14 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	poolCreatedEntity.dealsCreated = 0
 
 	poolCreatedEntity.save()
+
+	let userEntity = getOrCreateUser(event.params.sponsor.toHex())
+	if (userEntity != null) {
+		let poolsSponsored = userEntity.poolsSponsored
+		poolsSponsored.push(poolCreatedEntity.id)
+		userEntity.poolsSponsored = poolsSponsored
+		userEntity.save()
+	}
 
 	// use templates to create a new pool to track events
 	AelinPool.create(event.params.poolAddress)

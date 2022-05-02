@@ -606,11 +606,12 @@ type User @entity {
 }
 
 type Notification @entity {
+	"poolAddress - NotificationType"
 	id: ID!
 	type: NotificationType
 	message: String!
 	pool: PoolCreated!
 	triggerStart: BigInt!
 	triggerEnd: BigInt!
-	target: [NotificationTarget!]!
+	target: NotificationTarget!
 }
