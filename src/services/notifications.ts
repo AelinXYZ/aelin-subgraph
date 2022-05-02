@@ -143,8 +143,6 @@ function createHolderSet(event: SetHolderEvent): void {
 		notificationEntity.type = Notifications.HolderSet
 		notificationEntity.pool = dealEntity.poolAddress.toHex()
 		notificationEntity.triggerStart = event.block.timestamp
-			.plus(dealEntity.proRataRedemptionPeriod)
-			.plus(dealEntity.openRedemptionPeriod)
 		notificationEntity.triggerEnd = event.block.timestamp.plus(MAX_TIME_PERIOD)
 		notificationEntity.target = NotificationTarget.Holder
 		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
