@@ -388,6 +388,14 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 		historyEntity.save()
 	}
 
+	let userEntity = getOrCreateUser(event.params.purchaser.toHex())
+	if (userEntity != null) {
+		let dealsAccepted = userEntity.dealsAccepted
+		dealsAccepted.push(dealAcceptedEntity.id)
+		userEntity.dealsAccepted = dealsAccepted
+		userEntity.save()
+	}
+
 	dealAcceptedEntity.save()
 }
 

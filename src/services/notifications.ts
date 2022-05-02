@@ -12,7 +12,7 @@ import { CreatePool as CreatePoolEvent } from '../types/AelinPoolFactory/AelinPo
 
 import { Notification } from '../types/schema'
 import { getDeal, getPoolCreated, getVestingDeal } from './entities'
-import { BigDecimal, BigInt, store } from '@graphprotocol/graph-ts'
+import { BigInt, store } from '@graphprotocol/graph-ts'
 import { Notifications, NotificationTarget } from '../enum'
 import { ZERO } from '../helpers'
 
@@ -236,7 +236,7 @@ function createDealProposed(event: DealFullyFundedEvent): void {
 			notificationEntity.message = `A deal has been proposed in the ${poolName} pool. If you do not accept, it will be treated as declining the deal.`
 		}
 
-		notificationEntity.target = NotificationTarget.Investor
+		notificationEntity.target = NotificationTarget.PoolInvestor
 
 		notificationEntity.save()
 	}
@@ -259,7 +259,7 @@ function createAllDealTokensVested(event: DealFullyFundedEvent): void {
 			.plus(dealEntity.vestingCliff)
 			.plus(dealEntity.vestingPeriod)
 			.plus(MAX_TIME_PERIOD)
-		notificationEntity.target = NotificationTarget.Investor
+		notificationEntity.target = NotificationTarget.DealInvestor
 
 		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
 		if (poolEntity != null) {
@@ -286,7 +286,7 @@ function createDealTokensVestingBegun(event: DealFullyFundedEvent): void {
 			.plus(dealEntity.openRedemptionPeriod)
 			.plus(dealEntity.vestingCliff)
 			.plus(MAX_TIME_PERIOD)
-		notificationEntity.target = NotificationTarget.Investor
+		notificationEntity.target = NotificationTarget.DealInvestor
 
 		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
 		if (poolEntity != null) {
@@ -311,7 +311,7 @@ function createVestingCliffBegun(event: DealFullyFundedEvent): void {
 			.plus(dealEntity.proRataRedemptionPeriod)
 			.plus(dealEntity.openRedemptionPeriod)
 			.plus(dealEntity.vestingCliff)
-		notificationEntity.target = NotificationTarget.Investor
+		notificationEntity.target = NotificationTarget.DealInvestor
 
 		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
 		if (poolEntity != null) {

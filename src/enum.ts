@@ -17,7 +17,8 @@ export namespace Notifications {
 }
 
 export namespace NotificationTarget {
-	export const Investor = 'Investor'
+	export const DealInvestor = 'DealInvestor'
+	export const PoolInvestor = 'PoolInvestor'
 	export const Sponsor = 'Sponsor'
 	export const Holder = 'Holder'
 }

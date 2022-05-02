@@ -17,7 +17,8 @@ enum NotificationType {
 }
 
 enum NotificationTarget {
-	Investor
+	DealInvestor
+	PoolInvestor
 	Sponsor
 	Holder
 }
@@ -605,6 +606,7 @@ type User @entity {
 	poolsInvested: [PoolCreated!]!
 	poolsSponsored: [PoolCreated!]!
 	poolsFunded: [PoolCreated!]!
+	dealsAccepted: [DealAccepted!]!
 	vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
 	allocationsStat: [UserAllocationStat!]!
 }
