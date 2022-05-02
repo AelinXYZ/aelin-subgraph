@@ -57,6 +57,7 @@ export function handleWithdrawUnderlyingDealToken(
 	event: WithdrawUnderlyingDealTokenEvent
 ): void {
 	createEntity(Entity.WithdrawUnderlyingDealToken, event)
+	removeNotificationsForEvent(event)
 }
 
 export function handleDealFullyFunded(event: DealFullyFundedEvent): void {

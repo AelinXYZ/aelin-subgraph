@@ -6,7 +6,8 @@ import {
 import {
 	SetHolder as SetHolderEvent,
 	DealFullyFunded as DealFullyFundedEvent,
-	ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent
+	ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
+	WithdrawUnderlyingDealToken as WithdrawUnderlyingDealTokenEvent
 } from '../types/templates/AelinDeal/AelinDeal'
 import { CreatePool as CreatePoolEvent } from '../types/AelinPoolFactory/AelinPoolFactory'
 
@@ -80,6 +81,11 @@ export function removeNotificationsForEvent<E>(event: E): void {
 		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.AllDealTokensVested)
 		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.DealProposed)
 		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.HolderSet)
+	} else if (event instanceof WithdrawUnderlyingDealTokenEvent) {
+		let dealEntity = getDeal(event.address.toHex())
+		if (dealEntity != null) {
+			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
+		}
 	}
 }
 
