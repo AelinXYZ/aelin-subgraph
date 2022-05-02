@@ -99,13 +99,13 @@ export function createNotificationsForEvent<E>(event: E): void {
 	if (event instanceof DealFullyFundedEvent) {
 		createVestingCliffBegun(event)
 		creatWithdrawUnredeemed(event)
-		createDealTokensVestingBegun(event)
 		createAllDealTokensVested(event)
 		createDealProposed(event)
 	} else if (event instanceof CreatePoolEvent) {
 		createInvestmentWindowAlert(event)
 		createInvestmentWindowEnded(event)
 	} else if (event instanceof AcceptDealEvent) {
+		createDealTokensVestingBegun(event)
 		createSponsorFeesReady(event)
 	} else if (event instanceof SetHolderEvent) {
 		createHolderSet(event)
@@ -265,8 +265,8 @@ function createAllDealTokensVested(event: DealFullyFundedEvent): void {
 	}
 }
 
-function createDealTokensVestingBegun(event: DealFullyFundedEvent): void {
-	let dealEntity = getDeal(event.address.toHex())
+function createDealTokensVestingBegun(event: AcceptDealEvent): void {
+	let dealEntity = getDeal(event.params.dealAddress.toHex())
 	if (dealEntity != null) {
 		let notificationEntity = new Notification(dealEntity.poolAddress.toHex() + '-' + Notifications.DealTokensVestingBegun)
 		notificationEntity.type = Notifications.DealTokensVestingBegun
