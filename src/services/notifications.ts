@@ -207,7 +207,7 @@ function createInvestmentWindowAlert(event: CreatePoolEvent): void {
 			.div(BigInt.fromI32(4))
 			.times(BigInt.fromI32(3))
 		notificationEntity.triggerStart = event.block.timestamp.plus(alertTime)
-		notificationEntity.triggerEnd = poolEntity.purchaseExpiry.plus(poolEntity.duration)
+		notificationEntity.triggerEnd = poolEntity.purchaseExpiry
 		notificationEntity.target = NotificationTarget.Sponsor
 
 		let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
