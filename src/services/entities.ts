@@ -20,7 +20,6 @@ import {
 } from '../types/templates/AelinDeal/AelinDeal'
 
 import { AelinDeal as AelinDealContract } from '../types/templates/AelinDeal/AelinDeal'
-import { AelinPool as AelinPoolContract } from '../types/templates/AelinPool/AelinPool'
 
 import {
 	DealCreated,
@@ -123,6 +122,11 @@ export function createEntity<E>(entityType: Entity, event: E): void {
 				createDepositEntity(event)
 			}
 			break
+		case Entity.UserAllocationStat:
+			if (event instanceof PurchasePoolTokenEvent) {
+				createUserAllocationStatEntity(event)
+			}
+			break
 		case Entity.WithdrawFromPool:
 			if (event instanceof WithdrawFromPoolEvent) {
 				createWithdrawFromPoolEntity(event)
@@ -146,11 +150,6 @@ export function createEntity<E>(entityType: Entity, event: E): void {
 		case Entity.DealAccepted:
 			if (event instanceof AcceptDealEvent) {
 				createDealAcceptedEntity(event)
-			}
-			break
-		case Entity.UserAllocationStat:
-			if (event instanceof AcceptDealEvent) {
-				createUserAllocationStatEntity(event)
 			}
 			break
 		case Entity.TotalDealsBySponsor:
@@ -332,7 +331,7 @@ function createTotalDealsBySponsorEntity(event: CreateDealEvent): void {
 	totalDealsBySponsorEntity.save()
 }
 
-function createUserAllocationStatEntity(event: AcceptDealEvent): void {
+function createUserAllocationStatEntity(event: PurchasePoolTokenEvent): void {
 	let poolCreatedEntity = getPoolCreated(event.address.toHex())
 	if (poolCreatedEntity == null) {
 		return
@@ -343,7 +342,6 @@ function createUserAllocationStatEntity(event: AcceptDealEvent): void {
 	userAllocationStatEntity.totalWithdrawn = BigInt.fromI32(0)
 	userAllocationStatEntity.totalAccepted = BigInt.fromI32(0)
 	userAllocationStatEntity.poolTokenBalance = BigInt.fromI32(0)
-	userAllocationStatEntity.investmentTokenBalance = BigInt.fromI32(0)
 	userAllocationStatEntity.pool = poolCreatedEntity.id
 
 	let userEntity = getOrCreateUser(event.params.purchaser.toHex())

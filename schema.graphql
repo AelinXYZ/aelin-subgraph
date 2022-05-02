@@ -404,11 +404,7 @@ type UserAllocationStat @entity {
 
 	totalAccepted: BigInt!
 
-	remainingProRataAllocation: BigInt!
-
 	poolTokenBalance: BigInt!
-
-	investmentTokenBalance: BigInt!
 
 	pool: PoolCreated!
 }

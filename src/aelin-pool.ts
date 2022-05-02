@@ -9,7 +9,7 @@ import {
 	AcceptDeal as AcceptDealEvent,
 	AelinToken as AelinTokenEvent
 } from './types/templates/AelinPool/AelinPool'
-import { Address, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigInt, log } from '@graphprotocol/graph-ts'
 import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE } from './helpers'
 import { AelinDeal } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
@@ -144,6 +144,27 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
 		)
 		poolCreatedEntity.save()
 	}
+
+	/**
+	 * UserAllocationStat entity
+	 */
+	 let userAllocationStatEntity = getUserAllocationStat(
+		event.params.purchaser.toHex() + '-' + event.address.toHex()
+	)
+	if (userAllocationStatEntity == null) {
+		createEntity(Entity.UserAllocationStat, event)
+		userAllocationStatEntity = getUserAllocationStat(
+			event.params.purchaser.toHex() + '-' + event.address.toHex()
+		)
+	}
+
+	if (userAllocationStatEntity != null) {
+		userAllocationStatEntity.totalAccepted = userAllocationStatEntity.totalAccepted.plus(
+			event.params.purchaseTokenAmount
+		)
+		userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.plus(event.params.purchaseTokenAmount)
+		userAllocationStatEntity.save()
+	}
 }
 
 export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
@@ -167,49 +188,15 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 	/**
 	 * Update UserAllocationStat entity
 	 */
-
-	let dealAddress = poolCreatedEntity.dealAddress
-	if (dealAddress) {
-		let userAllocationStatEntity = getUserAllocationStat(
-			event.params.purchaser.toHex() + '-' + event.address.toHex()
+	let userAllocationStatEntity = getUserAllocationStat(
+		event.params.purchaser.toHex() + '-' + event.address.toHex()
+	)
+	if (userAllocationStatEntity != null) {
+		userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
+			event.params.purchaseTokenAmount
 		)
-		if (userAllocationStatEntity != null) {
-			let exp = DEAL_WRAPPER_DECIMALS.minus(
-				BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals)
-			)
-			let dealTokenAmount = event.params.purchaseTokenAmount.times(
-				// @ts-ignore
-				BigInt.fromI32(10).pow(<u8>exp.toI32())
-			)
-			let aelinDealContract = AelinDealContract.bind(Address.fromBytes(dealAddress))
-			let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
-			let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
-
-			userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
-				event.params.purchaseTokenAmount
-			)
-
-			let aelinPoolContract = AelinPoolContract.bind(
-				Address.fromString(poolCreatedEntity.id)
-			)
-			let remainingProRataAllocation = aelinPoolContract.try_maxProRataAmount(
-				event.params.purchaser
-			)
-			if (remainingProRataAllocation.reverted) {
-				remainingProRataAllocation = aelinPoolContract.try_maxProRataAvail(
-					event.params.purchaser
-				)
-			}
-			if (!remainingProRataAllocation.reverted) {
-				userAllocationStatEntity.remainingProRataAllocation =
-					remainingProRataAllocation.value
-			}
-
-			userAllocationStatEntity.poolTokenBalance = aelinPoolContract.balanceOf(event.params.purchaser)
-			userAllocationStatEntity.investmentTokenBalance = userAllocationStatEntity.investmentTokenBalance.plus(investorDealTotal.div(BigInt.fromI32(10).pow(18)))
-
-			userAllocationStatEntity.save()
-		}
+		userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.minus(event.params.purchaseTokenAmount)
+		userAllocationStatEntity.save()
 	}
 }
 
@@ -252,36 +239,9 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	let userAllocationStatEntity = getUserAllocationStat(
 		event.params.purchaser.toHex() + '-' + event.address.toHex()
 	)
-	if (userAllocationStatEntity == null) {
-		createEntity(Entity.UserAllocationStat, event)
-		userAllocationStatEntity = getUserAllocationStat(
-			event.params.purchaser.toHex() + '-' + event.address.toHex()
-		)
-	}
 
 	if (userAllocationStatEntity != null) {
-		userAllocationStatEntity.totalAccepted = userAllocationStatEntity.totalAccepted.plus(
-			event.params.poolTokenAmount
-		)
-		let aelinPoolContract = AelinPoolContract.bind(
-			Address.fromString(poolCreatedEntity.id)
-		)
-		let remainingProRataAllocation = aelinPoolContract.try_maxProRataAmount(
-			event.params.purchaser
-		)
-		if (remainingProRataAllocation.reverted) {
-			remainingProRataAllocation = aelinPoolContract.try_maxProRataAvail(
-				event.params.purchaser
-			)
-		}
-		if (!remainingProRataAllocation.reverted) {
-			userAllocationStatEntity.remainingProRataAllocation =
-				remainingProRataAllocation.value
-		}
-
-		userAllocationStatEntity.poolTokenBalance = aelinPoolContract.balanceOf(event.params.purchaser)
-		userAllocationStatEntity.investmentTokenBalance = userAllocationStatEntity.investmentTokenBalance.plus(investorDealTotal.div(BigInt.fromI32(10).pow(18)))
-
+		userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.minus(event.params.poolTokenAmount)
 		userAllocationStatEntity.save()
 	}
 
