@@ -42,7 +42,6 @@ export function removeNotificationsForEvent<E>(event: E): void {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.VestingCliffBegun)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealTokensVestingBegun)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.SponsorFeesReady)
-			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealProposed)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
 
 			// Remove AllDealTokensVested if ClaimedUnderlyingDealTokenEvent timestamp > AllDealTokensVested.triggerEnd
@@ -57,35 +56,30 @@ export function removeNotificationsForEvent<E>(event: E): void {
 				}
 			}
 		}
+	} else if(event instanceof AcceptDealEvent) {
+		store.remove('Notification', event.address.toHex() + '-' + Notifications.DealProposed)
 	} else if (event instanceof CreateDealEvent) {
 		// Remove InvestmentWindowAlert, InvestmentWindowEnded
 		// If the sponsor does not create a deal or nobody invests, these notifications wont be removed
-		let dealEntity = getDeal(event.params.dealContract.toHex())
-		if (dealEntity != null) {
-			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.InvestmentWindowAlert)
-			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.InvestmentWindowEnded)
-		}
+		store.remove('Notification', event.address.toHex() + '-' + Notifications.InvestmentWindowAlert)
+		store.remove('Notification', event.address.toHex() + '-' + Notifications.InvestmentWindowEnded)
 	} else if (event instanceof DealFullyFundedEvent) {
-		// Remove HolderSet
-		// HolderSet notification will never be removed if the Holder does not fund the deal and there are no withdraws
+		// Remove HolderSet. HolderSet notification will never be removed if the Holder does not fund the deal and there are no withdraws
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.HolderSet)
 		}
 	} else if (event instanceof WithdrawFromPoolEvent) {
 		// This event will trigger all removals ONLY if triggerEnd < timestamp fo the Withdrawal event.
-		let poolCreatedEntity = getPoolCreated(event.address.toHex())
-		if (poolCreatedEntity !== null) {
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.DealTokensVestingBegun)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.InvestmentWindowEnded)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.InvestmentWindowAlert)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.WithdrawUnredeemed)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.SponsorFeesReady)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.VestingCliffBegun)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.AllDealTokensVested)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.DealProposed)
-			removeNotificationTriggerEnd(poolCreatedEntity.id, event.block.timestamp, Notifications.HolderSet)
-		}
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.DealTokensVestingBegun)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.InvestmentWindowEnded)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.InvestmentWindowAlert)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.WithdrawUnredeemed)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.SponsorFeesReady)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.VestingCliffBegun)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.AllDealTokensVested)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.DealProposed)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.HolderSet)
 	}
 }
 
