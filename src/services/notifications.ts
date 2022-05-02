@@ -279,7 +279,7 @@ function createDealTokensVestingBegun(event: DealFullyFundedEvent): void {
 			.plus(dealEntity.proRataRedemptionPeriod)
 			.plus(dealEntity.openRedemptionPeriod)
 			.plus(dealEntity.vestingCliff)
-			.plus(MAX_TIME_PERIOD)
+			.plus(dealEntity.vestingPeriod)
 		notificationEntity.target = NotificationTarget.DealInvestor
 
 		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
