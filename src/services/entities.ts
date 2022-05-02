@@ -20,6 +20,7 @@ import {
 } from '../types/templates/AelinDeal/AelinDeal'
 
 import { AelinDeal as AelinDealContract } from '../types/templates/AelinDeal/AelinDeal'
+import { AelinPool as AelinPoolContract } from '../types/templates/AelinPool/AelinPool'
 
 import {
 	DealCreated,
@@ -341,6 +342,8 @@ function createUserAllocationStatEntity(event: AcceptDealEvent): void {
 	userAllocationStatEntity.userAddress = event.params.purchaser
 	userAllocationStatEntity.totalWithdrawn = BigInt.fromI32(0)
 	userAllocationStatEntity.totalAccepted = BigInt.fromI32(0)
+	userAllocationStatEntity.poolTokenBalance = BigInt.fromI32(0)
+	userAllocationStatEntity.investmentTokenBalance = BigInt.fromI32(0)
 	userAllocationStatEntity.pool = poolCreatedEntity.id
 
 	let userEntity = getOrCreateUser(event.params.purchaser.toHex())

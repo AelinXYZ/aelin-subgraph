@@ -174,6 +174,17 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 			event.params.purchaser.toHex() + '-' + event.address.toHex()
 		)
 		if (userAllocationStatEntity != null) {
+			let exp = DEAL_WRAPPER_DECIMALS.minus(
+				BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals)
+			)
+			let dealTokenAmount = event.params.purchaseTokenAmount.times(
+				// @ts-ignore
+				BigInt.fromI32(10).pow(<u8>exp.toI32())
+			)
+			let aelinDealContract = AelinDealContract.bind(Address.fromBytes(dealAddress))
+			let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
+			let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
+
 			userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
 				event.params.purchaseTokenAmount
 			)
@@ -194,6 +205,9 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 					remainingProRataAllocation.value
 			}
 
+			userAllocationStatEntity.poolTokenBalance = aelinPoolContract.balanceOf(event.params.purchaser)
+			userAllocationStatEntity.investmentTokenBalance = userAllocationStatEntity.investmentTokenBalance.plus(investorDealTotal.div(BigInt.fromI32(10).pow(18)))
+
 			userAllocationStatEntity.save()
 		}
 	}
@@ -206,6 +220,31 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	if (poolCreatedEntity == null) {
 		return
 	}
+
+	/**
+	 * Update DealFunded entity
+	 */
+	let dealFundedEntity = getDealFunded(
+		event.params.dealAddress.toHex() + '-' + poolCreatedEntity.sponsor.toHex()
+	)
+	if (dealFundedEntity != null) {
+		dealFundedEntity.amountRaised = dealFundedEntity.amountRaised.plus(
+			event.params.poolTokenAmount
+		)
+		dealFundedEntity.save()
+	}
+
+	let exp = DEAL_WRAPPER_DECIMALS.minus(
+		BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals)
+	)
+	let dealTokenAmount = event.params.poolTokenAmount.times(
+		// @ts-ignore
+		BigInt.fromI32(10).pow(<u8>exp.toI32())
+	)
+	let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
+	let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
+	let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
+
 
 	/**
 	 * UserAllocationStat entity
@@ -239,32 +278,12 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 			userAllocationStatEntity.remainingProRataAllocation =
 				remainingProRataAllocation.value
 		}
+
+		userAllocationStatEntity.poolTokenBalance = aelinPoolContract.balanceOf(event.params.purchaser)
+		userAllocationStatEntity.investmentTokenBalance = userAllocationStatEntity.investmentTokenBalance.plus(investorDealTotal.div(BigInt.fromI32(10).pow(18)))
+
 		userAllocationStatEntity.save()
 	}
-
-	/**
-	 * Update DealFunded entity
-	 */
-	let dealFundedEntity = getDealFunded(
-		event.params.dealAddress.toHex() + '-' + poolCreatedEntity.sponsor.toHex()
-	)
-	if (dealFundedEntity != null) {
-		dealFundedEntity.amountRaised = dealFundedEntity.amountRaised.plus(
-			event.params.poolTokenAmount
-		)
-		dealFundedEntity.save()
-	}
-
-	let exp = DEAL_WRAPPER_DECIMALS.minus(
-		BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals)
-	)
-	let dealTokenAmount = event.params.poolTokenAmount.times(
-		// @ts-ignore
-		BigInt.fromI32(10).pow(<u8>exp.toI32())
-	)
-	let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
-	let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
-	let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
 
 	/**
 	 * VestingDeal entity
