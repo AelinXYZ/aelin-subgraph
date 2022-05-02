@@ -171,7 +171,7 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 	let dealAddress = poolCreatedEntity.dealAddress
 	if (dealAddress) {
 		let userAllocationStatEntity = getUserAllocationStat(
-			event.params.purchaser.toHex() + '-' + dealAddress.toHex()
+			event.params.purchaser.toHex() + '-' + event.address.toHex()
 		)
 		if (userAllocationStatEntity != null) {
 			userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
@@ -211,12 +211,12 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	 * UserAllocationStat entity
 	 */
 	let userAllocationStatEntity = getUserAllocationStat(
-		event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
+		event.params.purchaser.toHex() + '-' + event.address.toHex()
 	)
 	if (userAllocationStatEntity == null) {
 		createEntity(Entity.UserAllocationStat, event)
 		userAllocationStatEntity = getUserAllocationStat(
-			event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex()
+			event.params.purchaser.toHex() + '-' + event.address.toHex()
 		)
 	}
 

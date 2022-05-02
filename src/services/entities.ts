@@ -337,7 +337,7 @@ function createUserAllocationStatEntity(event: AcceptDealEvent): void {
 		return
 	}
 
-	let userAllocationStatEntity = new UserAllocationStat(event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex())
+	let userAllocationStatEntity = new UserAllocationStat(event.params.purchaser.toHex() + '-' + event.address.toHex())
 	userAllocationStatEntity.userAddress = event.params.purchaser
 	userAllocationStatEntity.totalWithdrawn = BigInt.fromI32(0)
 	userAllocationStatEntity.totalAccepted = BigInt.fromI32(0)
