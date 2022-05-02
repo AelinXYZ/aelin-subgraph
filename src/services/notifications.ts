@@ -43,6 +43,7 @@ export function removeNotificationsForEvent<E>(event: E): void {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.VestingCliffBegun)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealTokensVestingBegun)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.SponsorFeesReady)
+			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealProposed)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
 
 			// Remove AllDealTokensVested if ClaimedUnderlyingDealTokenEvent timestamp > AllDealTokensVested.triggerEnd
@@ -57,8 +58,6 @@ export function removeNotificationsForEvent<E>(event: E): void {
 				}
 			}
 		}
-	} else if(event instanceof AcceptDealEvent) {
-		store.remove('Notification', event.address.toHex() + '-' + Notifications.DealProposed)
 	} else if (event instanceof CreateDealEvent) {
 		// Remove InvestmentWindowAlert, InvestmentWindowEnded
 		// If the sponsor does not create a deal or nobody invests, these notifications wont be removed
