@@ -11,9 +11,10 @@ import {
 import { CreatePool as CreatePoolEvent } from '../types/AelinPoolFactory/AelinPoolFactory'
 
 import { Notification } from '../types/schema'
-import { getDeal, getPoolCreated } from './entities'
+import { getDeal, getPoolCreated, getVestingDeal } from './entities'
 import { BigDecimal, BigInt, store } from '@graphprotocol/graph-ts'
 import { Notifications, NotificationTarget } from '../enum'
+import { ZERO } from '../helpers'
 
 const MAX_TIME_PERIOD = BigInt.fromI32(60 * 60 * 24 * 30) // 30 days
 
@@ -35,7 +36,7 @@ export enum NotificationType {
 
 export function removeNotificationsForEvent<E>(event: E): void {
 	if (event instanceof ClaimedUnderlyingDealTokenEvent) {
-		// Remove VestingCliffBegun, DealTokensVestingBegun, AllDealTokensVested (only if triggerEnd), DealProposed, SponsorFeesReady, WithdrawUnredeemed
+		// Remove VestingCliffBegun, DealTokensVestingBegun, AllDealTokensVested, DealProposed, SponsorFeesReady, WithdrawUnredeemed
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.VestingCliffBegun)
@@ -43,7 +44,18 @@ export function removeNotificationsForEvent<E>(event: E): void {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.SponsorFeesReady)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealProposed)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
+
+			// Remove AllDealTokensVested if ClaimedUnderlyingDealTokenEvent timestamp > AllDealTokensVested.triggerEnd
 			removeNotificationTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp, Notifications.AllDealTokensVested)
+			
+			// Remove AllDealTokensVested if All tokens claimed
+			let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + '-' + event.address.toHex())
+			if(vestingDealEntity) {
+				let remainingAmountToVest = vestingDealEntity.remainingAmountToVest
+				if(remainingAmountToVest.equals(ZERO)) {
+					store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.AllDealTokensVested)
+				}
+			}
 		}
 	} else if (event instanceof CreateDealEvent) {
 		// Remove InvestmentWindowAlert, InvestmentWindowEnded
