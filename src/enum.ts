@@ -14,6 +14,8 @@ export namespace Notifications {
 	export const WithdrawUnredeemed = 'WithdrawUnredeemed'
 	export const DealTokensVestingBegun = 'DealTokensVestingBegun'
 	export const AllDealTokensVested = 'AllDealTokensVested'
+	export const FundingWindowAlert = 'FundingWindowAlert'
+	export const FundingWindowEnded = 'FundingWindowEnded'
 }
 
 export namespace NotificationTarget {
