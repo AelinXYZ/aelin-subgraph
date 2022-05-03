@@ -261,14 +261,6 @@ function createDealFundedEntity(event: DealFullyFundedEvent): void {
 		historyEntity.save()
 	}
 
-	let userEntity = getOrCreateUser(dealDetailEntity.holder.toHex())
-	if (userEntity != null) {
-		let poolsFunded = userEntity.poolsFunded
-		poolsFunded.push(event.params.poolAddress.toHex())
-		userEntity.poolsFunded = poolsFunded
-		userEntity.save()
-	}
-
 	dealFundedEntity.save()
 }
 
@@ -648,6 +640,15 @@ function createOrUpdateDealEntity<E>(event: E): void {
 				poolCreatedEntity.dealsCreated = dealsCreated
 				poolCreatedEntity.save()
 			}
+	
+			let userEntity = getOrCreateUser(event.params.holder.toHex())
+			if (userEntity != null) {
+				let poolsAsHolder = userEntity.poolsAsHolder
+				poolsAsHolder.push(dealEntity.poolAddress.toHex())
+				userEntity.poolsAsHolder = poolsAsHolder
+				userEntity.save()
+			}
+
 			dealEntity.save()
 		}
 	} else if (event instanceof DealFullyFundedEvent) {

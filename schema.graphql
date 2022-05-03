@@ -406,6 +406,8 @@ type UserAllocationStat @entity {
 
 	poolTokenBalance: BigInt!
 
+	remainingProRataAllocation: BigInt!
+
 	pool: PoolCreated!
 }
 
@@ -601,7 +603,7 @@ type User @entity {
 	history: History! @derivedFrom(field: "user")
 	poolsInvested: [PoolCreated!]!
 	poolsSponsored: [PoolCreated!]!
-	poolsFunded: [PoolCreated!]!
+	poolsAsHolder: [PoolCreated!]!
 	dealsAccepted: [DealAccepted!]!
 	vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
 	allocationsStat: [UserAllocationStat!]!
