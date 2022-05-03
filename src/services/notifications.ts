@@ -59,12 +59,14 @@ export function removeNotificationsForEvent<E>(event: E): void {
 					store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.AllDealTokensVested)
 				}
 			}
+			removeAllIfTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp)
 		}
 	} else if (event instanceof CreateDealEvent) {
 		// Remove InvestmentWindowAlert, InvestmentWindowEnded
 		// If the sponsor does not create a deal or nobody invests, these notifications wont be removed
 		store.remove('Notification', event.address.toHex() + '-' + Notifications.InvestmentWindowAlert)
 		store.remove('Notification', event.address.toHex() + '-' + Notifications.InvestmentWindowEnded)
+		removeAllIfTriggerEnd(event.address.toHex(), event.block.timestamp)
 	} else if (event instanceof DealFullyFundedEvent) {
 		// Remove HolderSet. HolderSet notification will never be removed if the Holder does not fund the deal and there are no withdraws
 		let dealEntity = getDeal(event.address.toHex())
@@ -72,26 +74,39 @@ export function removeNotificationsForEvent<E>(event: E): void {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.HolderSet)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.FundingWindowAlert)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.FundingWindowEnded)
+			removeAllIfTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp)
 		}
 	} else if (event instanceof WithdrawFromPoolEvent) {
-		// This event will trigger all removals ONLY if triggerEnd < timestamp fo the Withdrawal event.
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.DealTokensVestingBegun)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.InvestmentWindowEnded)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.InvestmentWindowAlert)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.WithdrawUnredeemed)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.SponsorFeesReady)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.VestingCliffBegun)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.AllDealTokensVested)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.DealProposed)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.HolderSet)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.FundingWindowEnded)
-		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.FundingWindowAlert)
+		removeAllIfTriggerEnd(event.address.toHex(), event.block.timestamp)
+	} else if (event instanceof AcceptDealEvent) { 
+		removeWithdrawUnredeemed(event)
+		removeAllIfTriggerEnd(event.address.toHex(), event.block.timestamp)
 	} else if (event instanceof WithdrawUnderlyingDealTokenEvent) {
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
-			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
+			if (
+				event.params.depositor.toHex() === dealEntity.holder.toHex()
+			) {
+				store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
+			}
+			removeAllIfTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp)
 		}
 	}
+}
+
+// Delete any notification after the triggerEnd has passed.
+function removeAllIfTriggerEnd(poolAddress:string, timestamp: BigInt):void {
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.DealTokensVestingBegun)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.InvestmentWindowEnded)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.InvestmentWindowAlert)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.WithdrawUnredeemed)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.SponsorFeesReady)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.VestingCliffBegun)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.AllDealTokensVested)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.DealProposed)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.HolderSet)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.FundingWindowEnded)
+	removeNotificationTriggerEnd(poolAddress, timestamp, Notifications.FundingWindowAlert)
 }
 
 // Will remove a NotificationEntity if triggerEnd < timestamp of the event
@@ -99,6 +114,16 @@ function removeNotificationTriggerEnd<N>(address: string, timestamp: BigInt, not
 	let notificationEntity = Notification.load(address + '-' + notification)
 	if (notificationEntity != null && notificationEntity.triggerEnd.lt(timestamp)) {
 		store.remove('Notification', address + '-' + notification)
+	}
+}
+
+// If all tokens are Accepted, then there's nothing to redeem
+function removeWithdrawUnredeemed(event: AcceptDealEvent):void {
+	let poolEntity = getPoolCreated(event.address.toHex())
+	if (poolEntity != null) {
+		if(poolEntity.contributions.equals(poolEntity.totalAmountAccepted)) {
+			store.remove('Notification', event.address.toHex() + '-' + Notifications.WithdrawUnredeemed)
+		}		
 	}
 }
 

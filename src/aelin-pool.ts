@@ -300,4 +300,5 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	poolCreatedEntity.save()
 
 	createNotificationsForEvent(event)
+	removeNotificationsForEvent(event)
 }
