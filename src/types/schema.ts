@@ -34,6 +34,8 @@ export class PoolCreated extends Entity {
     this.set("totalAmountAccepted", Value.fromBigInt(BigInt.zero()));
     this.set("totalAmountFunded", Value.fromBigInt(BigInt.zero()));
     this.set("totalAmountWithdrawn", Value.fromBigInt(BigInt.zero()));
+    this.set("totalAmountEarnedBySponsor", Value.fromBigInt(BigInt.zero()));
+    this.set("dealsCreated", Value.fromI32(0));
   }
 
   save(): void {
@@ -265,6 +267,24 @@ export class PoolCreated extends Entity {
 
   set totalAmountWithdrawn(value: BigInt) {
     this.set("totalAmountWithdrawn", Value.fromBigInt(value));
+  }
+
+  get totalAmountEarnedBySponsor(): BigInt {
+    let value = this.get("totalAmountEarnedBySponsor");
+    return value!.toBigInt();
+  }
+
+  set totalAmountEarnedBySponsor(value: BigInt) {
+    this.set("totalAmountEarnedBySponsor", Value.fromBigInt(value));
+  }
+
+  get dealsCreated(): i32 {
+    let value = this.get("dealsCreated");
+    return value!.toI32();
+  }
+
+  set dealsCreated(value: i32) {
+    this.set("dealsCreated", Value.fromI32(value));
   }
 }
 
@@ -1359,9 +1379,12 @@ export class VestingDeal extends Entity {
     this.set("tokenToVest", Value.fromBytes(Bytes.empty()));
     this.set("tokenToVestSymbol", Value.fromString(""));
     this.set("investorDealTotal", Value.fromBigInt(BigInt.zero()));
-    this.set("amountToVest", Value.fromBigInt(BigInt.zero()));
+    this.set("remainingAmountToVest", Value.fromBigInt(BigInt.zero()));
     this.set("totalVested", Value.fromBigInt(BigInt.zero()));
     this.set("vestingPeriodEnds", Value.fromBigInt(BigInt.zero()));
+    this.set("vestingPeriodStarts", Value.fromBigInt(BigInt.zero()));
+    this.set("poolAddress", Value.fromBytes(Bytes.empty()));
+    this.set("underlyingDealTokenDecimals", Value.fromI32(0));
     this.set("pool", Value.fromString(""));
   }
 
@@ -1436,13 +1459,13 @@ export class VestingDeal extends Entity {
     this.set("investorDealTotal", Value.fromBigInt(value));
   }
 
-  get amountToVest(): BigInt {
-    let value = this.get("amountToVest");
+  get remainingAmountToVest(): BigInt {
+    let value = this.get("remainingAmountToVest");
     return value!.toBigInt();
   }
 
-  set amountToVest(value: BigInt) {
-    this.set("amountToVest", Value.fromBigInt(value));
+  set remainingAmountToVest(value: BigInt) {
+    this.set("remainingAmountToVest", Value.fromBigInt(value));
   }
 
   get totalVested(): BigInt {
@@ -1461,6 +1484,33 @@ export class VestingDeal extends Entity {
 
   set vestingPeriodEnds(value: BigInt) {
     this.set("vestingPeriodEnds", Value.fromBigInt(value));
+  }
+
+  get vestingPeriodStarts(): BigInt {
+    let value = this.get("vestingPeriodStarts");
+    return value!.toBigInt();
+  }
+
+  set vestingPeriodStarts(value: BigInt) {
+    this.set("vestingPeriodStarts", Value.fromBigInt(value));
+  }
+
+  get poolAddress(): Bytes {
+    let value = this.get("poolAddress");
+    return value!.toBytes();
+  }
+
+  set poolAddress(value: Bytes) {
+    this.set("poolAddress", Value.fromBytes(value));
+  }
+
+  get underlyingDealTokenDecimals(): i32 {
+    let value = this.get("underlyingDealTokenDecimals");
+    return value!.toI32();
+  }
+
+  set underlyingDealTokenDecimals(value: i32) {
+    this.set("underlyingDealTokenDecimals", Value.fromI32(value));
   }
 
   get pool(): string {
@@ -1621,6 +1671,7 @@ export class UserAllocationStat extends Entity {
     this.set("userAddress", Value.fromBytes(Bytes.empty()));
     this.set("totalWithdrawn", Value.fromBigInt(BigInt.zero()));
     this.set("totalAccepted", Value.fromBigInt(BigInt.zero()));
+    this.set("poolTokenBalance", Value.fromBigInt(BigInt.zero()));
     this.set("remainingProRataAllocation", Value.fromBigInt(BigInt.zero()));
     this.set("pool", Value.fromString(""));
   }
@@ -1678,6 +1729,15 @@ export class UserAllocationStat extends Entity {
 
   set totalAccepted(value: BigInt) {
     this.set("totalAccepted", Value.fromBigInt(value));
+  }
+
+  get poolTokenBalance(): BigInt {
+    let value = this.get("poolTokenBalance");
+    return value!.toBigInt();
+  }
+
+  set poolTokenBalance(value: BigInt) {
+    this.set("poolTokenBalance", Value.fromBigInt(value));
   }
 
   get remainingProRataAllocation(): BigInt {
@@ -2185,6 +2245,7 @@ export class Deal extends Entity {
     this.set("underlyingDealTokenTotal", Value.fromBigInt(BigInt.zero()));
     this.set("vestingPeriod", Value.fromBigInt(BigInt.zero()));
     this.set("vestingCliff", Value.fromBigInt(BigInt.zero()));
+    this.set("vestingPeriodStarts", Value.fromBigInt(BigInt.zero()));
     this.set("proRataRedemptionPeriod", Value.fromBigInt(BigInt.zero()));
     this.set("openRedemptionPeriod", Value.fromBigInt(BigInt.zero()));
     this.set("proRataRedemptionStart", Value.fromBigInt(BigInt.zero()));
@@ -2195,6 +2256,7 @@ export class Deal extends Entity {
     this.set("isDealFunded", Value.fromBoolean(false));
     this.set("holderFundingExpiration", Value.fromBigInt(BigInt.zero()));
     this.set("holderFundingDuration", Value.fromBigInt(BigInt.zero()));
+    this.set("underlyingPerDealExchangeRate", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -2322,6 +2384,15 @@ export class Deal extends Entity {
     this.set("vestingCliff", Value.fromBigInt(value));
   }
 
+  get vestingPeriodStarts(): BigInt {
+    let value = this.get("vestingPeriodStarts");
+    return value!.toBigInt();
+  }
+
+  set vestingPeriodStarts(value: BigInt) {
+    this.set("vestingPeriodStarts", Value.fromBigInt(value));
+  }
+
   get proRataRedemptionPeriod(): BigInt {
     let value = this.get("proRataRedemptionPeriod");
     return value!.toBigInt();
@@ -2427,6 +2498,15 @@ export class Deal extends Entity {
 
   set holderFundingDuration(value: BigInt) {
     this.set("holderFundingDuration", Value.fromBigInt(value));
+  }
+
+  get underlyingPerDealExchangeRate(): BigInt {
+    let value = this.get("underlyingPerDealExchangeRate");
+    return value!.toBigInt();
+  }
+
+  set underlyingPerDealExchangeRate(value: BigInt) {
+    this.set("underlyingPerDealExchangeRate", Value.fromBigInt(value));
   }
 }
 
@@ -2541,7 +2621,8 @@ export class User extends Entity {
 
     this.set("poolsInvested", Value.fromStringArray(new Array(0)));
     this.set("poolsSponsored", Value.fromStringArray(new Array(0)));
-    this.set("poolsFunded", Value.fromStringArray(new Array(0)));
+    this.set("poolsAsHolder", Value.fromStringArray(new Array(0)));
+    this.set("dealsAccepted", Value.fromStringArray(new Array(0)));
     this.set("allocationsStat", Value.fromStringArray(new Array(0)));
   }
 
@@ -2598,13 +2679,22 @@ export class User extends Entity {
     this.set("poolsSponsored", Value.fromStringArray(value));
   }
 
-  get poolsFunded(): Array<string> {
-    let value = this.get("poolsFunded");
+  get poolsAsHolder(): Array<string> {
+    let value = this.get("poolsAsHolder");
     return value!.toStringArray();
   }
 
-  set poolsFunded(value: Array<string>) {
-    this.set("poolsFunded", Value.fromStringArray(value));
+  set poolsAsHolder(value: Array<string>) {
+    this.set("poolsAsHolder", Value.fromStringArray(value));
+  }
+
+  get dealsAccepted(): Array<string> {
+    let value = this.get("dealsAccepted");
+    return value!.toStringArray();
+  }
+
+  set dealsAccepted(value: Array<string>) {
+    this.set("dealsAccepted", Value.fromStringArray(value));
   }
 
   get vestingDeals(): Array<string> {
@@ -2623,5 +2713,106 @@ export class User extends Entity {
 
   set allocationsStat(value: Array<string>) {
     this.set("allocationsStat", Value.fromStringArray(value));
+  }
+}
+
+export class Notification extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("message", Value.fromString(""));
+    this.set("pool", Value.fromString(""));
+    this.set("triggerStart", Value.fromBigInt(BigInt.zero()));
+    this.set("triggerEnd", Value.fromBigInt(BigInt.zero()));
+    this.set("target", Value.fromString(""));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Notification entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Notification entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Notification", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Notification | null {
+    return changetype<Notification | null>(store.get("Notification", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get type(): string | null {
+    let value = this.get("type");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set type(value: string | null) {
+    if (!value) {
+      this.unset("type");
+    } else {
+      this.set("type", Value.fromString(<string>value));
+    }
+  }
+
+  get message(): string {
+    let value = this.get("message");
+    return value!.toString();
+  }
+
+  set message(value: string) {
+    this.set("message", Value.fromString(value));
+  }
+
+  get pool(): string {
+    let value = this.get("pool");
+    return value!.toString();
+  }
+
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
+  }
+
+  get triggerStart(): BigInt {
+    let value = this.get("triggerStart");
+    return value!.toBigInt();
+  }
+
+  set triggerStart(value: BigInt) {
+    this.set("triggerStart", Value.fromBigInt(value));
+  }
+
+  get triggerEnd(): BigInt {
+    let value = this.get("triggerEnd");
+    return value!.toBigInt();
+  }
+
+  set triggerEnd(value: BigInt) {
+    this.set("triggerEnd", Value.fromBigInt(value));
+  }
+
+  get target(): string {
+    let value = this.get("target");
+    return value!.toString();
+  }
+
+  set target(value: string) {
+    this.set("target", Value.fromString(value));
   }
 }

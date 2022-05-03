@@ -70,6 +70,8 @@ export function removeNotificationsForEvent<E>(event: E): void {
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.HolderSet)
+			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.FundingWindowAlert)
+			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.FundingWindowEnded)
 		}
 	} else if (event instanceof WithdrawFromPoolEvent) {
 		// This event will trigger all removals ONLY if triggerEnd < timestamp fo the Withdrawal event.
@@ -83,6 +85,7 @@ export function removeNotificationsForEvent<E>(event: E): void {
 		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.DealProposed)
 		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.HolderSet)
 		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.FundingWindowEnded)
+		removeNotificationTriggerEnd(event.address.toHex(), event.block.timestamp, Notifications.FundingWindowAlert)
 	} else if (event instanceof WithdrawUnderlyingDealTokenEvent) {
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
@@ -177,7 +180,31 @@ function createFundingWindowEnded(event: SetHolderEvent): void {
 		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
 		if (poolEntity != null) {
 			let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
-			notificationEntity.message = `The funding window has concluded in the ${poolName} pool. If you want to fund it, please contact your sponsor and create a new deal.`
+			notificationEntity.message = `The funding window has concluded in the ${poolName} pool you were set as Holder. If you still want to fund it, please contact your sponsor and create a new deal.`
+		}
+
+		notificationEntity.save()
+	}
+}
+
+function createFundingWindowAlert(event: SetHolderEvent): void {
+	let dealEntity = getDeal(event.address.toHex())
+	if (dealEntity != null) {
+		let notificationEntity = new Notification(dealEntity.poolAddress.toHex() + '-' + Notifications.FundingWindowAlert)
+		notificationEntity.type = Notifications.FundingWindowAlert
+		notificationEntity.pool = dealEntity.poolAddress.toHex()
+		// 75% of purchaseExpiry
+		let alertTime = dealEntity.holderFundingExpiration
+			.minus(event.block.timestamp)
+			.div(BigInt.fromI32(4))
+			.times(BigInt.fromI32(3))
+		notificationEntity.triggerStart = event.block.timestamp.plus(alertTime)
+		notificationEntity.triggerEnd = dealEntity.holderFundingExpiration
+		notificationEntity.target = NotificationTarget.Holder
+		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
+		if (poolEntity != null) {
+			let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
+			notificationEntity.message = `The funding window is coming to an end in the ${poolName} pool you are set as Holder. Please fund the deal.`
 		}
 
 		notificationEntity.save()
