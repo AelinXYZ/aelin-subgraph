@@ -275,28 +275,28 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 		event.address.toHex() + '-' + poolCreatedEntity.sponsor.toHex()
 	)
 	if (dealSponsoredEntity == null) { 
-    return
-  }
+    	return
+  	}
 
-  dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(
-    event.params.poolTokenAmount
-  )
-  dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
-    event.params.poolTokenAmount.times(event.params.sponsorFee)
-  )
-  dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
-    investorDealTotal.div(BigInt.fromI32(10).pow(18))
-  )
-  dealSponsoredEntity.save()
+	dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(
+		event.params.poolTokenAmount
+	)
+	dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
+		event.params.poolTokenAmount.times(event.params.sponsorFee)
+	)
+	dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
+		investorDealTotal.div(BigInt.fromI32(10).pow(18))
+	)
+	dealSponsoredEntity.save()
 	
   
-  /**
-   * Update PoolCreated entity
+	/**
+	 * Update PoolCreated entity
 	 */
-  poolCreatedEntity.totalAmountAccepted = poolCreatedEntity.totalAmountAccepted.plus(
-    event.params.poolTokenAmount
-    )
-  poolCreatedEntity.totalAmountEarnedBySponsor = poolCreatedEntity.totalAmountEarnedBySponsor.plus(event.params.sponsorFee)
+	poolCreatedEntity.totalAmountAccepted = poolCreatedEntity.totalAmountAccepted.plus(
+		event.params.poolTokenAmount
+	)
+	poolCreatedEntity.totalAmountEarnedBySponsor = poolCreatedEntity.totalAmountEarnedBySponsor.plus(event.params.sponsorFee)
 	poolCreatedEntity.save()
 
 	createNotificationsForEvent(event)

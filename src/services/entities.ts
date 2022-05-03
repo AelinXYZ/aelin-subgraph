@@ -383,6 +383,15 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 		let dealsAccepted = userEntity.dealsAccepted
 		dealsAccepted.push(dealAcceptedEntity.id)
 		userEntity.dealsAccepted = dealsAccepted
+
+		// If dealAccepted then remove it from poolsInvested to avoid duplicates/redundant info
+		let poolsInvested = userEntity.poolsInvested
+		let poolInvestedIndex = poolsInvested.indexOf(dealAcceptedEntity.pool)
+		if(poolInvestedIndex > 0) {
+			poolsInvested.splice(poolInvestedIndex, 1)
+			userEntity.poolsInvested = poolsInvested
+		}
+
 		userEntity.save()
 	}
 

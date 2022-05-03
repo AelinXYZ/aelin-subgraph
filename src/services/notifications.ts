@@ -39,18 +39,14 @@ export enum NotificationType {
 
 export function removeNotificationsForEvent<E>(event: E): void {
 	if (event instanceof ClaimedUnderlyingDealTokenEvent) {
-		// Remove VestingCliffBegun, DealTokensVestingBegun, AllDealTokensVested, DealProposed, SponsorFeesReady, WithdrawUnredeemed
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.VestingCliffBegun)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealTokensVestingBegun)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.SponsorFeesReady)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealProposed)
-			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
+			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)			
 
-			// Remove AllDealTokensVested if ClaimedUnderlyingDealTokenEvent timestamp > AllDealTokensVested.triggerEnd
-			removeNotificationTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp, Notifications.AllDealTokensVested)
-			
 			// Remove AllDealTokensVested if All tokens claimed
 			let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + '-' + event.address.toHex())
 			if(vestingDealEntity) {
@@ -62,13 +58,11 @@ export function removeNotificationsForEvent<E>(event: E): void {
 			removeAllIfTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp)
 		}
 	} else if (event instanceof CreateDealEvent) {
-		// Remove InvestmentWindowAlert, InvestmentWindowEnded
-		// If the sponsor does not create a deal or nobody invests, these notifications wont be removed
+		// !IMPORTANT - TO IMPROVE: If the sponsor does not create a deal or nobody invests, these notifications wont be removed
 		store.remove('Notification', event.address.toHex() + '-' + Notifications.InvestmentWindowAlert)
 		store.remove('Notification', event.address.toHex() + '-' + Notifications.InvestmentWindowEnded)
 		removeAllIfTriggerEnd(event.address.toHex(), event.block.timestamp)
 	} else if (event instanceof DealFullyFundedEvent) {
-		// Remove HolderSet. HolderSet notification will never be removed if the Holder does not fund the deal and there are no withdraws
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.HolderSet)
@@ -350,15 +344,12 @@ function createDealTokensVestingBegun(event: AcceptDealEvent): void {
 		let notificationEntity = new Notification(dealEntity.poolAddress.toHex() + '-' + Notifications.DealTokensVestingBegun)
 		notificationEntity.type = Notifications.DealTokensVestingBegun
 		notificationEntity.pool = dealEntity.poolAddress.toHex()
-		notificationEntity.triggerStart = event.block.timestamp
-			.plus(dealEntity.proRataRedemptionPeriod)
-			.plus(dealEntity.openRedemptionPeriod)
-			.plus(dealEntity.vestingCliff)
-		notificationEntity.triggerEnd = event.block.timestamp
-			.plus(dealEntity.proRataRedemptionPeriod)
-			.plus(dealEntity.openRedemptionPeriod)
-			.plus(dealEntity.vestingCliff)
+
+		let vestingCliffBegunNotification = Notification.load(dealEntity.poolAddress.toHex() + '-' + Notifications.VestingCliffBegun)
+		notificationEntity.triggerStart = vestingCliffBegunNotification.triggerEnd
+		notificationEntity.triggerEnd = vestingCliffBegunNotification.triggerEnd
 			.plus(dealEntity.vestingPeriod)
+
 		notificationEntity.target = NotificationTarget.DealInvestor
 
 		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
@@ -395,92 +386,3 @@ function createVestingCliffBegun(event: DealFullyFundedEvent): void {
 		notificationEntity.save()
 	}
 }
-
-/**
- * INVESTOR
- * --------
- *
- * VestingCliffBegun
- *  Creation: DealFullyFunded
- *  Removal: ClaimedUnderlyingDealTokenEvent
- *  triggerStart: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod
- *  triggerEnd: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod + vestingCliff
- *
- * DealTokensVestingBegun
- *  Creation: DealFullyFunded
- *  Removal: ClaimedUnderlyingDealTokenEvent
- *  triggerStart: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod + vestingCliff
- *  triggerEnd: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod + vestingCliff + MAX_TIME_PERIOD
- *
- * AllDealTokensVested
- *  Creation: DealFullyFunded
- *  Removal: ClaimedUnderlyingDealTokenEvent (amountToVest == 0)
- *  triggerStart: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod + vestingCliff + vestingPeriod
- *  triggerEnd: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod + vestingCliff + vestingPeriod + MAX_TIME_PERIOD
- *
- * DealProposed
- *  Creation: DealFullyFunded
- *  Removal: ClaimedUnderlyingDealTokenEvent
- *  triggerStart: block.timestamp
- *  triggerEnd: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod
- *
- *
- * SPONSOR
- * -------
- *
- * InvestmentWindowAlert
- *  Creation: CreatePoolEvent
- *  Removal: CreateDealEvent
- *  triggerStart: purchaseExpiry * ALERT_WINDOW
- *  triggerEnds: purchaseExpiry + _duration
- *
- * InvestmentWindowEnded
- *  Creation: CreatePoolEvent
- *  Removal: CreateDealEvent
- *  triggerStart: purchaseExpiry
- *  triggerEnds: purchaseExpiry + _duration
- *
- * SponsorFeesReady
- *  Creation: AcceptDealEvent
- *  Removal: ClaimedUnderlyingDealTokenEvent
- *  triggerStart: block.timestamp
- *  triggerEnd: block.timestamp + MAX_TIME_PERIOD
- *
- * TBD
- * // When the vesting period start, this notification will be sent to the sponsor with a summary of the investment
- * DealTokensVestingBegunSponsor
- *  Creation: DealFullyFunded
- *  Removal: ClaimedUnderlyingDealTokenEvent
- *  triggerStart: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod + vestingCliff
- *  triggerEnd: event.block.timestamp + proRataRedemptionPeriod + openRedemptionPeriod + vestingCliff + MAX_TIME_PERIOD
- *
- *
- * HOLDER
- * ------
- *
- * HolderSet
- *  Creation: SetHolderEvent
- *  Removal: DealFullyFunded
- *  triggerStart: block.timestamp
- *  triggerEnds: proRataRedemptionPeriodStart + openRedemptionPeriod
- *
- * WithdrawUnredeemed
- *  Creation: DealFullyFunded
- *  Removal: ClaimedUnderlyingDealTokenEvent
- *  triggerStart: proRataRedemptionPeriodStart + openRedemptionPeriod
- *  triggerEnds: proRataRedemptionPeriodStart + openRedemptionPeriod + MAX_TIME_PERIOD
- *
- * TBD
- * DealFundingWindowAlert
- *  Creation:
- *  Removal:
- *  triggerStart:
- *  triggerEnds:
- *
- * DealFundingWindowEnded
- *  Creation:
- *  Removal:
- *  triggerStart:
- *  triggerEnds:
- *
- */
