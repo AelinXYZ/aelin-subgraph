@@ -81,6 +81,13 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	 */
 
 	poolCreatedEntity.poolStatus = PoolStatus.DealOpen
+	poolCreatedEntity.vestingStarts = event.block.timestamp
+			.plus(dealEntity.proRataRedemptionPeriod)
+			.plus(dealEntity.openRedemptionPeriod)
+	poolCreatedEntity.vestingEnds = poolCreatedEntity.vestingStarts
+			.plus(dealEntity.vestingCliff)
+			.plus(dealEntity.vestingPeriod)
+
 	dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp
 	dealDetailEntity.isDealFunded = true
 
