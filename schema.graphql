@@ -589,6 +589,9 @@ type Deal @entity {
 	holderFundingDuration: BigInt!
 
 	underlyingPerDealExchangeRate: BigInt!
+
+	" the block timestamp when the deal was created"
+	timestamp: BigInt!
 }
 
 type History @entity {

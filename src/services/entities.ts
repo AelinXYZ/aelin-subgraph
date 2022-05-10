@@ -615,6 +615,7 @@ function createOrUpdateDealEntity<E>(event: E): void {
 		dealEntity.name = event.params.name
 		dealEntity.symbol = event.params.symbol
 		dealEntity.poolAddress = event.address
+		dealEntity.timestamp = event.block.timestamp
 		dealEntity.save()
 	} else if (event instanceof DealDetailEvent) {
 		let dealEntity = getDeal(event.params.dealContract.toHex())
