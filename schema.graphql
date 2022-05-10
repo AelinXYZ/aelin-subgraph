@@ -467,6 +467,8 @@ type Vest @entity {
 	" the transaction hash + event log index of the purchase event "
 	id: ID!
 
+	poolName: String!
+
 	" the address of user depositing "
 	userAddress: Bytes!
 
