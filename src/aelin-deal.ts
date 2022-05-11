@@ -12,6 +12,7 @@ import {
 	Entity,
 	getDeal,
 	getDealDetails,
+	getDealFunded,
 	getPoolCreated,
 	getVestingDeal
 } from './services/entities'
@@ -19,6 +20,7 @@ import {
 	createNotificationsForEvent,
 	removeNotificationsForEvent
 } from './services/notifications'
+import { log } from '@graphprotocol/graph-ts'
 
 
 export function handleSetHolder(event: SetHolderEvent): void {
@@ -57,6 +59,16 @@ export function handleWithdrawUnderlyingDealToken(
 	event: WithdrawUnderlyingDealTokenEvent
 ): void {
 	createEntity(Entity.WithdrawUnderlyingDealToken, event)
+
+	/**
+	 * Update DealFunded Entity
+	 */
+	 const dealFundedEntity = getDealFunded(event.address.toHex() + "-" + event.params.depositor.toHex())
+	 if(dealFundedEntity) {
+		dealFundedEntity.amountFunded = dealFundedEntity.amountFunded.minus(event.params.underlyingDealTokenAmount)
+		dealFundedEntity.save()
+	}
+
 	removeNotificationsForEvent(event)
 }
 

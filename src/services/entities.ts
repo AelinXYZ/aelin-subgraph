@@ -247,19 +247,22 @@ function createDepositDealTokenEntity(event: DepositDealTokenEvent): void {
 
 function createDealFundedEntity(event: DealFullyFundedEvent): void {
 	let poolCreatedEntity = getPoolCreated(event.params.poolAddress.toHex())
-	let dealDetailEntity = getDealDetails(event.address.toHex())
+	let dealEntity = getDeal(event.address.toHex())
 
-	if (dealDetailEntity == null || poolCreatedEntity == null) {
+	if (dealEntity == null || poolCreatedEntity == null) {
 		return
 	}
 
-	let dealFundedEntity = new DealFunded(event.address.toHex() + '-' + poolCreatedEntity.sponsor.toHex())
-	dealFundedEntity.holder = dealDetailEntity.holder
+	let dealFundedEntity = new DealFunded(event.address.toHex() + '-' + dealEntity.holder.toHex())
+	dealFundedEntity.holder = dealEntity.holder
 	dealFundedEntity.poolName = poolCreatedEntity.name
 	dealFundedEntity.timestamp = event.block.timestamp
 	dealFundedEntity.pool = event.params.poolAddress.toHex()
+	dealFundedEntity.amountFunded = dealEntity.underlyingDealTokenTotal
+	dealFundedEntity.purchaseTokenSymbol = poolCreatedEntity.purchaseTokenSymbol
+	dealFundedEntity.underlyingDealTokenSymbol = dealEntity.underlyingDealTokenSymbol
 
-	let historyEntity = getOrCreateHistory(dealDetailEntity.holder.toHex())
+	let historyEntity = getOrCreateHistory(dealEntity.holder.toHex())
 	if (historyEntity != null) {
 		let dealsFunded = historyEntity.dealsFunded
 		dealsFunded.push(dealFundedEntity.id)

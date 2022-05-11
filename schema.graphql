@@ -492,7 +492,11 @@ type DealFunded @entity {
 
 	amountRaised: BigInt!
 
+	purchaseTokenSymbol: String!
+
 	amountFunded: BigInt!
+
+	underlyingDealTokenSymbol: String!
 
 	pool: PoolCreated!
 }
