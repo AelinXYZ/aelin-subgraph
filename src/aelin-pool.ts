@@ -281,9 +281,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(
 		event.params.poolTokenAmount
 	)
-	dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
-		event.params.poolTokenAmount.times(event.params.sponsorFee)
-	)
+	dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(event.params.sponsorFee)
 	dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
 		investorDealTotal.div(BigInt.fromI32(10).pow(18))
 	)
