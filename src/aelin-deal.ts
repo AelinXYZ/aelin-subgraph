@@ -105,6 +105,7 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 
 	dealEntity.proRataRedemptionPeriodStart = event.block.timestamp
 	dealEntity.isDealFunded = true
+	dealEntity.dealFundedAt = event.block.timestamp
 
 	createEntity(Entity.DealFunded, event)
 

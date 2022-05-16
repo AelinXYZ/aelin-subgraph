@@ -260,7 +260,9 @@ function createDealFundedEntity(event: DealFullyFundedEvent): void {
 	dealFundedEntity.pool = event.params.poolAddress.toHex()
 	dealFundedEntity.amountFunded = dealEntity.underlyingDealTokenTotal
 	dealFundedEntity.purchaseTokenSymbol = poolCreatedEntity.purchaseTokenSymbol
+	dealFundedEntity.purchaseTokenDecimals = poolCreatedEntity.purchaseTokenDecimals
 	dealFundedEntity.underlyingDealTokenSymbol = dealEntity.underlyingDealTokenSymbol
+	dealFundedEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
 
 	let historyEntity = getOrCreateHistory(dealEntity.holder.toHex())
 	if (historyEntity != null) {
