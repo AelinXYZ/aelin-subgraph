@@ -211,12 +211,18 @@ function createVestEntity(event: ClaimedUnderlyingDealTokenEvent): void {
 		return
 	}
 
+	let poolCreatedEntity = getPoolCreated(dealCreatedEntity.poolAddress.toHex())
+	if (poolCreatedEntity == null) {
+		return
+	}
+
 	let vestEntity = new Vest(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
 
 	vestEntity.amountVested = event.params.underlyingDealTokensClaimed
 	vestEntity.pool = dealCreatedEntity.poolAddress.toHex()
 	vestEntity.userAddress = event.params.recipient
 	vestEntity.timestamp = event.block.timestamp
+	vestEntity.poolName = poolCreatedEntity.name
 
 	let historyEntity = getOrCreateHistory(event.params.recipient.toHex())
 	if (historyEntity != null) {
@@ -615,6 +621,7 @@ function createOrUpdateDealEntity<E>(event: E): void {
 		dealEntity.name = event.params.name
 		dealEntity.symbol = event.params.symbol
 		dealEntity.poolAddress = event.address
+		dealEntity.timestamp = event.block.timestamp
 		dealEntity.save()
 	} else if (event instanceof DealDetailEvent) {
 		let dealEntity = getDeal(event.params.dealContract.toHex())
