@@ -492,7 +492,15 @@ type DealFunded @entity {
 
 	amountRaised: BigInt!
 
+	purchaseTokenSymbol: String!
+
+	purchaseTokenDecimals: Int!
+
 	amountFunded: BigInt!
+
+	underlyingDealTokenSymbol: String!
+
+	underlyingDealTokenDecimals: Int!
 
 	pool: PoolCreated!
 }
@@ -594,6 +602,8 @@ type Deal @entity {
 
 	" the block timestamp when the deal was created"
 	timestamp: BigInt!
+
+	dealFundedAt: BigInt!
 }
 
 type History @entity {
