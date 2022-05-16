@@ -17,6 +17,7 @@ import { AelinPool as AelinPoolContract } from './types/templates/AelinPool/Aeli
 import {
 	createEntity,
 	Entity,
+	getDeal,
 	getDealCreated,
 	getDealFunded,
 	getDealSponsored,
@@ -296,6 +297,16 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	)
 	poolCreatedEntity.totalAmountEarnedBySponsor = poolCreatedEntity.totalAmountEarnedBySponsor.plus(event.params.sponsorFee)
 	poolCreatedEntity.save()
+
+	/**
+	 * Update Deal entity
+	 */
+	const dealEntity = getDeal(event.params.dealAddress.toHex())
+	if(dealEntity == null) {
+		return
+	}
+	dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed.minus(investorDealTotal.div(BigInt.fromI32(10).pow(18)))
+	dealEntity.save()
 
 	createNotificationsForEvent(event)
 	removeNotificationsForEvent(event)
