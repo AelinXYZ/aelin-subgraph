@@ -346,9 +346,11 @@ function createDealTokensVestingBegun(event: AcceptDealEvent): void {
 		notificationEntity.pool = dealEntity.poolAddress.toHex()
 
 		let vestingCliffBegunNotification = Notification.load(dealEntity.poolAddress.toHex() + '-' + Notifications.VestingCliffBegun)
-		notificationEntity.triggerStart = vestingCliffBegunNotification.triggerEnd
-		notificationEntity.triggerEnd = vestingCliffBegunNotification.triggerEnd
-			.plus(dealEntity.vestingPeriod)
+		if(vestingCliffBegunNotification) {
+			notificationEntity.triggerStart = vestingCliffBegunNotification.triggerEnd
+			notificationEntity.triggerEnd = vestingCliffBegunNotification.triggerEnd
+				.plus(dealEntity.vestingPeriod)
+		}
 
 		notificationEntity.target = NotificationTarget.DealInvestor
 

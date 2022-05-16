@@ -92,6 +92,10 @@ type PoolCreated @entity {
 	totalAmountEarnedBySponsor: BigInt!
 
 	dealsCreated: Int!
+
+	vestingStarts: BigInt!
+
+	vestingEnds: BigInt!
 }
 
 type TotalPoolsCreated @entity {
