@@ -68,6 +68,17 @@ export function handleWithdrawUnderlyingDealToken(
 		dealFundedEntity.amountFunded = dealFundedEntity.amountFunded.minus(event.params.underlyingDealTokenAmount)
 		dealFundedEntity.save()
 	}
+	
+	/**
+	 * Update Deal entity
+	 */
+	const dealEntity = getDeal(event.address.toHex())
+	if(dealEntity == null) {
+		return
+	}
+
+	dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed.minus(event.params.underlyingDealTokenAmount)
+	dealEntity.save()
 
 	removeNotificationsForEvent(event)
 }
@@ -106,6 +117,7 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	dealEntity.proRataRedemptionPeriodStart = event.block.timestamp
 	dealEntity.isDealFunded = true
 	dealEntity.dealFundedAt = event.block.timestamp
+	dealEntity.totalAmountUnredeemed = dealEntity.underlyingDealTokenTotal
 
 	createEntity(Entity.DealFunded, event)
 

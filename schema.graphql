@@ -600,6 +600,8 @@ type Deal @entity {
 
 	underlyingPerDealExchangeRate: BigInt!
 
+	totalAmountUnredeemed: BigInt!
+
 	" the block timestamp when the deal was created"
 	timestamp: BigInt!
 
