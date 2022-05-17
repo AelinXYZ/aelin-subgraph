@@ -121,6 +121,7 @@ export function handleDealDetail(event: DealDetailEvent): void {
 		)
 		if (poolCreatedEntity != null) {
 			poolCreatedEntity.deal = event.params.dealContract.toHex()
+			poolCreatedEntity.holder = event.params.holder
 			poolCreatedEntity.save()
 		}
 	}

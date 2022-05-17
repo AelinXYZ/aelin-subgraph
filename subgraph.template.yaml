@@ -1,5 +1,5 @@
 specVersion: 0.0.2
-description: Fundraising on Ethereum
+description: Fundraising on Ethereum.
 schema:
   file: ./schema.graphql
 dataSources:

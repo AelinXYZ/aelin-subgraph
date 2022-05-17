@@ -96,6 +96,8 @@ type PoolCreated @entity {
 	vestingStarts: BigInt!
 
 	vestingEnds: BigInt!
+
+	holder: Bytes!
 }
 
 type TotalPoolsCreated @entity {
@@ -635,7 +637,7 @@ type User @entity {
 type Notification @entity {
 	"poolAddress - NotificationType"
 	id: ID!
-	type: NotificationType
+	type: NotificationType!
 	message: String!
 	pool: PoolCreated!
 	triggerStart: BigInt!
