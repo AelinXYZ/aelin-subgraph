@@ -52,6 +52,7 @@ import {
 
 import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED } from '../helpers'
 import { ERC20 } from '../types/templates/AelinPool/ERC20'
+import { getTokenDecimals, getTokenTotalSupply, getTokenSymbol } from './token'
 
 export enum Entity {
 	AelinToken,
@@ -612,11 +613,9 @@ function createDealDetailEntity(event: DealDetailEvent): void {
 	dealDetailEntity.holderFundingDuration = event.params.holderFundingDuration
 	dealDetailEntity.holderFundingExpiration = event.params.holderFundingDuration.plus(event.block.timestamp)
 	dealDetailEntity.isDealFunded = false
-	//get underlyingDealToken symbol and decimals
-	const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken)
-	dealDetailEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol()
-	dealDetailEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals()
-	dealDetailEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply()
+	dealDetailEntity.underlyingDealTokenSymbol = getTokenSymbol(event.params.underlyingDealToken)
+	dealDetailEntity.underlyingDealTokenDecimals = getTokenDecimals(event.params.underlyingDealToken)
+	dealDetailEntity.underlyingDealTokenTotalSupply = getTokenTotalSupply(event.params.underlyingDealToken)
 	dealDetailEntity.save()
 }
 
@@ -646,10 +645,9 @@ function createOrUpdateDealEntity<E>(event: E): void {
 			dealEntity.holderFundingDuration = event.params.holderFundingDuration
 			dealEntity.holderFundingExpiration = event.params.holderFundingDuration.plus(event.block.timestamp)
 			dealEntity.isDealFunded = false
-			const underlyingDealToken = ERC20.bind(event.params.underlyingDealToken)
-			dealEntity.underlyingDealTokenSymbol = underlyingDealToken.symbol()
-			dealEntity.underlyingDealTokenDecimals = underlyingDealToken.decimals()
-			dealEntity.underlyingDealTokenTotalSupply = underlyingDealToken.totalSupply()
+			dealEntity.underlyingDealTokenSymbol = getTokenSymbol(event.params.underlyingDealToken)
+			dealEntity.underlyingDealTokenDecimals = getTokenDecimals(event.params.underlyingDealToken)
+			dealEntity.underlyingDealTokenTotalSupply = getTokenTotalSupply(event.params.underlyingDealToken)
 
 			let aelinDealContract = AelinDealContract.bind(event.params.dealContract)
 			let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()

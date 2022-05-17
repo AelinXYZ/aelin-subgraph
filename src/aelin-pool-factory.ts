@@ -9,6 +9,7 @@ import {
 	createNotificationsForEvent,
 } from './services/notifications'
 import { getOrCreateUser } from './services/entities'
+import { getTokenDecimals, getTokenSymbol } from './services/token'
 
 export function handleCreatePool(event: CreatePoolEvent): void {
 	let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
@@ -34,9 +35,8 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	)
 	poolCreatedEntity.timestamp = event.block.timestamp
 
-	const purchaseToken = ERC20.bind(event.params.purchaseToken)
-	poolCreatedEntity.purchaseTokenSymbol = purchaseToken.symbol()
-	poolCreatedEntity.purchaseTokenDecimals = purchaseToken.decimals()
+	poolCreatedEntity.purchaseTokenSymbol = getTokenSymbol(event.params.purchaseToken)
+	poolCreatedEntity.purchaseTokenDecimals = getTokenDecimals(event.params.purchaseToken)
 
 	poolCreatedEntity.hasAllowList = event.params.hasAllowList
 	poolCreatedEntity.poolStatus = PoolStatus.PoolOpen
