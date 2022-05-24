@@ -1,7 +1,8 @@
 import {
 	CreateDeal as CreateDealEvent,
 	AcceptDeal as AcceptDealEvent,
-	WithdrawFromPool as WithdrawFromPoolEvent
+	WithdrawFromPool as WithdrawFromPoolEvent,
+	DealDetail as DealDetailEvent
 } from '../types/templates/AelinPool/AelinPool'
 import {
 	SetHolder as SetHolderEvent,
@@ -30,7 +31,8 @@ export enum NotificationType {
 	VestingCliffBegun,
 	WithdrawUnredeemed,
 	DealTokensVestingBegun,
-	AllDealTokensVested
+	AllDealTokensVested,
+	DealNotFunded
 }
 
 /**
@@ -68,6 +70,7 @@ export function removeNotificationsForEvent<E>(event: E): void {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.HolderSet)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.FundingWindowAlert)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.FundingWindowEnded)
+			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealNotFunded)
 			removeAllIfTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp)
 		}
 	} else if (event instanceof WithdrawFromPoolEvent) {
@@ -141,6 +144,30 @@ export function createNotificationsForEvent<E>(event: E): void {
 		createHolderSet(event)
 		createFundingWindowEnded(event)
 		createFundingWindowAlert(event)
+	} else if (event instanceof DealDetailEvent) {
+		createDealNotFundedAlert(event)
+	}
+}
+
+function createDealNotFundedAlert(event: DealDetailEvent): void {
+	// This Alert is created as soon as the Deal is created, and it will be triggered on holderFundingExpiration
+	// If the deal is FullyFunded then it will be removed
+	let dealEntity = getDeal(event.params.dealContract.toHex())
+	if (dealEntity != null) { 
+		let notificationEntity = new Notification(dealEntity.poolAddress.toHex() + '-' + Notifications.DealNotFunded)
+		notificationEntity.type = Notifications.DealNotFunded
+		notificationEntity.pool = dealEntity.poolAddress.toHex()
+		notificationEntity.triggerStart = dealEntity.holderFundingExpiration
+		notificationEntity.triggerEnd = dealEntity.holderFundingExpiration
+			.plus(MAX_TIME_PERIOD)
+		notificationEntity.target = NotificationTarget.PoolInvestor
+		let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
+		if (poolEntity != null) {
+			let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
+			notificationEntity.message = `The holder assigned to the pool ${poolName} has run out of time to fund the deal. You can now withdraw your tokens, or wait for the sponsor to create another deal.`
+		}
+
+		notificationEntity.save()
 	}
 }
 

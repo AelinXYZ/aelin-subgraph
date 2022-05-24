@@ -127,6 +127,7 @@ export function handleDealDetail(event: DealDetailEvent): void {
 
 	// use templates to create a new deal to track events
 	AelinDeal.create(event.params.dealContract)
+	createNotificationsForEvent(event)
 }
 
 // @TODO add block or timestamp to these events????

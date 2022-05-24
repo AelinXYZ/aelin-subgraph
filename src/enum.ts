@@ -16,6 +16,7 @@ export namespace Notifications {
 	export const AllDealTokensVested = 'AllDealTokensVested'
 	export const FundingWindowAlert = 'FundingWindowAlert'
 	export const FundingWindowEnded = 'FundingWindowEnded'
+	export const DealNotFunded = 'DealNotFunded'
 }
 
 export namespace NotificationTarget {

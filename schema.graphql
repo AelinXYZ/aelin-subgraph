@@ -16,6 +16,7 @@ enum NotificationType {
 	AllDealTokensVested
 	FundingWindowAlert
 	FundingWindowEnded
+	DealNotFunded
 }
 
 enum NotificationTarget {
