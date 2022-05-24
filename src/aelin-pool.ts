@@ -13,7 +13,6 @@ import { Address, BigInt, log } from '@graphprotocol/graph-ts'
 import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE } from './helpers'
 import { AelinDeal } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
-import { AelinPool as AelinPoolContract } from './types/templates/AelinPool/AelinPool'
 import {
 	createEntity,
 	Entity,
@@ -283,12 +282,8 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	dealSponsoredEntity.totalInvested = dealSponsoredEntity.totalInvested.plus(
 		event.params.poolTokenAmount
 	)
-	const sponsorFeeAmt = event.params.sponsorFee.times(
-		// @ts-ignore
-		BigInt.fromI32(10).pow(<u8>exp.toI32())
-	)
 	dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
-		sponsorFeeAmt.times(underlyingPerDealExchangeRate)
+		event.params.sponsorFee.times(underlyingPerDealExchangeRate)
 		.div(BigInt.fromI32(10).pow(18))
 	)
 	dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
