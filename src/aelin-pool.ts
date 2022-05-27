@@ -29,6 +29,7 @@ import {
 	createNotificationsForEvent,
 	removeNotificationsForEvent
 } from './services/notifications'
+import { getTokenSymbol } from './services/token'
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
 	createEntity(Entity.AelinToken, event)

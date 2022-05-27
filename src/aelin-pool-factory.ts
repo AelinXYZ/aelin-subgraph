@@ -2,7 +2,6 @@ import { BigInt } from '@graphprotocol/graph-ts'
 import { PoolCreated, TotalPoolsCreated } from './types/schema'
 import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory/AelinPoolFactory'
 import { AelinPool } from './types/templates'
-import { ERC20 } from './types/templates/AelinPool/ERC20'
 import { ONE } from './helpers'
 import { PoolStatus } from './enum'
 import {
@@ -47,6 +46,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	poolCreatedEntity.totalAmountFunded = BigInt.fromI32(0)
 	poolCreatedEntity.totalAmountEarnedBySponsor = BigInt.fromI32(0)
 	poolCreatedEntity.dealsCreated = 0
+	poolCreatedEntity.filter = `${event.params.name.toLowerCase()}-${event.params.sponsor.toHex()}-${getTokenSymbol(event.params.purchaseToken).toLowerCase()}`
 
 	poolCreatedEntity.save()
 

@@ -51,7 +51,6 @@ import {
 } from '../types/schema'
 
 import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED } from '../helpers'
-import { ERC20 } from '../types/templates/AelinPool/ERC20'
 import { getTokenDecimals, getTokenTotalSupply, getTokenSymbol } from './token'
 
 export enum Entity {

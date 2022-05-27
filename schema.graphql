@@ -99,6 +99,9 @@ type PoolCreated @entity {
 	vestingEnds: BigInt!
 
 	holder: Bytes!
+
+	"poolName-sponsorAddress-purchaseTokenSymbol"
+	filter: String!
 }
 
 type TotalPoolsCreated @entity {
