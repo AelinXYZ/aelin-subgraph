@@ -394,6 +394,7 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 		let dealsAccepted = userEntity.dealsAccepted
 		dealsAccepted.push(dealAcceptedEntity.id)
 		userEntity.dealsAccepted = dealsAccepted
+		userEntity.dealsAcceptedAmt = dealsAccepted.length
 
 		// If dealAccepted then remove it from poolsInvested to avoid duplicates/redundant info
 		let poolsInvested = userEntity.poolsInvested
@@ -532,6 +533,7 @@ function createPurchasePoolTokenEntity(event: PurchasePoolTokenEvent): void {
 		let poolsInvested = userEntity.poolsInvested
 		poolsInvested.push(event.address.toHex())
 		userEntity.poolsInvested = poolsInvested
+		userEntity.poolsInvestedAmt = poolsInvested.length
 		userEntity.save()
 	}
 
@@ -664,6 +666,7 @@ function createOrUpdateDealEntity<E>(event: E): void {
 				let poolsAsHolder = userEntity.poolsAsHolder
 				poolsAsHolder.push(dealEntity.poolAddress.toHex())
 				userEntity.poolsAsHolder = poolsAsHolder
+				userEntity.poolsAsHolderAmt = poolsAsHolder.length
 				userEntity.save()
 			}
 

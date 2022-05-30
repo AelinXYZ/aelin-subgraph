@@ -55,6 +55,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 		let poolsSponsored = userEntity.poolsSponsored
 		poolsSponsored.push(poolCreatedEntity.id)
 		userEntity.poolsSponsored = poolsSponsored
+		userEntity.poolsSponsoredAmt = poolsSponsored.length
 		userEntity.save()
 	}
 

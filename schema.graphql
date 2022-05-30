@@ -631,9 +631,13 @@ type User @entity {
 	id: ID!
 	history: History! @derivedFrom(field: "user")
 	poolsInvested: [PoolCreated!]!
+	poolsInvestedAmt: Int!
 	poolsSponsored: [PoolCreated!]!
+	poolsSponsoredAmt: Int!
 	poolsAsHolder: [PoolCreated!]!
+	poolsAsHolderAmt: Int!
 	dealsAccepted: [DealAccepted!]!
+	dealsAcceptedAmt: Int!
 	vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
 	allocationsStat: [UserAllocationStat!]!
 }
