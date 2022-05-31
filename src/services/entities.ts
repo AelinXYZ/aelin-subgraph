@@ -409,9 +409,52 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 
 	dealAcceptedEntity.save()
 }
+export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	let dealEntity = getDeal(event.params.dealAddress.toHex())
+	
+	if (dealEntity == null || poolCreatedEntity == null) {
+		return
+	}
+
+	let vestingDealEntity = getVestingDeal(poolCreatedEntity.sponsor.toHex() + '-' + event.params.dealAddress.toHex())
+
+	let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
+	let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
+	let investorDealTotal = event.params.sponsorFee.times(underlyingPerDealExchangeRate).div(BigInt.fromI32(10).pow(18))
+
+
+	if(vestingDealEntity === null) {
+		vestingDealEntity = new VestingDeal(poolCreatedEntity.sponsor.toHex() + '-' + event.params.dealAddress.toHex())
+	
+		vestingDealEntity.poolName = poolCreatedEntity.name
+		vestingDealEntity.poolAddress = event.address
+		vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
+		vestingDealEntity.tokenToVestSymbol = dealEntity.underlyingDealTokenSymbol
+		vestingDealEntity.investorDealTotal = investorDealTotal
+		vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+		vestingDealEntity.totalVested = BigInt.fromI32(0)
+		vestingDealEntity.vestingPeriodStarts = dealEntity.vestingPeriodStarts
+		vestingDealEntity.vestingPeriodEnds = dealEntity.vestingPeriodStarts.plus(dealEntity.vestingPeriod)
+		vestingDealEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
+		vestingDealEntity.user = poolCreatedEntity.sponsor.toHex()
+		vestingDealEntity.pool = poolCreatedEntity.id
+	} else {
+		vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(investorDealTotal)
+		vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+	}
+
+	vestingDealEntity.save()
+}
 
 function createVestingDealEntity(event: AcceptDealEvent): void {
-	let vestingDealEntity = new VestingDeal(event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex())
+	createOrUpdateSponsorVestingDeal(event)
+
+	let vestingDealEntity = getVestingDeal(event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex())
+
+	if(vestingDealEntity == null) {
+		vestingDealEntity = new VestingDeal(event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex())
+	}
 
 	let poolCreatedEntity = getPoolCreated(event.address.toHex())
 	let dealEntity = getDeal(event.params.dealAddress.toHex())
@@ -435,10 +478,12 @@ function createVestingDealEntity(event: AcceptDealEvent): void {
 	vestingDealEntity.tokenToVestSymbol = dealEntity.underlyingDealTokenSymbol
 
 	let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
-	vestingDealEntity.investorDealTotal = investorDealTotal
+
+	vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(investorDealTotal
 		.div(BigInt.fromI32(10).pow(18))
 		.times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
-		.div(ONE_HUNDRED)
+		.div(ONE_HUNDRED))
+
 	vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
 	vestingDealEntity.totalVested = BigInt.fromI32(0)
 	vestingDealEntity.vestingPeriodStarts = dealEntity.vestingPeriodStarts

@@ -9,12 +9,13 @@ import {
 	AcceptDeal as AcceptDealEvent,
 	AelinToken as AelinTokenEvent
 } from './types/templates/AelinPool/AelinPool'
-import { Address, BigInt, log } from '@graphprotocol/graph-ts'
+import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts'
 import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE } from './helpers'
 import { AelinDeal } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
 import {
 	createEntity,
+	createOrUpdateSponsorVestingDeal,
 	Entity,
 	getDeal,
 	getDealCreated,
@@ -258,6 +259,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	if (vestingDealEntity === null) {
 		createEntity(Entity.VestingDeal, event)
 	} else {
+		createOrUpdateSponsorVestingDeal(event)
 		let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
 		let dealTokens = investorDealTotal
 			.div(BigInt.fromI32(10).pow(18))
