@@ -10,13 +10,20 @@ import {
 import {
 	createEntity,
 	Entity,
+	getDeal,
 	getDealDetails,
 	getPoolCreated,
 	getVestingDeal
 } from './services/entities'
+import {
+	createNotificationsForEvent,
+	removeNotificationsForEvent
+} from './services/notifications'
+
 
 export function handleSetHolder(event: SetHolderEvent): void {
 	createEntity(Entity.SetHolder, event)
+	createNotificationsForEvent(event)
 }
 
 export function handleDealTransfer(event: TransferEvent): void {
@@ -36,9 +43,6 @@ export function handleClaimedUnderlyingDealToken(
 		event.params.recipient.toHex() + '-' + event.address.toHex()
 	)
 	if (vestingDealEntity != null) {
-		vestingDealEntity.amountToVest = vestingDealEntity.amountToVest.minus(
-			event.params.underlyingDealTokensClaimed
-		)
 		vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(
 			event.params.underlyingDealTokensClaimed
 		)
@@ -46,21 +50,29 @@ export function handleClaimedUnderlyingDealToken(
 	}
 
 	createEntity(Entity.Vest, event)
+	removeNotificationsForEvent(event)
 }
 
 export function handleWithdrawUnderlyingDealToken(
 	event: WithdrawUnderlyingDealTokenEvent
 ): void {
 	createEntity(Entity.WithdrawUnderlyingDealToken, event)
+	removeNotificationsForEvent(event)
 }
 
 export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	createEntity(Entity.DealFullyFunded, event)
+	createEntity(Entity.Deal, event)
 
 	let poolCreatedEntity = getPoolCreated(event.params.poolAddress.toHex())
 	let dealDetailEntity = getDealDetails(event.address.toHex())
+	let dealEntity = getDeal(event.address.toHex())
 
-	if (dealDetailEntity == null || poolCreatedEntity == null) {
+	if (
+		dealDetailEntity == null ||
+		poolCreatedEntity == null ||
+		dealEntity == null
+	) {
 		return
 	}
 
@@ -72,23 +84,35 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp
 	dealDetailEntity.isDealFunded = true
 
+	dealEntity.proRataRedemptionPeriodStart = event.block.timestamp
+	dealEntity.isDealFunded = true
+
 	createEntity(Entity.DealFunded, event)
 
 	poolCreatedEntity.save()
 	dealDetailEntity.save()
+	dealEntity.save()
+
+	createNotificationsForEvent(event)
+	removeNotificationsForEvent(event)
 }
 
 export function handleDepositDealToken(event: DepositDealTokenEvent): void {
 	createEntity(Entity.DepositDealToken, event)
 
 	/**
-	 * Update DealDetail entity
+	 * Update PoolCreated entity
 	 */
-	let dealDetailEntity = getDealDetails(event.address.toHex())
-	if (dealDetailEntity != null) {
-		dealDetailEntity.totalAmountFunded = dealDetailEntity.totalAmountFunded.plus(
-			event.params.underlyingDealTokenAmount
+	let dealEntity = getDeal(event.address.toHex())
+	if (dealEntity != null) {
+		let poolCreatedEntity = getPoolCreated(
+			dealEntity.poolAddress.toHex()
 		)
-		dealDetailEntity.save()
+		if (poolCreatedEntity != null) {
+			poolCreatedEntity.totalAmountFunded = poolCreatedEntity.totalAmountFunded.plus(
+				event.params.underlyingDealTokenAmount
+			)
+			poolCreatedEntity.save()
+		}
 	}
 }

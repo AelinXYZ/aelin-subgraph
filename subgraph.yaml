@@ -54,16 +54,16 @@ templates:
           handler: handleSetSponsor
         - event: PurchasePoolToken(indexed address,uint256)
           handler: handlePurchasePoolToken
-        - event: WithdrawFromPool(indexed address,uint256)
-          handler: handleWithdrawFromPool
-        - event: AcceptDeal(indexed address,indexed address,uint256,uint256,uint256)
-          handler: handleAcceptDeal
         - event: CreateDeal(string,string,indexed address,indexed address)
           handler: handleCreateDeal
         - event: DealDetail(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,indexed address,uint256)
           handler: handleDealDetail
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolTransfer
+        - event: WithdrawFromPool(indexed address,uint256)
+          handler: handleWithdrawFromPool
+        - event: AcceptDeal(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleAcceptDeal
         - event: AelinToken(string,string,uint8)
           handler: handleAelinPoolToken
 
