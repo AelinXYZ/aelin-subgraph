@@ -307,9 +307,8 @@ function createClaimedUnderlyingDealTokenEntity(event: ClaimedUnderlyingDealToke
 
 	let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + '-' + event.address.toHex())
 	if (vestingDealEntity) {
-		vestingDealEntity.remainingAmountToVest = vestingDealEntity.remainingAmountToVest.minus(
-			event.params.underlyingDealTokensClaimed
-		)
+		let aelinDealContract = AelinDealContract.bind(event.address)
+		vestingDealEntity.remainingAmountToVest = aelinDealContract.claimableTokens(event.params.recipient).value0;
 		vestingDealEntity.save()
 	}
 }

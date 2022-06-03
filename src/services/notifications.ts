@@ -16,7 +16,6 @@ import { Notification } from '../types/schema'
 import { getDeal, getPoolCreated, getVestingDeal } from './entities'
 import { BigInt, store } from '@graphprotocol/graph-ts'
 import { Notifications, NotificationTarget } from '../enum'
-import { ZERO } from '../helpers'
 
 const MAX_TIME_PERIOD = BigInt.fromI32(60 * 60 * 24 * 10) // 10 days
 
@@ -74,7 +73,7 @@ export function removeNotificationsForEvent<E>(event: E): void {
 		let dealEntity = getDeal(event.address.toHex())
 		if (dealEntity != null) {
 			if (
-				event.params.depositor.toHex() === dealEntity.holder.toHex()
+				event.params.depositor.equals(dealEntity.holder)
 			) {
 				store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
 			}
