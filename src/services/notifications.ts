@@ -47,16 +47,7 @@ export function removeNotificationsForEvent<E>(event: E): void {
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealTokensVestingBegun)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.SponsorFeesReady)
 			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.DealProposed)
-			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)			
-
-			// Remove AllDealTokensVested if All tokens claimed
-			let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + '-' + event.address.toHex())
-			if(vestingDealEntity) {
-				let remainingAmountToVest = vestingDealEntity.remainingAmountToVest
-				if(remainingAmountToVest.equals(ZERO)) {
-					store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.AllDealTokensVested)
-				}
-			}
+			store.remove('Notification', dealEntity.poolAddress.toHex() + '-' + Notifications.WithdrawUnredeemed)
 			removeAllIfTriggerEnd(dealEntity.poolAddress.toHex(), event.block.timestamp)
 		}
 	} else if (event instanceof CreateDealEvent) {
