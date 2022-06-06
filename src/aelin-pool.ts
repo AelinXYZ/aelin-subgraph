@@ -9,8 +9,8 @@ import {
 	AcceptDeal as AcceptDealEvent,
 	AelinToken as AelinTokenEvent
 } from './types/templates/AelinPool/AelinPool'
-import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts'
-import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE } from './helpers'
+import { Address, BigInt, log } from '@graphprotocol/graph-ts'
+import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
 import { AelinDeal } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
 import {
@@ -30,7 +30,6 @@ import {
 	createNotificationsForEvent,
 	removeNotificationsForEvent
 } from './services/notifications'
-import { getTokenSymbol } from './services/token'
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
 	createEntity(Entity.AelinToken, event)
@@ -146,6 +145,7 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
 		poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
 			event.params.purchaseTokenAmount
 		)
+		poolCreatedEntity.totalUsersInvested++
 		poolCreatedEntity.save()
 	}
 
@@ -201,6 +201,22 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 		)
 		userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.minus(event.params.purchaseTokenAmount)
 		userAllocationStatEntity.save()
+	}
+
+	/**
+	 * Update Deal entity
+	 */
+	const dealAddress = poolCreatedEntity.dealAddress
+	if(dealAddress) {
+		const dealEntity = getDeal(dealAddress.toHex())
+		if(dealEntity) {
+			let aelinDealContract = AelinDealContract.bind(Address.fromBytes(dealAddress))
+			const dealTokenBalance = aelinDealContract.balanceOf(event.params.purchaser)
+			if(dealTokenBalance.equals(ZERO)) {
+				dealEntity.totalUsersRejected++
+				dealEntity.save()
+			}
+		}
 	}
 }
 

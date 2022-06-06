@@ -102,6 +102,8 @@ type PoolCreated @entity {
 
 	"poolName-sponsorAddress-purchaseTokenSymbol"
 	filter: String!
+
+	totalUsersInvested: Int!
 }
 
 type TotalPoolsCreated @entity {
@@ -612,6 +614,10 @@ type Deal @entity {
 	timestamp: BigInt!
 
 	dealFundedAt: BigInt!
+
+	totalUsersAccepted: Int!
+
+	totalUsersRejected: Int!
 }
 
 type History @entity {

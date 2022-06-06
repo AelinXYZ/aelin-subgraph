@@ -363,6 +363,16 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 		return
 	}
 
+	const dealAddress = poolCreatedEntity.dealAddress
+	if(!dealAddress) {
+		return
+	}
+
+	const dealEntity = getDeal(dealAddress.toHex())
+	if(!dealEntity) {
+		return
+	}
+
 	let dealAcceptedEntity = new DealAccepted(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
 
 	let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
@@ -383,7 +393,7 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 	let historyEntity = getOrCreateHistory(event.params.purchaser.toHex())
 	if (historyEntity != null) {
 		let dealsAccepted = historyEntity.dealsAccepted
-		dealsAccepted.push(dealAcceptedEntity.id)
+		dealsAccepted.push(dealAddress.toHex())
 		historyEntity.dealsAccepted = dealsAccepted
 		historyEntity.save()
 	}
@@ -391,14 +401,20 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 	let userEntity = getOrCreateUser(event.params.purchaser.toHex())
 	if (userEntity != null) {
 		let dealsAccepted = userEntity.dealsAccepted
-		dealsAccepted.push(dealAcceptedEntity.id)
-		userEntity.dealsAccepted = dealsAccepted
-		userEntity.dealsAcceptedAmt = dealsAccepted.length
+		let dealsAcceptedIndex = dealsAccepted.indexOf(dealAddress.toHex())
+		//Check if already accepted
+		if(dealsAcceptedIndex < 0) {
+			dealsAccepted.push(dealAddress.toHex())
+			userEntity.dealsAccepted = dealsAccepted
+			userEntity.dealsAcceptedAmt = dealsAccepted.length
+			dealEntity.totalUsersAccepted++
+			dealEntity.save()
+		}
 
 		// If dealAccepted then remove it from poolsInvested to avoid duplicates/redundant info
 		let poolsInvested = userEntity.poolsInvested
 		let poolInvestedIndex = poolsInvested.indexOf(dealAcceptedEntity.pool)
-		if(poolInvestedIndex > 0) {
+		if(poolInvestedIndex >= 0) {
 			poolsInvested.splice(poolInvestedIndex, 1)
 			userEntity.poolsInvested = poolsInvested
 		}
