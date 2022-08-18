@@ -26,6 +26,7 @@ export class PoolCreated extends Entity {
     this.set("sponsor", Value.fromBytes(Bytes.empty()));
     this.set("purchaseDuration", Value.fromBigInt(BigInt.zero()));
     this.set("purchaseExpiry", Value.fromBigInt(BigInt.zero()));
+    this.set("purchaseTokenDecimals", Value.fromI32(0));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("hasAllowList", Value.fromBoolean(false));
     this.set("poolStatus", Value.fromString(""));

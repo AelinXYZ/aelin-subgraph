@@ -1,25 +1,30 @@
 {
-    "network": "optimism",
-    "dataSources": [
-        {
-            "name": "AelinPoolFactory",
-            "address": "0x87525307974a312AF13a78041F88B0BAe23ebb10",
-            "startBlock": 1487918
-        },
-        {
-            "name": "AelinPoolFactory_v2",
-            "address": "0x914FfC8dc0678911AAE77f51B8489d6e214Da20F",
-            "startBlock": 1971285
-        },
-        {
-            "name": "AelinPoolFactory_v3",
-            "address": "0x9219f9f65B007Fd3bA0b53762861f54062531a31",
-            "startBlock": 2266169
-        },
-        {
-            "name": "AelinPoolFactory_v4",
-            "address": "0xFE65c4AD2DdAc66538289e11429a4FC8f9Bb29E7",
-            "startBlock": 18470094
-        }
-    ]
+  "network": "optimism",
+  "dataSources": [
+    {
+      "name": "AelinPoolFactory",
+      "address": "0x87525307974a312AF13a78041F88B0BAe23ebb10",
+      "startBlock": 1487918
+    },
+    {
+      "name": "AelinPoolFactory_v2",
+      "address": "0x914FfC8dc0678911AAE77f51B8489d6e214Da20F",
+      "startBlock": 1971285
+    },
+    {
+      "name": "AelinPoolFactory_v3",
+      "address": "0x9219f9f65B007Fd3bA0b53762861f54062531a31",
+      "startBlock": 2266169
+    },
+    {
+      "name": "AelinPoolFactory_v4",
+      "address": "0xFE65c4AD2DdAc66538289e11429a4FC8f9Bb29E7",
+      "startBlock": 18470094
+    },
+    {
+      "name": "AelinPoolFactory_v5",
+      "address": "0x8B35551d6459a3d49B9A5A0D7333c6D7E0cCbBd9",
+      "startBlock": 19552522
+    }
+  ]
 }
