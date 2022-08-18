@@ -18,11 +18,6 @@
     },
     {
       "name": "AelinPoolFactory_v4",
-      "address": "0xFE65c4AD2DdAc66538289e11429a4FC8f9Bb29E7",
-      "startBlock": 18470094
-    },
-    {
-      "name": "AelinPoolFactory_v5",
       "address": "0x8B35551d6459a3d49B9A5A0D7333c6D7E0cCbBd9",
       "startBlock": 19552522
     }
