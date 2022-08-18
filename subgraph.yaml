@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Fundraising on Ethereum
 schema:
   file: ./schema.graphql
@@ -12,7 +12,7 @@ dataSources:
       startBlock: 1487918
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PoolCreated
@@ -34,7 +34,7 @@ dataSources:
       startBlock: 1971285
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PoolCreated
@@ -56,7 +56,7 @@ dataSources:
       startBlock: 2266169
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PoolCreated
@@ -78,7 +78,7 @@ dataSources:
       startBlock: 19552522
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - PoolCreated
@@ -100,7 +100,7 @@ templates:
       abi: AelinPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/aelin-pool.ts
       entities:
@@ -146,7 +146,7 @@ templates:
       abi: AelinDeal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/aelin-deal.ts
       entities:

@@ -24,8 +24,8 @@
     "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml && npm run codegen"
   },
   "devDependencies": {
-    "@graphprotocol/graph-ts": "0.24.0",
-    "@graphprotocol/graph-cli": "0.24.0"
+    "@graphprotocol/graph-ts": "0.27.0",
+    "@graphprotocol/graph-cli": "0.33.0"
   },
   "dependencies": {
     "babel-polyfill": "6.26.0",
