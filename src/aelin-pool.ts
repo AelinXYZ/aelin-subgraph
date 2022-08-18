@@ -7,7 +7,10 @@ import {
 	PurchasePoolToken as PurchasePoolTokenEvent,
 	WithdrawFromPool as WithdrawFromPoolEvent,
 	AcceptDeal as AcceptDealEvent,
-	AelinToken as AelinTokenEvent
+	AelinToken as AelinTokenEvent,
+	PoolWith721 as PoolWith721Event,
+	PoolWith1155 as PoolWith1155Event,
+	BlacklistNFT as BlacklistNFTEvent
 } from './types/templates/AelinPool/AelinPool'
 import { Address, BigInt, log } from '@graphprotocol/graph-ts'
 import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
@@ -21,6 +24,7 @@ import {
 	getDealCreated,
 	getDealFunded,
 	getDealSponsored,
+	getNftCollectionRule,
 	getPoolCreated,
 	getTotalDealsBySponsor,
 	getUserAllocationStat,
@@ -145,8 +149,15 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
 		poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
 			event.params.purchaseTokenAmount
 		)
-		poolCreatedEntity.totalUsersInvested++
-		poolCreatedEntity.save()
+
+		const totalAddressesInvested = poolCreatedEntity.totalAddressesInvested
+		const hasInvested = totalAddressesInvested.includes(event.params.purchaser.toHex())
+		if (!hasInvested) {
+			poolCreatedEntity.totalUsersInvested++
+			totalAddressesInvested.push(event.params.purchaser.toHex())
+			poolCreatedEntity.totalAddressesInvested = totalAddressesInvested
+			poolCreatedEntity.save()			
+		}
 	}
 
 	/**
@@ -333,4 +344,26 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 
 	createNotificationsForEvent(event)
 	removeNotificationsForEvent(event)
+}
+
+export function handlePoolWith721(event: PoolWith721Event): void {
+	createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handlePoolWith1155(event: PoolWith1155Event): void {
+	createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handleBlacklistNFT(event: BlacklistNFTEvent): void {
+	/**
+ 	* Update NftCollectionRule entity
+	*/
+	let nftCollectionRuleEntity = getNftCollectionRule(event.address.toHex()+"-"+event.params.collection.toHex())
+
+	if(nftCollectionRuleEntity) {
+		let blackListedNfts = nftCollectionRuleEntity.erc721Blacklisted
+		blackListedNfts.push(event.params.nftID)
+		nftCollectionRuleEntity.erc721Blacklisted = blackListedNfts
+		nftCollectionRuleEntity.save()
+	}
 }

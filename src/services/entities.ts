@@ -7,7 +7,9 @@ import {
 	PurchasePoolToken as PurchasePoolTokenEvent,
 	WithdrawFromPool as WithdrawFromPoolEvent,
 	AcceptDeal as AcceptDealEvent,
-	AelinToken as AelinTokenEvent
+	AelinToken as AelinTokenEvent,
+	PoolWith721 as PoolWith721Event,
+	PoolWith1155 as PoolWith1155Event
 } from '../types/templates/AelinPool/AelinPool'
 
 import {
@@ -47,11 +49,13 @@ import {
 	Vest,
 	Deal,
 	History,
-	User
+	User,
+	NftCollectionRule
 } from '../types/schema'
 
 import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED } from '../helpers'
 import { getTokenDecimals, getTokenTotalSupply, getTokenSymbol } from './token'
+import { NFTType } from '../enum'
 
 export enum Entity {
 	AelinToken,
@@ -77,7 +81,8 @@ export enum Entity {
 	DealFunded,
 	DepositDealToken,
 	Vest,
-	Deal
+	Deal,
+	NftCollectionRule
 }
 
 export function createEntity<E>(entityType: Entity, event: E): void {
@@ -200,9 +205,65 @@ export function createEntity<E>(entityType: Entity, event: E): void {
 		case Entity.Deal:
 			createOrUpdateDealEntity(event)
 			break
+		case Entity.NftCollectionRule:
+			if (event instanceof PoolWith721Event) {
+				createNft721CollectionRules(event)
+				break
+			} else if (event instanceof PoolWith1155Event) {
+				createNft1155CollectionRules(event)
+				break
+			}
 		default:
 			log.error('Error in entities service. Trying to create a undefined EntityType??: {}', [])
 	}
+}
+
+function createNft721CollectionRules(event: PoolWith721Event): void {
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity == null) {
+		return
+	}
+
+	const nftCollectionRule = new NftCollectionRule(event.address.toHex() + '-' + event.params.collectionAddress.toHex())
+	nftCollectionRule.poolAddress = event.address
+	nftCollectionRule.collectionAddress = event.params.collectionAddress
+	nftCollectionRule.purchaseAmount = event.params.purchaseAmount
+	nftCollectionRule.purchaseAmountPerToken = event.params.purchaseAmountPerToken
+	nftCollectionRule.nftType = NFTType.ERC721
+
+	poolCreatedEntity.hasNftList = true
+
+	let nftCollectionRules = poolCreatedEntity.nftCollectionRules
+	nftCollectionRules.push(nftCollectionRule.id)
+	poolCreatedEntity.nftCollectionRules = nftCollectionRules
+
+	nftCollectionRule.save()
+	poolCreatedEntity.save()
+}
+
+function createNft1155CollectionRules(event: PoolWith1155Event): void {
+	let poolCreatedEntity = getPoolCreated(event.address.toHex())
+	if (poolCreatedEntity == null) {
+		return
+	}
+
+	const nftCollectionRule = new NftCollectionRule(event.address.toHex() + '-' + event.params.collectionAddress.toHex())
+	nftCollectionRule.poolAddress = event.address
+	nftCollectionRule.collectionAddress = event.params.collectionAddress
+	nftCollectionRule.purchaseAmount = event.params.purchaseAmount
+	nftCollectionRule.purchaseAmountPerToken = event.params.purchaseAmountPerToken
+	nftCollectionRule.nftType = NFTType.ERC1155
+	nftCollectionRule.erc1155TokenIds = event.params.tokenIds
+	nftCollectionRule.erc1155TokensAmtEligible = event.params.minTokensEligible
+
+	poolCreatedEntity.hasNftList = true
+
+	let nftCollectionRules = poolCreatedEntity.nftCollectionRules
+	nftCollectionRules.push(nftCollectionRule.id)
+	poolCreatedEntity.nftCollectionRules = nftCollectionRules
+
+	nftCollectionRule.save()
+	poolCreatedEntity.save()
 }
 
 function createVestEntity(event: ClaimedUnderlyingDealTokenEvent): void {
@@ -307,8 +368,7 @@ function createClaimedUnderlyingDealTokenEntity(event: ClaimedUnderlyingDealToke
 
 	let vestingDealEntity = getVestingDeal(event.params.recipient.toHex() + '-' + event.address.toHex())
 	if (vestingDealEntity) {
-		let aelinDealContract = AelinDealContract.bind(event.address)
-		vestingDealEntity.remainingAmountToVest = aelinDealContract.claimableTokens(event.params.recipient).value0;
+		vestingDealEntity.lastClaim = event.block.timestamp
 		vestingDealEntity.save()
 	}
 }
@@ -364,12 +424,12 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 	}
 
 	const dealAddress = poolCreatedEntity.dealAddress
-	if(!dealAddress) {
+	if (!dealAddress) {
 		return
 	}
 
 	const dealEntity = getDeal(dealAddress.toHex())
-	if(!dealEntity) {
+	if (!dealEntity) {
 		return
 	}
 
@@ -403,7 +463,7 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 		let dealsAccepted = userEntity.dealsAccepted
 		let dealsAcceptedIndex = dealsAccepted.indexOf(dealAddress.toHex())
 		//Check if already accepted
-		if(dealsAcceptedIndex < 0) {
+		if (dealsAcceptedIndex < 0) {
 			dealsAccepted.push(dealAddress.toHex())
 			userEntity.dealsAccepted = dealsAccepted
 			userEntity.dealsAcceptedAmt = dealsAccepted.length
@@ -414,7 +474,7 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 		// If dealAccepted then remove it from poolsInvested to avoid duplicates/redundant info
 		let poolsInvested = userEntity.poolsInvested
 		let poolInvestedIndex = poolsInvested.indexOf(dealAcceptedEntity.pool)
-		if(poolInvestedIndex >= 0) {
+		if (poolInvestedIndex >= 0) {
 			poolsInvested.splice(poolInvestedIndex, 1)
 			userEntity.poolsInvested = poolsInvested
 		}
@@ -427,7 +487,7 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
 	let poolCreatedEntity = getPoolCreated(event.address.toHex())
 	let dealEntity = getDeal(event.params.dealAddress.toHex())
-	
+
 	if (dealEntity == null || poolCreatedEntity == null) {
 		return
 	}
@@ -438,10 +498,9 @@ export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
 	let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
 	let investorDealTotal = event.params.sponsorFee.times(underlyingPerDealExchangeRate).div(BigInt.fromI32(10).pow(18))
 
-
-	if(vestingDealEntity === null) {
+	if (vestingDealEntity === null) {
 		vestingDealEntity = new VestingDeal(poolCreatedEntity.sponsor.toHex() + '-' + event.params.dealAddress.toHex())
-	
+
 		vestingDealEntity.poolName = poolCreatedEntity.name
 		vestingDealEntity.poolAddress = event.address
 		vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
@@ -467,7 +526,7 @@ function createVestingDealEntity(event: AcceptDealEvent): void {
 
 	let vestingDealEntity = getVestingDeal(event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex())
 
-	if(vestingDealEntity == null) {
+	if (vestingDealEntity == null) {
 		vestingDealEntity = new VestingDeal(event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex())
 	}
 
@@ -494,10 +553,12 @@ function createVestingDealEntity(event: AcceptDealEvent): void {
 
 	let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
 
-	vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(investorDealTotal
-		.div(BigInt.fromI32(10).pow(18))
-		.times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
-		.div(ONE_HUNDRED))
+	vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(
+		investorDealTotal
+			.div(BigInt.fromI32(10).pow(18))
+			.times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
+			.div(ONE_HUNDRED)
+	)
 
 	vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
 	vestingDealEntity.totalVested = BigInt.fromI32(0)
@@ -711,6 +772,8 @@ function createOrUpdateDealEntity<E>(event: E): void {
 			dealEntity.underlyingDealTokenTotalSupply = getTokenTotalSupply(event.params.underlyingDealToken)
 
 			let aelinDealContract = AelinDealContract.bind(event.params.dealContract)
+			dealEntity.maxDealTotalSupply = aelinDealContract.maxTotalSupply()
+
 			let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
 			dealEntity.underlyingPerDealExchangeRate = underlyingPerDealExchangeRate
 
@@ -720,7 +783,7 @@ function createOrUpdateDealEntity<E>(event: E): void {
 				poolCreatedEntity.dealsCreated = dealsCreated
 				poolCreatedEntity.save()
 			}
-	
+
 			let userEntity = getOrCreateUser(event.params.holder.toHex())
 			if (userEntity != null) {
 				let poolsAsHolder = userEntity.poolsAsHolder
@@ -854,4 +917,14 @@ export function getOrCreateUser(address: string): User | null {
 	}
 
 	return userEntity
+}
+
+export function getNftCollectionRule(id: string): NftCollectionRule | null {
+	let nftCollectionRuleEntity = NftCollectionRule.load(id)
+	if (nftCollectionRuleEntity == null) {
+		log.error('trying to find a nftCollectionRuleEntity not saved with id: {}', [id])
+		return null
+	}
+
+	return nftCollectionRuleEntity
 }

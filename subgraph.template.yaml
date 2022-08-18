@@ -68,6 +68,12 @@ templates:
           handler: handleAcceptDeal
         - event: AelinToken(string,string,uint8)
           handler: handleAelinPoolToken
+        - event: PoolWith721(indexed address,uint256,bool)
+          handler: handlePoolWith721
+        - event: PoolWith1155(indexed address,uint256,bool,uint256[],uint256[])
+          handler: handlePoolWith1155
+        - event: BlacklistNFT(indexed address,uint256)
+          handler: handleBlacklistNFT
 
   - name: AelinDeal
     kind: ethereum/contract

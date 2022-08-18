@@ -25,3 +25,8 @@ export namespace NotificationTarget {
 	export const Sponsor = 'Sponsor'
 	export const Holder = 'Holder'
 }
+
+export namespace NFTType {
+	export const ERC721 = "ERC721"
+	export const ERC1155 = "ERC1155"
+}

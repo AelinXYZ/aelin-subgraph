@@ -26,6 +26,11 @@ enum NotificationTarget {
 	Holder
 }
 
+enum NFTType {
+	ERC721
+	ERC1155
+}
+
 type PoolCreated @entity {
 	" the address of the pool "
 	id: ID!
@@ -104,6 +109,12 @@ type PoolCreated @entity {
 	filter: String!
 
 	totalUsersInvested: Int!
+
+	totalAddressesInvested: [String!]!
+
+	hasNftList: Boolean!
+
+	nftCollectionRules: [NftCollectionRule!]!
 }
 
 type TotalPoolsCreated @entity {
@@ -377,6 +388,9 @@ type VestingDeal @entity {
 	underlyingDealTokenDecimals: Int!
 
 	pool: PoolCreated!
+
+	"timestamp of the last time the user claimed"
+	lastClaim: BigInt!
 }
 
 type TotalDealsBySponsor @entity {
@@ -618,6 +632,8 @@ type Deal @entity {
 	totalUsersAccepted: Int!
 
 	totalUsersRejected: Int!
+
+	maxDealTotalSupply: BigInt!
 }
 
 type History @entity {
@@ -657,4 +673,17 @@ type Notification @entity {
 	triggerStart: BigInt!
 	triggerEnd: BigInt!
 	target: NotificationTarget!
+}
+
+type NftCollectionRule @entity {
+	"poolAddress - collectionAddress"
+	id: ID!
+	poolAddress: Bytes!
+	nftType: NFTType!
+	collectionAddress: Bytes!
+	purchaseAmount: BigInt!
+	purchaseAmountPerToken: Boolean!
+	erc1155TokenIds: [BigInt!]!
+	erc721Blacklisted: [BigInt!]!
+	erc1155TokensAmtEligible: [BigInt!]!
 }

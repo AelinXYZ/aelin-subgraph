@@ -4,12 +4,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: AelinPoolFactory
-    network: kovan
+    name: AelinPoolFactory_v4
+    network: optimism
     source:
-      address: "0x3347b7C7F491B4cD665656796614A729036Ff220"
+      address: "0xFE65c4AD2DdAc66538289e11429a4FC8f9Bb29E7"
       abi: AelinPoolFactory
-      startBlock: 29236924
+      startBlock: 18470094
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -29,7 +29,7 @@ dataSources:
 templates:
   - name: AelinPool
     kind: ethereum/contract
-    network: kovan
+    network: optimism
     source:
       abi: AelinPool
     mapping:
@@ -66,10 +66,16 @@ templates:
           handler: handleAcceptDeal
         - event: AelinToken(string,string,uint8)
           handler: handleAelinPoolToken
+        - event: PoolWith721(indexed address,uint256,bool)
+          handler: handlePoolWith721
+        - event: PoolWith1155(indexed address,uint256,bool,uint256[],uint256[])
+          handler: handlePoolWith1155
+        - event: BlacklistNFT(indexed address,uint256)
+          handler: handleBlacklistNFT
 
   - name: AelinDeal
     kind: ethereum/contract
-    network: kovan
+    network: optimism
     source:
       abi: AelinDeal
     mapping:
