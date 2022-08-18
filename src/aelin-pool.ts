@@ -7,19 +7,24 @@ import {
 	PurchasePoolToken as PurchasePoolTokenEvent,
 	WithdrawFromPool as WithdrawFromPoolEvent,
 	AcceptDeal as AcceptDealEvent,
-	AelinToken as AelinTokenEvent
+	AelinToken as AelinTokenEvent,
+	PoolWith721 as PoolWith721Event,
+	PoolWith1155 as PoolWith1155Event,
+	BlacklistNFT as BlacklistNFTEvent
 } from './types/templates/AelinPool/AelinPool'
 import { Address, BigInt, log } from '@graphprotocol/graph-ts'
-import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE } from './helpers'
+import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
 import { AelinDeal } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
-import { AelinPool as AelinPoolContract } from './types/templates/AelinPool/AelinPool'
 import {
 	createEntity,
+	createOrUpdateSponsorVestingDeal,
 	Entity,
+	getDeal,
 	getDealCreated,
 	getDealFunded,
 	getDealSponsored,
+	getNftCollectionRule,
 	getPoolCreated,
 	getTotalDealsBySponsor,
 	getUserAllocationStat,
@@ -120,12 +125,14 @@ export function handleDealDetail(event: DealDetailEvent): void {
 		)
 		if (poolCreatedEntity != null) {
 			poolCreatedEntity.deal = event.params.dealContract.toHex()
+			poolCreatedEntity.holder = event.params.holder
 			poolCreatedEntity.save()
 		}
 	}
 
 	// use templates to create a new deal to track events
 	AelinDeal.create(event.params.dealContract)
+	createNotificationsForEvent(event)
 }
 
 // @TODO add block or timestamp to these events????
@@ -142,7 +149,15 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
 		poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
 			event.params.purchaseTokenAmount
 		)
-		poolCreatedEntity.save()
+
+		const totalAddressesInvested = poolCreatedEntity.totalAddressesInvested
+		const hasInvested = totalAddressesInvested.includes(event.params.purchaser.toHex())
+		if (!hasInvested) {
+			poolCreatedEntity.totalUsersInvested++
+			totalAddressesInvested.push(event.params.purchaser.toHex())
+			poolCreatedEntity.totalAddressesInvested = totalAddressesInvested
+			poolCreatedEntity.save()			
+		}
 	}
 
 	/**
@@ -197,6 +212,22 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
 		)
 		userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.minus(event.params.purchaseTokenAmount)
 		userAllocationStatEntity.save()
+	}
+
+	/**
+	 * Update Deal entity
+	 */
+	const dealAddress = poolCreatedEntity.dealAddress
+	if(dealAddress) {
+		const dealEntity = getDeal(dealAddress.toHex())
+		if(dealEntity) {
+			let aelinDealContract = AelinDealContract.bind(Address.fromBytes(dealAddress))
+			const dealTokenBalance = aelinDealContract.balanceOf(event.params.purchaser)
+			if(dealTokenBalance.equals(ZERO)) {
+				dealEntity.totalUsersRejected++
+				dealEntity.save()
+			}
+		}
 	}
 }
 
@@ -255,6 +286,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	if (vestingDealEntity === null) {
 		createEntity(Entity.VestingDeal, event)
 	} else {
+		createOrUpdateSponsorVestingDeal(event)
 		let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
 		let dealTokens = investorDealTotal
 			.div(BigInt.fromI32(10).pow(18))
@@ -282,7 +314,8 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 		event.params.poolTokenAmount
 	)
 	dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
-		event.params.poolTokenAmount.times(event.params.sponsorFee)
+		event.params.sponsorFee.times(underlyingPerDealExchangeRate)
+		.div(BigInt.fromI32(10).pow(18))
 	)
 	dealSponsoredEntity.totalAccepted = dealSponsoredEntity.totalAccepted.plus(
 		investorDealTotal.div(BigInt.fromI32(10).pow(18))
@@ -299,6 +332,38 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
 	poolCreatedEntity.totalAmountEarnedBySponsor = poolCreatedEntity.totalAmountEarnedBySponsor.plus(event.params.sponsorFee)
 	poolCreatedEntity.save()
 
+	/**
+	 * Update Deal entity
+	 */
+	const dealEntity = getDeal(event.params.dealAddress.toHex())
+	if(dealEntity == null) {
+		return
+	}
+	dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed.minus(investorDealTotal.div(BigInt.fromI32(10).pow(18)))
+	dealEntity.save()
+
 	createNotificationsForEvent(event)
 	removeNotificationsForEvent(event)
+}
+
+export function handlePoolWith721(event: PoolWith721Event): void {
+	createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handlePoolWith1155(event: PoolWith1155Event): void {
+	createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handleBlacklistNFT(event: BlacklistNFTEvent): void {
+	/**
+ 	* Update NftCollectionRule entity
+	*/
+	let nftCollectionRuleEntity = getNftCollectionRule(event.address.toHex()+"-"+event.params.collection.toHex())
+
+	if(nftCollectionRuleEntity) {
+		let blackListedNfts = nftCollectionRuleEntity.erc721Blacklisted
+		blackListedNfts.push(event.params.nftID)
+		nftCollectionRuleEntity.erc721Blacklisted = blackListedNfts
+		nftCollectionRuleEntity.save()
+	}
 }

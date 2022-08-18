@@ -36,6 +36,14 @@ export class PoolCreated extends Entity {
     this.set("totalAmountWithdrawn", Value.fromBigInt(BigInt.zero()));
     this.set("totalAmountEarnedBySponsor", Value.fromBigInt(BigInt.zero()));
     this.set("dealsCreated", Value.fromI32(0));
+    this.set("vestingStarts", Value.fromBigInt(BigInt.zero()));
+    this.set("vestingEnds", Value.fromBigInt(BigInt.zero()));
+    this.set("holder", Value.fromBytes(Bytes.empty()));
+    this.set("filter", Value.fromString(""));
+    this.set("totalUsersInvested", Value.fromI32(0));
+    this.set("totalAddressesInvested", Value.fromStringArray(new Array(0)));
+    this.set("hasNftList", Value.fromBoolean(false));
+    this.set("nftCollectionRules", Value.fromStringArray(new Array(0)));
   }
 
   save(): void {
@@ -285,6 +293,78 @@ export class PoolCreated extends Entity {
 
   set dealsCreated(value: i32) {
     this.set("dealsCreated", Value.fromI32(value));
+  }
+
+  get vestingStarts(): BigInt {
+    let value = this.get("vestingStarts");
+    return value!.toBigInt();
+  }
+
+  set vestingStarts(value: BigInt) {
+    this.set("vestingStarts", Value.fromBigInt(value));
+  }
+
+  get vestingEnds(): BigInt {
+    let value = this.get("vestingEnds");
+    return value!.toBigInt();
+  }
+
+  set vestingEnds(value: BigInt) {
+    this.set("vestingEnds", Value.fromBigInt(value));
+  }
+
+  get holder(): Bytes {
+    let value = this.get("holder");
+    return value!.toBytes();
+  }
+
+  set holder(value: Bytes) {
+    this.set("holder", Value.fromBytes(value));
+  }
+
+  get filter(): string {
+    let value = this.get("filter");
+    return value!.toString();
+  }
+
+  set filter(value: string) {
+    this.set("filter", Value.fromString(value));
+  }
+
+  get totalUsersInvested(): i32 {
+    let value = this.get("totalUsersInvested");
+    return value!.toI32();
+  }
+
+  set totalUsersInvested(value: i32) {
+    this.set("totalUsersInvested", Value.fromI32(value));
+  }
+
+  get totalAddressesInvested(): Array<string> {
+    let value = this.get("totalAddressesInvested");
+    return value!.toStringArray();
+  }
+
+  set totalAddressesInvested(value: Array<string>) {
+    this.set("totalAddressesInvested", Value.fromStringArray(value));
+  }
+
+  get hasNftList(): boolean {
+    let value = this.get("hasNftList");
+    return value!.toBoolean();
+  }
+
+  set hasNftList(value: boolean) {
+    this.set("hasNftList", Value.fromBoolean(value));
+  }
+
+  get nftCollectionRules(): Array<string> {
+    let value = this.get("nftCollectionRules");
+    return value!.toStringArray();
+  }
+
+  set nftCollectionRules(value: Array<string>) {
+    this.set("nftCollectionRules", Value.fromStringArray(value));
   }
 }
 
@@ -1386,6 +1466,7 @@ export class VestingDeal extends Entity {
     this.set("poolAddress", Value.fromBytes(Bytes.empty()));
     this.set("underlyingDealTokenDecimals", Value.fromI32(0));
     this.set("pool", Value.fromString(""));
+    this.set("lastClaim", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -1520,6 +1601,15 @@ export class VestingDeal extends Entity {
 
   set pool(value: string) {
     this.set("pool", Value.fromString(value));
+  }
+
+  get lastClaim(): BigInt {
+    let value = this.get("lastClaim");
+    return value!.toBigInt();
+  }
+
+  set lastClaim(value: BigInt) {
+    this.set("lastClaim", Value.fromBigInt(value));
   }
 }
 
@@ -1972,6 +2062,7 @@ export class Vest extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("poolName", Value.fromString(""));
     this.set("userAddress", Value.fromBytes(Bytes.empty()));
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("amountVested", Value.fromBigInt(BigInt.zero()));
@@ -2002,6 +2093,15 @@ export class Vest extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get poolName(): string {
+    let value = this.get("poolName");
+    return value!.toString();
+  }
+
+  set poolName(value: string) {
+    this.set("poolName", Value.fromString(value));
   }
 
   get userAddress(): Bytes {
@@ -2050,7 +2150,11 @@ export class DealFunded extends Entity {
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("poolName", Value.fromString(""));
     this.set("amountRaised", Value.fromBigInt(BigInt.zero()));
+    this.set("purchaseTokenSymbol", Value.fromString(""));
+    this.set("purchaseTokenDecimals", Value.fromI32(0));
     this.set("amountFunded", Value.fromBigInt(BigInt.zero()));
+    this.set("underlyingDealTokenSymbol", Value.fromString(""));
+    this.set("underlyingDealTokenDecimals", Value.fromI32(0));
     this.set("pool", Value.fromString(""));
   }
 
@@ -2116,6 +2220,24 @@ export class DealFunded extends Entity {
     this.set("amountRaised", Value.fromBigInt(value));
   }
 
+  get purchaseTokenSymbol(): string {
+    let value = this.get("purchaseTokenSymbol");
+    return value!.toString();
+  }
+
+  set purchaseTokenSymbol(value: string) {
+    this.set("purchaseTokenSymbol", Value.fromString(value));
+  }
+
+  get purchaseTokenDecimals(): i32 {
+    let value = this.get("purchaseTokenDecimals");
+    return value!.toI32();
+  }
+
+  set purchaseTokenDecimals(value: i32) {
+    this.set("purchaseTokenDecimals", Value.fromI32(value));
+  }
+
   get amountFunded(): BigInt {
     let value = this.get("amountFunded");
     return value!.toBigInt();
@@ -2123,6 +2245,24 @@ export class DealFunded extends Entity {
 
   set amountFunded(value: BigInt) {
     this.set("amountFunded", Value.fromBigInt(value));
+  }
+
+  get underlyingDealTokenSymbol(): string {
+    let value = this.get("underlyingDealTokenSymbol");
+    return value!.toString();
+  }
+
+  set underlyingDealTokenSymbol(value: string) {
+    this.set("underlyingDealTokenSymbol", Value.fromString(value));
+  }
+
+  get underlyingDealTokenDecimals(): i32 {
+    let value = this.get("underlyingDealTokenDecimals");
+    return value!.toI32();
+  }
+
+  set underlyingDealTokenDecimals(value: i32) {
+    this.set("underlyingDealTokenDecimals", Value.fromI32(value));
   }
 
   get pool(): string {
@@ -2257,6 +2397,12 @@ export class Deal extends Entity {
     this.set("holderFundingExpiration", Value.fromBigInt(BigInt.zero()));
     this.set("holderFundingDuration", Value.fromBigInt(BigInt.zero()));
     this.set("underlyingPerDealExchangeRate", Value.fromBigInt(BigInt.zero()));
+    this.set("totalAmountUnredeemed", Value.fromBigInt(BigInt.zero()));
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("dealFundedAt", Value.fromBigInt(BigInt.zero()));
+    this.set("totalUsersAccepted", Value.fromI32(0));
+    this.set("totalUsersRejected", Value.fromI32(0));
+    this.set("maxDealTotalSupply", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -2508,6 +2654,60 @@ export class Deal extends Entity {
   set underlyingPerDealExchangeRate(value: BigInt) {
     this.set("underlyingPerDealExchangeRate", Value.fromBigInt(value));
   }
+
+  get totalAmountUnredeemed(): BigInt {
+    let value = this.get("totalAmountUnredeemed");
+    return value!.toBigInt();
+  }
+
+  set totalAmountUnredeemed(value: BigInt) {
+    this.set("totalAmountUnredeemed", Value.fromBigInt(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get dealFundedAt(): BigInt {
+    let value = this.get("dealFundedAt");
+    return value!.toBigInt();
+  }
+
+  set dealFundedAt(value: BigInt) {
+    this.set("dealFundedAt", Value.fromBigInt(value));
+  }
+
+  get totalUsersAccepted(): i32 {
+    let value = this.get("totalUsersAccepted");
+    return value!.toI32();
+  }
+
+  set totalUsersAccepted(value: i32) {
+    this.set("totalUsersAccepted", Value.fromI32(value));
+  }
+
+  get totalUsersRejected(): i32 {
+    let value = this.get("totalUsersRejected");
+    return value!.toI32();
+  }
+
+  set totalUsersRejected(value: i32) {
+    this.set("totalUsersRejected", Value.fromI32(value));
+  }
+
+  get maxDealTotalSupply(): BigInt {
+    let value = this.get("maxDealTotalSupply");
+    return value!.toBigInt();
+  }
+
+  set maxDealTotalSupply(value: BigInt) {
+    this.set("maxDealTotalSupply", Value.fromBigInt(value));
+  }
 }
 
 export class History extends Entity {
@@ -2620,9 +2820,13 @@ export class User extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("poolsInvested", Value.fromStringArray(new Array(0)));
+    this.set("poolsInvestedAmt", Value.fromI32(0));
     this.set("poolsSponsored", Value.fromStringArray(new Array(0)));
+    this.set("poolsSponsoredAmt", Value.fromI32(0));
     this.set("poolsAsHolder", Value.fromStringArray(new Array(0)));
+    this.set("poolsAsHolderAmt", Value.fromI32(0));
     this.set("dealsAccepted", Value.fromStringArray(new Array(0)));
+    this.set("dealsAcceptedAmt", Value.fromI32(0));
     this.set("allocationsStat", Value.fromStringArray(new Array(0)));
   }
 
@@ -2670,6 +2874,15 @@ export class User extends Entity {
     this.set("poolsInvested", Value.fromStringArray(value));
   }
 
+  get poolsInvestedAmt(): i32 {
+    let value = this.get("poolsInvestedAmt");
+    return value!.toI32();
+  }
+
+  set poolsInvestedAmt(value: i32) {
+    this.set("poolsInvestedAmt", Value.fromI32(value));
+  }
+
   get poolsSponsored(): Array<string> {
     let value = this.get("poolsSponsored");
     return value!.toStringArray();
@@ -2677,6 +2890,15 @@ export class User extends Entity {
 
   set poolsSponsored(value: Array<string>) {
     this.set("poolsSponsored", Value.fromStringArray(value));
+  }
+
+  get poolsSponsoredAmt(): i32 {
+    let value = this.get("poolsSponsoredAmt");
+    return value!.toI32();
+  }
+
+  set poolsSponsoredAmt(value: i32) {
+    this.set("poolsSponsoredAmt", Value.fromI32(value));
   }
 
   get poolsAsHolder(): Array<string> {
@@ -2688,6 +2910,15 @@ export class User extends Entity {
     this.set("poolsAsHolder", Value.fromStringArray(value));
   }
 
+  get poolsAsHolderAmt(): i32 {
+    let value = this.get("poolsAsHolderAmt");
+    return value!.toI32();
+  }
+
+  set poolsAsHolderAmt(value: i32) {
+    this.set("poolsAsHolderAmt", Value.fromI32(value));
+  }
+
   get dealsAccepted(): Array<string> {
     let value = this.get("dealsAccepted");
     return value!.toStringArray();
@@ -2695,6 +2926,15 @@ export class User extends Entity {
 
   set dealsAccepted(value: Array<string>) {
     this.set("dealsAccepted", Value.fromStringArray(value));
+  }
+
+  get dealsAcceptedAmt(): i32 {
+    let value = this.get("dealsAcceptedAmt");
+    return value!.toI32();
+  }
+
+  set dealsAcceptedAmt(value: i32) {
+    this.set("dealsAcceptedAmt", Value.fromI32(value));
   }
 
   get vestingDeals(): Array<string> {
@@ -2721,6 +2961,7 @@ export class Notification extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("type", Value.fromString(""));
     this.set("message", Value.fromString(""));
     this.set("pool", Value.fromString(""));
     this.set("triggerStart", Value.fromBigInt(BigInt.zero()));
@@ -2754,21 +2995,13 @@ export class Notification extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get type(): string | null {
+  get type(): string {
     let value = this.get("type");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
+    return value!.toString();
   }
 
-  set type(value: string | null) {
-    if (!value) {
-      this.unset("type");
-    } else {
-      this.set("type", Value.fromString(<string>value));
-    }
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
   }
 
   get message(): string {
@@ -2814,5 +3047,121 @@ export class Notification extends Entity {
 
   set target(value: string) {
     this.set("target", Value.fromString(value));
+  }
+}
+
+export class NftCollectionRule extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("poolAddress", Value.fromBytes(Bytes.empty()));
+    this.set("nftType", Value.fromString(""));
+    this.set("collectionAddress", Value.fromBytes(Bytes.empty()));
+    this.set("purchaseAmount", Value.fromBigInt(BigInt.zero()));
+    this.set("purchaseAmountPerToken", Value.fromBoolean(false));
+    this.set("erc1155TokenIds", Value.fromBigIntArray(new Array(0)));
+    this.set("erc721Blacklisted", Value.fromBigIntArray(new Array(0)));
+    this.set("erc1155TokensAmtEligible", Value.fromBigIntArray(new Array(0)));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save NftCollectionRule entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save NftCollectionRule entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("NftCollectionRule", id.toString(), this);
+    }
+  }
+
+  static load(id: string): NftCollectionRule | null {
+    return changetype<NftCollectionRule | null>(
+      store.get("NftCollectionRule", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get poolAddress(): Bytes {
+    let value = this.get("poolAddress");
+    return value!.toBytes();
+  }
+
+  set poolAddress(value: Bytes) {
+    this.set("poolAddress", Value.fromBytes(value));
+  }
+
+  get nftType(): string {
+    let value = this.get("nftType");
+    return value!.toString();
+  }
+
+  set nftType(value: string) {
+    this.set("nftType", Value.fromString(value));
+  }
+
+  get collectionAddress(): Bytes {
+    let value = this.get("collectionAddress");
+    return value!.toBytes();
+  }
+
+  set collectionAddress(value: Bytes) {
+    this.set("collectionAddress", Value.fromBytes(value));
+  }
+
+  get purchaseAmount(): BigInt {
+    let value = this.get("purchaseAmount");
+    return value!.toBigInt();
+  }
+
+  set purchaseAmount(value: BigInt) {
+    this.set("purchaseAmount", Value.fromBigInt(value));
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    let value = this.get("purchaseAmountPerToken");
+    return value!.toBoolean();
+  }
+
+  set purchaseAmountPerToken(value: boolean) {
+    this.set("purchaseAmountPerToken", Value.fromBoolean(value));
+  }
+
+  get erc1155TokenIds(): Array<BigInt> {
+    let value = this.get("erc1155TokenIds");
+    return value!.toBigIntArray();
+  }
+
+  set erc1155TokenIds(value: Array<BigInt>) {
+    this.set("erc1155TokenIds", Value.fromBigIntArray(value));
+  }
+
+  get erc721Blacklisted(): Array<BigInt> {
+    let value = this.get("erc721Blacklisted");
+    return value!.toBigIntArray();
+  }
+
+  set erc721Blacklisted(value: Array<BigInt>) {
+    this.set("erc721Blacklisted", Value.fromBigIntArray(value));
+  }
+
+  get erc1155TokensAmtEligible(): Array<BigInt> {
+    let value = this.get("erc1155TokensAmtEligible");
+    return value!.toBigIntArray();
+  }
+
+  set erc1155TokensAmtEligible(value: Array<BigInt>) {
+    this.set("erc1155TokensAmtEligible", Value.fromBigIntArray(value));
   }
 }

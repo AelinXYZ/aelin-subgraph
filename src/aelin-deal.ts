@@ -12,6 +12,7 @@ import {
 	Entity,
 	getDeal,
 	getDealDetails,
+	getDealFunded,
 	getPoolCreated,
 	getVestingDeal
 } from './services/entities'
@@ -19,6 +20,7 @@ import {
 	createNotificationsForEvent,
 	removeNotificationsForEvent
 } from './services/notifications'
+import { log } from '@graphprotocol/graph-ts'
 
 
 export function handleSetHolder(event: SetHolderEvent): void {
@@ -57,6 +59,27 @@ export function handleWithdrawUnderlyingDealToken(
 	event: WithdrawUnderlyingDealTokenEvent
 ): void {
 	createEntity(Entity.WithdrawUnderlyingDealToken, event)
+
+	/**
+	 * Update DealFunded Entity
+	 */
+	 const dealFundedEntity = getDealFunded(event.address.toHex() + "-" + event.params.depositor.toHex())
+	 if(dealFundedEntity) {
+		dealFundedEntity.amountFunded = dealFundedEntity.amountFunded.minus(event.params.underlyingDealTokenAmount)
+		dealFundedEntity.save()
+	}
+	
+	/**
+	 * Update Deal entity
+	 */
+	const dealEntity = getDeal(event.address.toHex())
+	if(dealEntity == null) {
+		return
+	}
+
+	dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed.minus(event.params.underlyingDealTokenAmount)
+	dealEntity.save()
+
 	removeNotificationsForEvent(event)
 }
 
@@ -81,11 +104,20 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
 	 */
 
 	poolCreatedEntity.poolStatus = PoolStatus.DealOpen
+	poolCreatedEntity.vestingStarts = event.block.timestamp
+			.plus(dealEntity.proRataRedemptionPeriod)
+			.plus(dealEntity.openRedemptionPeriod)
+	poolCreatedEntity.vestingEnds = poolCreatedEntity.vestingStarts
+			.plus(dealEntity.vestingCliff)
+			.plus(dealEntity.vestingPeriod)
+
 	dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp
 	dealDetailEntity.isDealFunded = true
 
 	dealEntity.proRataRedemptionPeriodStart = event.block.timestamp
 	dealEntity.isDealFunded = true
+	dealEntity.dealFundedAt = event.block.timestamp
+	dealEntity.totalAmountUnredeemed = dealEntity.underlyingDealTokenTotal
 
 	createEntity(Entity.DealFunded, event)
 

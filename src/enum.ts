@@ -16,6 +16,7 @@ export namespace Notifications {
 	export const AllDealTokensVested = 'AllDealTokensVested'
 	export const FundingWindowAlert = 'FundingWindowAlert'
 	export const FundingWindowEnded = 'FundingWindowEnded'
+	export const DealNotFunded = 'DealNotFunded'
 }
 
 export namespace NotificationTarget {
@@ -23,4 +24,9 @@ export namespace NotificationTarget {
 	export const PoolInvestor = 'PoolInvestor'
 	export const Sponsor = 'Sponsor'
 	export const Holder = 'Holder'
+}
+
+export namespace NFTType {
+	export const ERC721 = "ERC721"
+	export const ERC1155 = "ERC1155"
 }

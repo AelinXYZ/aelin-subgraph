@@ -16,6 +16,7 @@ enum NotificationType {
 	AllDealTokensVested
 	FundingWindowAlert
 	FundingWindowEnded
+	DealNotFunded
 }
 
 enum NotificationTarget {
@@ -23,6 +24,11 @@ enum NotificationTarget {
 	PoolInvestor
 	Sponsor
 	Holder
+}
+
+enum NFTType {
+	ERC721
+	ERC1155
 }
 
 type PoolCreated @entity {
@@ -92,6 +98,23 @@ type PoolCreated @entity {
 	totalAmountEarnedBySponsor: BigInt!
 
 	dealsCreated: Int!
+
+	vestingStarts: BigInt!
+
+	vestingEnds: BigInt!
+
+	holder: Bytes!
+
+	"poolName-sponsorAddress-purchaseTokenSymbol"
+	filter: String!
+
+	totalUsersInvested: Int!
+
+	totalAddressesInvested: [String!]!
+
+	hasNftList: Boolean!
+
+	nftCollectionRules: [NftCollectionRule!]!
 }
 
 type TotalPoolsCreated @entity {
@@ -365,6 +388,9 @@ type VestingDeal @entity {
 	underlyingDealTokenDecimals: Int!
 
 	pool: PoolCreated!
+
+	"timestamp of the last time the user claimed"
+	lastClaim: BigInt!
 }
 
 type TotalDealsBySponsor @entity {
@@ -463,6 +489,8 @@ type Vest @entity {
 	" the transaction hash + event log index of the purchase event "
 	id: ID!
 
+	poolName: String!
+
 	" the address of user depositing "
 	userAddress: Bytes!
 
@@ -486,7 +514,15 @@ type DealFunded @entity {
 
 	amountRaised: BigInt!
 
+	purchaseTokenSymbol: String!
+
+	purchaseTokenDecimals: Int!
+
 	amountFunded: BigInt!
+
+	underlyingDealTokenSymbol: String!
+
+	underlyingDealTokenDecimals: Int!
 
 	pool: PoolCreated!
 }
@@ -585,6 +621,19 @@ type Deal @entity {
 	holderFundingDuration: BigInt!
 
 	underlyingPerDealExchangeRate: BigInt!
+
+	totalAmountUnredeemed: BigInt!
+
+	" the block timestamp when the deal was created"
+	timestamp: BigInt!
+
+	dealFundedAt: BigInt!
+
+	totalUsersAccepted: Int!
+
+	totalUsersRejected: Int!
+
+	maxDealTotalSupply: BigInt!
 }
 
 type History @entity {
@@ -604,9 +653,13 @@ type User @entity {
 	id: ID!
 	history: History! @derivedFrom(field: "user")
 	poolsInvested: [PoolCreated!]!
+	poolsInvestedAmt: Int!
 	poolsSponsored: [PoolCreated!]!
+	poolsSponsoredAmt: Int!
 	poolsAsHolder: [PoolCreated!]!
+	poolsAsHolderAmt: Int!
 	dealsAccepted: [DealAccepted!]!
+	dealsAcceptedAmt: Int!
 	vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
 	allocationsStat: [UserAllocationStat!]!
 }
@@ -614,10 +667,23 @@ type User @entity {
 type Notification @entity {
 	"poolAddress - NotificationType"
 	id: ID!
-	type: NotificationType
+	type: NotificationType!
 	message: String!
 	pool: PoolCreated!
 	triggerStart: BigInt!
 	triggerEnd: BigInt!
 	target: NotificationTarget!
+}
+
+type NftCollectionRule @entity {
+	"poolAddress - collectionAddress"
+	id: ID!
+	poolAddress: Bytes!
+	nftType: NFTType!
+	collectionAddress: Bytes!
+	purchaseAmount: BigInt!
+	purchaseAmountPerToken: Boolean!
+	erc1155TokenIds: [BigInt!]!
+	erc721Blacklisted: [BigInt!]!
+	erc1155TokensAmtEligible: [BigInt!]!
 }

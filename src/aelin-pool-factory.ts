@@ -2,13 +2,13 @@ import { BigInt } from '@graphprotocol/graph-ts'
 import { PoolCreated, TotalPoolsCreated } from './types/schema'
 import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory/AelinPoolFactory'
 import { AelinPool } from './types/templates'
-import { ERC20 } from './types/templates/AelinPool/ERC20'
 import { ONE } from './helpers'
 import { PoolStatus } from './enum'
 import {
 	createNotificationsForEvent,
 } from './services/notifications'
 import { getOrCreateUser } from './services/entities'
+import { getTokenDecimals, getTokenSymbol } from './services/token'
 
 export function handleCreatePool(event: CreatePoolEvent): void {
 	let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
@@ -34,9 +34,8 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	)
 	poolCreatedEntity.timestamp = event.block.timestamp
 
-	const purchaseToken = ERC20.bind(event.params.purchaseToken)
-	poolCreatedEntity.purchaseTokenSymbol = purchaseToken.symbol()
-	poolCreatedEntity.purchaseTokenDecimals = purchaseToken.decimals()
+	poolCreatedEntity.purchaseTokenSymbol = getTokenSymbol(event.params.purchaseToken)
+	poolCreatedEntity.purchaseTokenDecimals = getTokenDecimals(event.params.purchaseToken)
 
 	poolCreatedEntity.hasAllowList = event.params.hasAllowList
 	poolCreatedEntity.poolStatus = PoolStatus.PoolOpen
@@ -47,6 +46,8 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 	poolCreatedEntity.totalAmountFunded = BigInt.fromI32(0)
 	poolCreatedEntity.totalAmountEarnedBySponsor = BigInt.fromI32(0)
 	poolCreatedEntity.dealsCreated = 0
+	poolCreatedEntity.filter = `${event.params.name.toLowerCase()}-${event.params.sponsor.toHex()}-${getTokenSymbol(event.params.purchaseToken).toLowerCase()}`
+	poolCreatedEntity.hasNftList = false
 
 	poolCreatedEntity.save()
 
@@ -55,6 +56,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
 		let poolsSponsored = userEntity.poolsSponsored
 		poolsSponsored.push(poolCreatedEntity.id)
 		userEntity.poolsSponsored = poolsSponsored
+		userEntity.poolsSponsoredAmt = poolsSponsored.length
 		userEntity.save()
 	}
 

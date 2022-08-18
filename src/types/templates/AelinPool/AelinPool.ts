@@ -268,6 +268,88 @@ export class WithdrawFromPool__Params {
   }
 }
 
+export class PoolWith721 extends ethereum.Event {
+  get params(): PoolWith721__Params {
+    return new PoolWith721__Params(this);
+  }
+}
+
+export class PoolWith721__Params {
+  _event: PoolWith721;
+
+  constructor(event: PoolWith721) {
+    this._event = event;
+  }
+
+  get collectionAddress(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get purchaseAmount(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    return this._event.parameters[2].value.toBoolean();
+  }
+}
+
+export class PoolWith1155 extends ethereum.Event {
+  get params(): PoolWith1155__Params {
+    return new PoolWith1155__Params(this);
+  }
+}
+
+export class PoolWith1155__Params {
+  _event: PoolWith1155;
+
+  constructor(event: PoolWith1155) {
+    this._event = event;
+  }
+
+  get collectionAddress(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get purchaseAmount(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    return this._event.parameters[2].value.toBoolean();
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray();
+  }
+
+  get minTokensEligible(): Array<BigInt> {
+    return this._event.parameters[4].value.toBigIntArray();
+  }
+}
+
+export class BlacklistNFT extends ethereum.Event {
+  get params(): BlacklistNFT__Params {
+    return new BlacklistNFT__Params(this);
+  }
+}
+
+export class BlacklistNFT__Params {
+  _event: BlacklistNFT;
+
+  constructor(event: BlacklistNFT) {
+    this._event = event;
+  }
+
+  get collection(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get nftID(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class AelinPool extends ethereum.SmartContract {
   static bind(address: Address): AelinPool {
     return new AelinPool("AelinPool", address);
