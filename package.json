@@ -13,15 +13,16 @@
     "deploy-hosted:kovan:linus": "npm run prepare:kovan && graph deploy --product hosted-service 0xlinus/boot-node",
     "deploy-hosted:mainnet:linus": "npm run prepare:mainnet && graph deploy --product hosted-service 0xlinus/boot-node-mainnet",
     "deploy-hosted:optimism:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/boot-node-optimism",
-    "deploy-hosted:optimism:stating:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/optimism-staging",
     "deploy-hosted:goerli:linus": "npm run prepare:goerli && graph deploy --product hosted-service 0xlinus/boot-node-goerli",
+    "deploy-hosted:optimism:stating:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/optimism-staging",
     "deploy-all-linus": "npm run deploy-hosted:kovan:linus && npm run deploy-hosted:mainnet:linus && npm run deploy-hosted:optimism:linus && npm run deploy-hosted:goerli:linus",
     "deploy": "graph deploy aelin/aelin-mega --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy aelin/aelin-mega --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-    "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "prepare:optimism": "mustache config/optimism.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "prepare:kovan": "mustache config/kovan.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml && npm run codegen"
+    "prepare:mainnet": "npm run verify-abis mainnet && mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "prepare:optimism": "npm run verify-abis optimism && mustache config/optimism.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "prepare:kovan": "npm run verify-abis kovan && mustache config/kovan.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "prepare:goerli": "npm run verify-abis goerli && mustache config/goerli.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "verify-abis": "node config/verify-abis.js"
   },
   "devDependencies": {
     "@graphprotocol/graph-ts": "0.27.0",
