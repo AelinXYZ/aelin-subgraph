@@ -22,11 +22,24 @@
     "prepare:optimism": "npm run verify-abis optimism && mustache config/optimism.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
     "prepare:kovan": "npm run verify-abis kovan && mustache config/kovan.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
     "prepare:goerli": "npm run verify-abis goerli && mustache config/goerli.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "verify-abis": "node config/verify-abis.js"
+    "verify-abis": "node config/verify-abis.js",
+    "lint:fix": "eslint --fix \"./**/*.{js,jsx,ts,tsx}\"",
+    "prepare": "husky install",
+    "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx}\""
   },
   "devDependencies": {
+    "@graphprotocol/graph-cli": "0.33.0",
     "@graphprotocol/graph-ts": "0.27.0",
-    "@graphprotocol/graph-cli": "0.33.0"
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.5",
+    "prettier": "^2.5.1",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "babel-polyfill": "6.26.0",
@@ -35,5 +48,11 @@
     "truffle": "5.4.22",
     "truffle-contract": "4.0.31",
     "truffle-hdwallet-provider": "1.0.17"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ]
   }
 }
