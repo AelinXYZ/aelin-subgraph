@@ -5,55 +5,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: AelinPoolFactory
-    network: optimism
+    network: goerli
     source:
-      address: "0x87525307974a312AF13a78041F88B0BAe23ebb10"
+      address: "0xCA4d64B67486867a9E867D0E38E1F1e99B718EEb"
       abi: AelinPoolFactory
-      startBlock: 1487918
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - PoolCreated
-      abis:
-        - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
-          handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
-  - kind: ethereum/contract
-    name: AelinPoolFactory_v2
-    network: optimism
-    source:
-      address: "0x914FfC8dc0678911AAE77f51B8489d6e214Da20F"
-      abi: AelinPoolFactory
-      startBlock: 1971285
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - PoolCreated
-      abis:
-        - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
-          handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
-  - kind: ethereum/contract
-    name: AelinPoolFactory_v3
-    network: optimism
-    source:
-      address: "0x9219f9f65B007Fd3bA0b53762861f54062531a31"
-      abi: AelinPoolFactory
-      startBlock: 2266169
+      startBlock: 6457748
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -71,11 +27,11 @@ dataSources:
       file: ./src/aelin-pool-factory.ts
   - kind: ethereum/contract
     name: AelinPoolFactory_v4
-    network: optimism
+    network: goerli
     source:
-      address: "0x8B35551d6459a3d49B9A5A0D7333c6D7E0cCbBd9"
+      address: "0xb52736cE26345942134b11083e88A0DD9Ef1be5A"
       abi: AelinPoolFactory
-      startBlock: 19552522
+      startBlock: 7340000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -95,7 +51,7 @@ dataSources:
 templates:
   - name: AelinPool
     kind: ethereum/contract
-    network: optimism
+    network: goerli
     source:
       abi: AelinPool
     mapping:
@@ -141,7 +97,7 @@ templates:
 
   - name: AelinDeal
     kind: ethereum/contract
-    network: optimism
+    network: goerli
     source:
       abi: AelinDeal
     mapping:
