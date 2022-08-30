@@ -19,7 +19,7 @@ dataSources:
         - PoolCreated
       abis:
         - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
+          file: ./abis/{{name}}.json
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
