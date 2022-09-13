@@ -96,11 +96,13 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
    * Update PoolCreated and DealDetail entity
    */
 
-  poolCreatedEntity.poolStatus = PoolStatus.DealOpen
-  poolCreatedEntity.vestingStarts = event.block.timestamp
+  const vestingStarts = event.block.timestamp
     .plus(dealEntity.proRataRedemptionPeriod)
     .plus(dealEntity.openRedemptionPeriod)
-  poolCreatedEntity.vestingEnds = poolCreatedEntity.vestingStarts
+
+  poolCreatedEntity.poolStatus = PoolStatus.DealOpen
+  poolCreatedEntity.vestingStarts = vestingStarts
+  poolCreatedEntity.vestingEnds = vestingStarts
     .plus(dealEntity.vestingCliff)
     .plus(dealEntity.vestingPeriod)
 

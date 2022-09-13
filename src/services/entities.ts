@@ -21,7 +21,10 @@ import {
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from '../types/templates/AelinDeal/AelinDeal'
 
+import { AcceptDeal as AcceptUpfrontDealEvent } from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
+
 import { AelinDeal as AelinDealContract } from '../types/templates/AelinDeal/AelinDeal'
+import { AelinUpfrontDeal as AelinUpfrontDealContract } from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
 
 import {
   DealCreated,
@@ -51,6 +54,7 @@ import {
   History,
   User,
   NftCollectionRule,
+  UpfrontDeal,
 } from '../types/schema'
 
 import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED } from '../helpers'
@@ -150,6 +154,9 @@ export function createEntity<E>(entityType: Entity, event: E): void {
     case Entity.VestingDeal:
       if (event instanceof AcceptDealEvent) {
         createVestingDealEntity(event)
+      }
+      if (event instanceof AcceptUpfrontDealEvent) {
+        createVestingUpfrontDealEntity(event)
       }
       break
     case Entity.DealAccepted:
@@ -506,6 +513,49 @@ function createDealAcceptedEntity(event: AcceptDealEvent): void {
 
   dealAcceptedEntity.save()
 }
+
+export function createOrUpdateSponsorVestingUpfrontDeal(event: AcceptUpfrontDealEvent): void {
+  let poolCreatedEntity = getPoolCreated(event.address.toHex())
+  let dealEntity = getDeal(event.address.toHex())
+
+  if (dealEntity == null || poolCreatedEntity == null) {
+    return
+  }
+
+  let vestingDealEntity = getVestingDeal(
+    poolCreatedEntity.sponsor.toHex() + '-' + event.address.toHex(),
+  )
+
+  let investorDealTotal = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
+
+  if (vestingDealEntity === null) {
+    vestingDealEntity = new VestingDeal(
+      poolCreatedEntity.sponsor.toHex() + '-' + event.address.toHex(),
+    )
+
+    vestingDealEntity.poolName = poolCreatedEntity.name
+    vestingDealEntity.poolAddress = event.address
+    vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
+    vestingDealEntity.tokenToVestSymbol = dealEntity.underlyingDealTokenSymbol
+    vestingDealEntity.investorDealTotal = investorDealTotal
+    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+    vestingDealEntity.totalVested = BigInt.fromI32(0)
+    vestingDealEntity.vestingPeriodStarts = dealEntity.vestingPeriodStarts
+    vestingDealEntity.vestingPeriodEnds = dealEntity.vestingPeriodStarts.plus(
+      dealEntity.vestingPeriod,
+    )
+    vestingDealEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
+    vestingDealEntity.user = poolCreatedEntity.sponsor.toHex()
+    vestingDealEntity.pool = poolCreatedEntity.id
+  } else {
+    vestingDealEntity.investorDealTotal =
+      vestingDealEntity.investorDealTotal.plus(investorDealTotal)
+    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+  }
+
+  vestingDealEntity.save()
+}
+
 export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
   let dealEntity = getDeal(event.params.dealAddress.toHex())
@@ -548,6 +598,50 @@ export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
       vestingDealEntity.investorDealTotal.plus(investorDealTotal)
     vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
   }
+
+  vestingDealEntity.save()
+}
+
+function createVestingUpfrontDealEntity(event: AcceptUpfrontDealEvent): void {
+  createOrUpdateSponsorVestingUpfrontDeal(event)
+
+  let vestingDealEntity = getVestingDeal(event.params.user.toHex() + '-' + event.address.toHex())
+
+  if (vestingDealEntity == null) {
+    vestingDealEntity = new VestingDeal(event.params.user.toHex() + '-' + event.address.toHex())
+  }
+
+  let poolCreatedEntity = getPoolCreated(event.address.toHex())
+  let dealEntity = getUpfrontDeal(event.address.toHex())
+
+  if (dealEntity == null || poolCreatedEntity == null) {
+    return
+  }
+
+  let investorDealTotal = event.params.totalDealTokens
+
+  vestingDealEntity.poolName = poolCreatedEntity.name
+  vestingDealEntity.poolAddress = event.address
+  vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
+  vestingDealEntity.tokenToVestSymbol = dealEntity.underlyingDealTokenSymbol
+
+  let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
+
+  vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(
+    investorDealTotal
+      .times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
+      .div(ONE_HUNDRED),
+  )
+
+  vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+  vestingDealEntity.totalVested = BigInt.fromI32(0)
+  vestingDealEntity.vestingPeriodStarts = (poolCreatedEntity.vestingStarts as BigInt).plus(
+    dealEntity.vestingCliffPeriod,
+  )
+  vestingDealEntity.vestingPeriodEnds = poolCreatedEntity.vestingEnds as BigInt
+  vestingDealEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
+  vestingDealEntity.user = event.params.user.toHex()
+  vestingDealEntity.pool = poolCreatedEntity.id
 
   vestingDealEntity.save()
 }
@@ -986,4 +1080,14 @@ export function getNftCollectionRule(id: string): NftCollectionRule | null {
   }
 
   return nftCollectionRuleEntity
+}
+
+export function getUpfrontDeal(address: string): UpfrontDeal | null {
+  let upfrontDealEntity = UpfrontDeal.load(address)
+  if (upfrontDealEntity == null) {
+    log.error('trying to find a upfrontDealEntity not saved with address: {}', [address])
+    return null
+  }
+
+  return upfrontDealEntity
 }

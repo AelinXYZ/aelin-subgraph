@@ -16,6 +16,7 @@ import { Notification } from '../types/schema'
 import { getDeal, getPoolCreated } from './entities'
 import { BigInt, store } from '@graphprotocol/graph-ts'
 import { Notifications, NotificationTarget } from '../enum'
+import { ZERO } from '../helpers'
 
 const MAX_TIME_PERIOD = BigInt.fromI32(60 * 60 * 24 * 10) // 10 days
 
@@ -351,14 +352,14 @@ function createSponsorFeesReady(event: AcceptDealEvent): void {
 
 function createInvestmentWindowEnded(event: CreatePoolEvent): void {
   let poolEntity = getPoolCreated(event.params.poolAddress.toHex())
-  if (poolEntity != null) {
+  if (poolEntity != null && poolEntity.purchaseExpiry) {
     let notificationEntity = new Notification(
       poolEntity.id + '-' + Notifications.InvestmentWindowEnded,
     )
     notificationEntity.type = Notifications.InvestmentWindowEnded
     notificationEntity.pool = poolEntity.id
-    notificationEntity.triggerStart = poolEntity.purchaseExpiry
-    notificationEntity.triggerEnd = poolEntity.purchaseExpiry.plus(poolEntity.duration)
+    notificationEntity.triggerStart = poolEntity.purchaseExpiry as BigInt
+    notificationEntity.triggerEnd = (poolEntity.purchaseExpiry as BigInt).plus(poolEntity.duration)
     notificationEntity.target = NotificationTarget.Sponsor
 
     let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
@@ -370,19 +371,19 @@ function createInvestmentWindowEnded(event: CreatePoolEvent): void {
 
 function createInvestmentWindowAlert(event: CreatePoolEvent): void {
   let poolEntity = getPoolCreated(event.params.poolAddress.toHex())
-  if (poolEntity != null) {
+  if (poolEntity != null && poolEntity.purchaseExpiry) {
     let notificationEntity = new Notification(
       poolEntity.id + '-' + Notifications.InvestmentWindowAlert,
     )
     notificationEntity.type = Notifications.InvestmentWindowAlert
     notificationEntity.pool = poolEntity.id
     // 75% of purchaseExpiry
-    let alertTime = poolEntity.purchaseExpiry
+    let alertTime = (poolEntity.purchaseExpiry as BigInt)
       .minus(event.block.timestamp)
       .div(BigInt.fromI32(4))
       .times(BigInt.fromI32(3))
     notificationEntity.triggerStart = event.block.timestamp.plus(alertTime)
-    notificationEntity.triggerEnd = poolEntity.purchaseExpiry
+    notificationEntity.triggerEnd = poolEntity.purchaseExpiry as BigInt
     notificationEntity.target = NotificationTarget.Sponsor
 
     let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)

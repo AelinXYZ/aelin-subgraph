@@ -4,6 +4,11 @@ export namespace PoolStatus {
   export const DealOpen = 'DealOpen'
 }
 
+export namespace DealType {
+  export const SponsorDeal = 'SponsorDeal'
+  export const UpfrontDeal = 'UpfrontDeal'
+}
+
 export namespace Notifications {
   export const InvestmentWindowAlert = 'InvestmentWindowAlert'
   export const InvestmentWindowEnded = 'InvestmentWindowEnded'
