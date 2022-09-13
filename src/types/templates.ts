@@ -21,3 +21,13 @@ export class AelinDeal extends DataSourceTemplate {
     DataSourceTemplate.createWithContext('AelinDeal', [address.toHex()], context)
   }
 }
+
+export class AelinUpfrontDeal extends DataSourceTemplate {
+  static create(address: Address): void {
+    DataSourceTemplate.create('AelinUpfrontDeal', [address.toHex()])
+  }
+
+  static createWithContext(address: Address, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext('AelinUpfrontDeal', [address.toHex()], context)
+  }
+}

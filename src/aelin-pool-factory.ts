@@ -3,7 +3,7 @@ import { PoolCreated, TotalPoolsCreated } from './types/schema'
 import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory/AelinPoolFactory'
 import { AelinPool } from './types/templates'
 import { ONE } from './helpers'
-import { PoolStatus } from './enum'
+import { PoolStatus, DealType } from './enum'
 import { createNotificationsForEvent } from './services/notifications'
 import { getOrCreateUser } from './services/entities'
 import { getTokenDecimals, getTokenSymbol } from './services/token'
@@ -19,6 +19,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   totalPoolsCreatedEntity.save()
 
   let poolCreatedEntity = new PoolCreated(event.params.poolAddress.toHex())
+  poolCreatedEntity.dealType = DealType.SponsorDeal
   poolCreatedEntity.name = event.params.name
   poolCreatedEntity.symbol = event.params.symbol
   poolCreatedEntity.purchaseTokenCap = event.params.purchaseTokenCap
