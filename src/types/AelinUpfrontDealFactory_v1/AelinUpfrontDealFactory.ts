@@ -140,6 +140,14 @@ export class CreateUpFrontDeal__Params {
   get sponsorFee(): BigInt {
     return this._event.parameters[7].value.toBigInt()
   }
+
+  get merkleRoot(): Bytes {
+    return this._event.parameters[8].value.toBytes()
+  }
+
+  get ipfsHash(): string {
+    return this._event.parameters[9].value.toString()
+  }
 }
 
 export class CreateUpFrontDealConfig extends ethereum.Event {
@@ -498,6 +506,14 @@ export class AelinUpfrontDealFactory__createUpFrontDealInput_dealDataStruct exte
   get sponsorFee(): BigInt {
     return this[6].toBigInt()
   }
+
+  get merkleRoot(): Bytes {
+    return this[7].toBytes()
+  }
+
+  get ipfsHash(): string {
+    return this[8].toString()
+  }
 }
 
 export class AelinUpfrontDealFactory__createUpFrontDealInput_dealConfigStruct extends ethereum.Tuple {
@@ -617,17 +633,15 @@ export class AelinUpfrontDealFactory extends ethereum.SmartContract {
     _dealConfig: AelinUpfrontDealFactory__createUpFrontDealInput_dealConfigStruct,
     _nftCollectionRules: Array<AelinUpfrontDealFactory__createUpFrontDealInput_nftCollectionRulesStruct>,
     _allowListInit: AelinUpfrontDealFactory__createUpFrontDealInput_allowListInitStruct,
-    _depositUnderlyingAmount: BigInt,
   ): Address {
     let result = super.call(
       'createUpFrontDeal',
-      'createUpFrontDeal((string,string,address,address,address,address,uint256),(uint256,uint256,uint256,uint256,uint256,uint256,bool),(uint256,address,bool,uint256[],uint256[])[],(address[],uint256[]),uint256):(address)',
+      'createUpFrontDeal((string,string,address,address,address,address,uint256,bytes32,string),(uint256,uint256,uint256,uint256,uint256,uint256,bool),(uint256,address,bool,uint256[],uint256[])[],(address[],uint256[])):(address)',
       [
         ethereum.Value.fromTuple(_dealData),
         ethereum.Value.fromTuple(_dealConfig),
         ethereum.Value.fromTupleArray(_nftCollectionRules),
         ethereum.Value.fromTuple(_allowListInit),
-        ethereum.Value.fromUnsignedBigInt(_depositUnderlyingAmount),
       ],
     )
 
@@ -639,17 +653,15 @@ export class AelinUpfrontDealFactory extends ethereum.SmartContract {
     _dealConfig: AelinUpfrontDealFactory__createUpFrontDealInput_dealConfigStruct,
     _nftCollectionRules: Array<AelinUpfrontDealFactory__createUpFrontDealInput_nftCollectionRulesStruct>,
     _allowListInit: AelinUpfrontDealFactory__createUpFrontDealInput_allowListInitStruct,
-    _depositUnderlyingAmount: BigInt,
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
       'createUpFrontDeal',
-      'createUpFrontDeal((string,string,address,address,address,address,uint256),(uint256,uint256,uint256,uint256,uint256,uint256,bool),(uint256,address,bool,uint256[],uint256[])[],(address[],uint256[]),uint256):(address)',
+      'createUpFrontDeal((string,string,address,address,address,address,uint256,bytes32,string),(uint256,uint256,uint256,uint256,uint256,uint256,bool),(uint256,address,bool,uint256[],uint256[])[],(address[],uint256[])):(address)',
       [
         ethereum.Value.fromTuple(_dealData),
         ethereum.Value.fromTuple(_dealConfig),
         ethereum.Value.fromTupleArray(_nftCollectionRules),
         ethereum.Value.fromTuple(_allowListInit),
-        ethereum.Value.fromUnsignedBigInt(_depositUnderlyingAmount),
       ],
     )
     if (result.reverted) {
@@ -736,10 +748,6 @@ export class CreateUpFrontDealCall__Inputs {
       this._call.inputValues[3].value.toTuple(),
     )
   }
-
-  get _depositUnderlyingAmount(): BigInt {
-    return this._call.inputValues[4].value.toBigInt()
-  }
 }
 
 export class CreateUpFrontDealCall__Outputs {
@@ -781,6 +789,14 @@ export class CreateUpFrontDealCall_dealDataStruct extends ethereum.Tuple {
 
   get sponsorFee(): BigInt {
     return this[6].toBigInt()
+  }
+
+  get merkleRoot(): Bytes {
+    return this[7].toBytes()
+  }
+
+  get ipfsHash(): string {
+    return this[8].toString()
   }
 }
 

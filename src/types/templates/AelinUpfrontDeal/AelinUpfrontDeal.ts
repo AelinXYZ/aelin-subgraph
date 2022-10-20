@@ -44,6 +44,28 @@ export class AcceptDeal__Params {
   }
 }
 
+export class BlacklistNFT extends ethereum.Event {
+  get params(): BlacklistNFT__Params {
+    return new BlacklistNFT__Params(this)
+  }
+}
+
+export class BlacklistNFT__Params {
+  _event: BlacklistNFT
+
+  constructor(event: BlacklistNFT) {
+    this._event = event
+  }
+
+  get collection(): Address {
+    return this._event.parameters[0].value.toAddress()
+  }
+
+  get nftID(): BigInt {
+    return this._event.parameters[1].value.toBigInt()
+  }
+}
+
 export class AelinToken extends ethereum.Event {
   get params(): AelinToken__Params {
     return new AelinToken__Params(this)
@@ -1401,19 +1423,19 @@ export class AelinUpfrontDeal extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
-  transfer(to: Address, amount: BigInt): boolean {
+  transfer(_dst: Address, _amount: BigInt): boolean {
     let result = super.call('transfer', 'transfer(address,uint256):(bool)', [
-      ethereum.Value.fromAddress(to),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
 
     return result[0].toBoolean()
   }
 
-  try_transfer(to: Address, amount: BigInt): ethereum.CallResult<boolean> {
+  try_transfer(_dst: Address, _amount: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall('transfer', 'transfer(address,uint256):(bool)', [
-      ethereum.Value.fromAddress(to),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
     if (result.reverted) {
       return new ethereum.CallResult()
@@ -1422,21 +1444,21 @@ export class AelinUpfrontDeal extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
-  transferFrom(from: Address, to: Address, amount: BigInt): boolean {
+  transferFrom(_src: Address, _dst: Address, _amount: BigInt): boolean {
     let result = super.call('transferFrom', 'transferFrom(address,address,uint256):(bool)', [
-      ethereum.Value.fromAddress(from),
-      ethereum.Value.fromAddress(to),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_src),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
 
     return result[0].toBoolean()
   }
 
-  try_transferFrom(from: Address, to: Address, amount: BigInt): ethereum.CallResult<boolean> {
+  try_transferFrom(_src: Address, _dst: Address, _amount: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall('transferFrom', 'transferFrom(address,address,uint256):(bool)', [
-      ethereum.Value.fromAddress(from),
-      ethereum.Value.fromAddress(to),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_src),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
     if (result.reverted) {
       return new ethereum.CallResult()
@@ -1827,16 +1849,12 @@ export class InitializeCall__Inputs {
     return changetype<InitializeCall_allowListInitStruct>(this._call.inputValues[3].value.toTuple())
   }
 
-  get _dealCreator(): Address {
+  get _aelinTreasuryAddress(): Address {
     return this._call.inputValues[4].value.toAddress()
   }
 
-  get _aelinTreasuryAddress(): Address {
-    return this._call.inputValues[5].value.toAddress()
-  }
-
   get _aelinEscrowLogicAddress(): Address {
-    return this._call.inputValues[6].value.toAddress()
+    return this._call.inputValues[5].value.toAddress()
   }
 }
 
@@ -2039,11 +2057,11 @@ export class TransferCall__Inputs {
     this._call = call
   }
 
-  get to(): Address {
+  get _dst(): Address {
     return this._call.inputValues[0].value.toAddress()
   }
 
-  get amount(): BigInt {
+  get _amount(): BigInt {
     return this._call.inputValues[1].value.toBigInt()
   }
 }
@@ -2077,15 +2095,15 @@ export class TransferFromCall__Inputs {
     this._call = call
   }
 
-  get from(): Address {
+  get _src(): Address {
     return this._call.inputValues[0].value.toAddress()
   }
 
-  get to(): Address {
+  get _dst(): Address {
     return this._call.inputValues[1].value.toAddress()
   }
 
-  get amount(): BigInt {
+  get _amount(): BigInt {
     return this._call.inputValues[2].value.toBigInt()
   }
 }

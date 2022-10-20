@@ -157,6 +157,18 @@
         "internalType": "uint256",
         "name": "sponsorFee",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "merkleRoot",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "ipfsHash",
+        "type": "string"
       }
     ],
     "name": "CreateUpFrontDeal",
@@ -563,6 +575,16 @@
             "internalType": "uint256",
             "name": "sponsorFee",
             "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "merkleRoot",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "ipfsHash",
+            "type": "string"
           }
         ],
         "internalType": "struct IAelinUpFrontDeal.UpFrontDealData",
@@ -659,11 +681,6 @@
         "internalType": "struct AelinAllowList.InitData",
         "name": "_allowListInit",
         "type": "tuple"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_depositUnderlyingAmount",
-        "type": "uint256"
       }
     ],
     "name": "createUpFrontDeal",

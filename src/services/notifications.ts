@@ -11,10 +11,14 @@ import {
   WithdrawUnderlyingDealToken as WithdrawUnderlyingDealTokenEvent,
 } from '../types/templates/AelinDeal/AelinDeal'
 import { CreatePool as CreatePoolEvent } from '../types/AelinPoolFactory/AelinPoolFactory'
-
+import { CreateUpFrontDeal as CreateUpFrontDealEvent } from '../types/AelinUpfrontDealFactory_v1/AelinUpfrontDealFactory'
+import {
+  AcceptDeal as AcceptUpfrontDealEvent,
+  DealFullyFunded as UpfrontDealFullyFundedEvent,
+} from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
 import { Notification } from '../types/schema'
-import { getDeal, getPoolCreated } from './entities'
-import { BigInt, store } from '@graphprotocol/graph-ts'
+import { getDeal, getPoolCreated, getUpfrontDeal } from './entities'
+import { BigInt, log, store } from '@graphprotocol/graph-ts'
 import { Notifications, NotificationTarget } from '../enum'
 import { ZERO } from '../helpers'
 
@@ -33,6 +37,10 @@ export enum NotificationType {
   DealTokensVestingBegun,
   AllDealTokensVested,
   DealNotFunded,
+  UpfrontDealFullyFunded,
+  HolderClaimFunds,
+  AcceptanceWindowAlert,
+  AcceptanceWindowEnded,
 }
 
 /**
@@ -171,9 +179,24 @@ function removeWithdrawUnredeemed(event: AcceptDealEvent): void {
  */
 
 export function createNotificationsForEvent<E>(event: E): void {
+  if (event instanceof AcceptUpfrontDealEvent) {
+    createAcceptanceWindowAlert(event)
+    createAcceptanceWindowEnded(event)
+  }
+  if (event instanceof UpfrontDealFullyFundedEvent) {
+    createUpfrontDealFullyFunded(event)
+    createHolderClaimFunds(event)
+    createUpfrontDealSponsorFeesReady(event)
+    createUpfrontDealVestingCliffBegun(event)
+    createUpfrontDealTokensVestingBegun(event)
+    createUpfrontDealAllDealTokensVested(event)
+  }
+  if (event instanceof CreateUpFrontDealEvent) {
+    createHolderSet(event)
+  }
   if (event instanceof DealFullyFundedEvent) {
     createVestingCliffBegun(event)
-    creatWithdrawUnredeemed(event)
+    createWithdrawUnredeemed(event)
     createAllDealTokensVested(event)
     createDealProposed(event)
   } else if (event instanceof CreatePoolEvent) {
@@ -189,6 +212,225 @@ export function createNotificationsForEvent<E>(event: E): void {
   } else if (event instanceof DealDetailEvent) {
     createDealNotFundedAlert(event)
   }
+}
+
+function createAcceptanceWindowAlert(event: AcceptUpfrontDealEvent): void {
+  let poolEntity = getPoolCreated(event.address.toHex())
+  if (poolEntity === null || poolEntity.purchaseExpiry === null) {
+    return
+  }
+
+  let notificationEntitySponsor = new Notification(
+    poolEntity.id + '-' + Notifications.InvestmentWindowAlert,
+  )
+  let notificationEntityInvestor = new Notification(
+    poolEntity.id + '-' + Notifications.InvestmentWindowAlert + NotificationTarget.PoolInvestor,
+  )
+
+  notificationEntitySponsor.type = Notifications.AcceptanceWindowAlert
+  notificationEntitySponsor.pool = poolEntity.id
+  // 75% of purchaseExpiry
+  let alertTime = (poolEntity.purchaseExpiry as BigInt)
+    .minus(event.block.timestamp)
+    .div(BigInt.fromI32(4))
+    .times(BigInt.fromI32(3))
+  notificationEntitySponsor.triggerStart = event.block.timestamp.plus(alertTime)
+  notificationEntitySponsor.triggerEnd = poolEntity.purchaseExpiry as BigInt
+  notificationEntitySponsor.target = NotificationTarget.Sponsor
+
+  let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
+  notificationEntitySponsor.message = `The acceptance window is coming to an end in the ${poolName} pool you are sponsoring.`
+
+  notificationEntityInvestor.type = Notifications.AcceptanceWindowAlert
+  notificationEntityInvestor.pool = poolEntity.id
+  notificationEntityInvestor.triggerStart = event.block.timestamp.plus(alertTime)
+  notificationEntityInvestor.triggerEnd = poolEntity.purchaseExpiry as BigInt
+  notificationEntityInvestor.target = NotificationTarget.PoolInvestor
+  notificationEntityInvestor.message = `The acceptance window is coming to an end in the ${poolName} pool you have invested.`
+
+  notificationEntitySponsor.save()
+  notificationEntityInvestor.save()
+}
+
+function createAcceptanceWindowEnded(event: AcceptUpfrontDealEvent): void {
+  let poolEntity = getPoolCreated(event.address.toHex())
+  let upfrontDeal = getUpfrontDeal(event.address.toHex())
+  if (poolEntity === null || upfrontDeal === null || poolEntity.purchaseExpiry === null) {
+    return
+  }
+
+  let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
+
+  let notificationEntityAcceptanceWindowEndedInvestor = new Notification(
+    poolEntity.id + '-' + Notifications.AcceptanceWindowEnded,
+  )
+
+  notificationEntityAcceptanceWindowEndedInvestor.type = Notifications.AcceptanceWindowEnded
+  notificationEntityAcceptanceWindowEndedInvestor.pool = poolEntity.id
+  notificationEntityAcceptanceWindowEndedInvestor.triggerStart = poolEntity.purchaseExpiry as BigInt
+  notificationEntityAcceptanceWindowEndedInvestor.triggerEnd = (poolEntity.purchaseExpiry as BigInt)
+    .plus(upfrontDeal.vestingPeriod)
+    .plus(upfrontDeal.vestingCliffPeriod)
+  notificationEntityAcceptanceWindowEndedInvestor.target = NotificationTarget.PoolInvestor
+  notificationEntityAcceptanceWindowEndedInvestor.message = `The acceptance window has concluded in the ${poolName} pool you invested. Please claim you deal tokens now.`
+
+  let notificationEntityAcceptanceWindowEndedSponsor = new Notification(
+    poolEntity.id + '-' + Notifications.AcceptanceWindowEnded + NotificationTarget.Sponsor,
+  )
+
+  notificationEntityAcceptanceWindowEndedSponsor.type = Notifications.AcceptanceWindowEnded
+  notificationEntityAcceptanceWindowEndedSponsor.pool = poolEntity.id
+  notificationEntityAcceptanceWindowEndedSponsor.triggerStart = poolEntity.purchaseExpiry as BigInt
+  notificationEntityAcceptanceWindowEndedSponsor.triggerEnd = (poolEntity.purchaseExpiry as BigInt)
+    .plus(upfrontDeal.vestingPeriod)
+    .plus(upfrontDeal.vestingCliffPeriod)
+  notificationEntityAcceptanceWindowEndedSponsor.target = NotificationTarget.Sponsor
+  notificationEntityAcceptanceWindowEndedSponsor.message = `The acceptance window has concluded in the ${poolName} pool you are sponsoring.`
+
+  notificationEntityAcceptanceWindowEndedInvestor.save()
+  notificationEntityAcceptanceWindowEndedSponsor.save()
+}
+
+function createUpfrontDealFullyFunded(event: UpfrontDealFullyFundedEvent): void {
+  let poolEntity = getPoolCreated(event.address.toHex())
+  if (poolEntity === null) {
+    return
+  }
+
+  let notificationEntity = new Notification(
+    event.address.toHex() + '-' + Notifications.UpfrontDealFullyFunded,
+  )
+  notificationEntity.type = Notifications.UpfrontDealFullyFunded
+  notificationEntity.pool = event.address.toHex()
+  notificationEntity.triggerStart = event.block.timestamp
+  notificationEntity.triggerEnd = event.block.timestamp.plus(poolEntity.purchaseDuration as BigInt)
+  notificationEntity.target = NotificationTarget.Sponsor
+  notificationEntity.message =
+    'A pool you have sponsored has been fully funded. Acceptance period started.'
+
+  notificationEntity.save()
+}
+
+function createHolderClaimFunds(event: UpfrontDealFullyFundedEvent): void {
+  let poolCreatedEntity = getPoolCreated(event.address.toHex())
+  if (poolCreatedEntity === null) {
+    return
+  }
+  let poolName = poolCreatedEntity.name.slice(poolCreatedEntity.name.indexOf('-') + 1)
+  let notificationEntityHolderClaimFunds = new Notification(
+    event.address.toHex() + '-' + Notifications.HolderClaimFunds,
+  )
+  notificationEntityHolderClaimFunds.type = Notifications.HolderClaimFunds
+  notificationEntityHolderClaimFunds.pool = event.address.toHex()
+  notificationEntityHolderClaimFunds.triggerStart =
+    poolCreatedEntity.purchaseExpiry as BigInt as BigInt
+  notificationEntityHolderClaimFunds.triggerEnd = (poolCreatedEntity.purchaseExpiry as BigInt).plus(
+    MAX_TIME_PERIOD,
+  )
+  notificationEntityHolderClaimFunds.target = NotificationTarget.Holder
+  notificationEntityHolderClaimFunds.message = `Funds raised are ready to claim in the ${poolName} pool that you are the holder.`
+
+  notificationEntityHolderClaimFunds.save()
+}
+
+function createUpfrontDealSponsorFeesReady(event: UpfrontDealFullyFundedEvent): void {
+  let poolCreatedEntity = getPoolCreated(event.address.toHex())
+  if (poolCreatedEntity === null) {
+    return
+  }
+  let poolName = poolCreatedEntity.name.slice(poolCreatedEntity.name.indexOf('-') + 1)
+  if (poolCreatedEntity.sponsorFee.gt(ZERO)) {
+    let notificationEntitySponsorFeesReady = new Notification(
+      event.address.toHex() + '-' + Notifications.SponsorFeesReady,
+    )
+    notificationEntitySponsorFeesReady.type = Notifications.SponsorFeesReady
+    notificationEntitySponsorFeesReady.pool = poolCreatedEntity.id
+    notificationEntitySponsorFeesReady.triggerStart =
+      poolCreatedEntity.purchaseExpiry as BigInt as BigInt
+    notificationEntitySponsorFeesReady.triggerEnd = (
+      poolCreatedEntity.purchaseExpiry as BigInt
+    ).plus(MAX_TIME_PERIOD)
+    notificationEntitySponsorFeesReady.target = NotificationTarget.Sponsor
+    notificationEntitySponsorFeesReady.message = `Fees are ready to claim in the ${poolName} pool that you sponsored.`
+
+    notificationEntitySponsorFeesReady.save()
+  }
+}
+
+function createUpfrontDealVestingCliffBegun(event: UpfrontDealFullyFundedEvent): void {
+  let poolCreatedEntity = getPoolCreated(event.address.toHex())
+  let upfrontDeal = getUpfrontDeal(event.address.toHex())
+  if (poolCreatedEntity === null || upfrontDeal === null) {
+    return
+  }
+  let poolName = poolCreatedEntity.name.slice(poolCreatedEntity.name.indexOf('-') + 1)
+  if (upfrontDeal.vestingCliffPeriod.gt(ZERO)) {
+    let notificationEntityVestingCliff = new Notification(
+      event.address.toHex() + '-' + Notifications.VestingCliffBegun,
+    )
+    notificationEntityVestingCliff.type = Notifications.VestingCliffBegun
+    notificationEntityVestingCliff.pool = event.address.toHex()
+    notificationEntityVestingCliff.triggerStart =
+      poolCreatedEntity.purchaseExpiry as BigInt as BigInt
+    notificationEntityVestingCliff.triggerEnd = (poolCreatedEntity.purchaseExpiry as BigInt).plus(
+      upfrontDeal.vestingCliffPeriod,
+    )
+    notificationEntityVestingCliff.target = NotificationTarget.PoolInvestor
+    notificationEntityVestingCliff.message = `The vesting cliff countdown has begun in the ${poolName} pool.`
+
+    notificationEntityVestingCliff.save()
+  }
+}
+
+function createUpfrontDealTokensVestingBegun(event: UpfrontDealFullyFundedEvent): void {
+  let poolCreatedEntity = getPoolCreated(event.address.toHex())
+  let upfrontDeal = getUpfrontDeal(event.address.toHex())
+  if (poolCreatedEntity === null || upfrontDeal === null) {
+    return
+  }
+  let poolName = poolCreatedEntity.name.slice(poolCreatedEntity.name.indexOf('-') + 1)
+  let notificationEntityVestingBegun = new Notification(
+    event.address.toHex() + '-' + Notifications.DealTokensVestingBegun,
+  )
+  notificationEntityVestingBegun.type = Notifications.DealTokensVestingBegun
+  notificationEntityVestingBegun.pool = event.address.toHex()
+
+  notificationEntityVestingBegun.triggerStart = (poolCreatedEntity.purchaseExpiry as BigInt).plus(
+    upfrontDeal.vestingCliffPeriod,
+  )
+  notificationEntityVestingBegun.triggerEnd = (poolCreatedEntity.purchaseExpiry as BigInt)
+    .plus(upfrontDeal.vestingCliffPeriod)
+    .plus(upfrontDeal.vestingPeriod)
+
+  notificationEntityVestingBegun.target = NotificationTarget.PoolInvestor
+  notificationEntityVestingBegun.message = `Your deal tokens have begun vesting in the ${poolName} pool.`
+
+  notificationEntityVestingBegun.save()
+}
+
+function createUpfrontDealAllDealTokensVested(event: UpfrontDealFullyFundedEvent): void {
+  let poolCreatedEntity = getPoolCreated(event.address.toHex())
+  let upfrontDeal = getUpfrontDeal(event.address.toHex())
+  if (poolCreatedEntity === null || upfrontDeal === null) {
+    return
+  }
+  let poolName = poolCreatedEntity.name.slice(poolCreatedEntity.name.indexOf('-') + 1)
+  let notificationEntityAllTokensVested = new Notification(
+    event.address.toHex() + '-' + Notifications.AllDealTokensVested,
+  )
+  notificationEntityAllTokensVested.type = Notifications.AllDealTokensVested
+  notificationEntityAllTokensVested.pool = event.address.toHex()
+  notificationEntityAllTokensVested.triggerStart = (poolCreatedEntity.purchaseExpiry as BigInt)
+    .plus(upfrontDeal.vestingCliffPeriod)
+    .plus(upfrontDeal.vestingPeriod)
+  notificationEntityAllTokensVested.triggerEnd = (poolCreatedEntity.purchaseExpiry as BigInt)
+    .plus(upfrontDeal.vestingCliffPeriod)
+    .plus(upfrontDeal.vestingPeriod)
+    .plus(MAX_TIME_PERIOD)
+  notificationEntityAllTokensVested.target = NotificationTarget.PoolInvestor
+  notificationEntityAllTokensVested.message = `All of your deal tokens have vested in the ${poolName} pool.`
+
+  notificationEntityAllTokensVested.save()
 }
 
 function createDealNotFundedAlert(event: DealDetailEvent): void {
@@ -239,7 +481,7 @@ function createDealNotFundedAlert(event: DealDetailEvent): void {
   }
 }
 
-function creatWithdrawUnredeemed(event: DealFullyFundedEvent): void {
+function createWithdrawUnredeemed(event: DealFullyFundedEvent): void {
   let dealEntity = getDeal(event.address.toHex())
   if (dealEntity != null) {
     let notificationEntity = new Notification(
@@ -265,22 +507,43 @@ function creatWithdrawUnredeemed(event: DealFullyFundedEvent): void {
   }
 }
 
-function createHolderSet(event: SetHolderEvent): void {
-  let dealEntity = getDeal(event.address.toHex())
-  if (dealEntity != null) {
+function createHolderSet<T>(event: T): void {
+  if (event instanceof SetHolderEvent) {
+    let dealEntity = getDeal(event.address.toHex())
+    if (dealEntity != null) {
+      let notificationEntity = new Notification(
+        dealEntity.poolAddress.toHex() + '-' + Notifications.HolderSet,
+      )
+      notificationEntity.type = Notifications.HolderSet
+      notificationEntity.pool = dealEntity.poolAddress.toHex()
+      notificationEntity.triggerStart = event.block.timestamp
+      notificationEntity.triggerEnd = dealEntity.holderFundingExpiration
+      notificationEntity.target = NotificationTarget.Holder
+      let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
+      if (poolEntity != null) {
+        let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
+        notificationEntity.message = `You've been added as the token holder for the ${poolName} pool. Please fund the deal.`
+      }
+
+      notificationEntity.save()
+    }
+  }
+  if (event instanceof CreateUpFrontDealEvent) {
+    let poolCreatedEntity = getPoolCreated(event.params.dealAddress.toHex())
+    if (poolCreatedEntity === null) {
+      return
+    }
+
+    let poolName = poolCreatedEntity.name.slice(poolCreatedEntity.name.indexOf('-') + 1)
     let notificationEntity = new Notification(
-      dealEntity.poolAddress.toHex() + '-' + Notifications.HolderSet,
+      event.params.dealAddress.toHex() + '-' + Notifications.HolderSet,
     )
     notificationEntity.type = Notifications.HolderSet
-    notificationEntity.pool = dealEntity.poolAddress.toHex()
+    notificationEntity.pool = event.params.dealAddress.toHex()
     notificationEntity.triggerStart = event.block.timestamp
-    notificationEntity.triggerEnd = dealEntity.holderFundingExpiration
+    notificationEntity.triggerEnd = event.block.timestamp.plus(MAX_TIME_PERIOD)
     notificationEntity.target = NotificationTarget.Holder
-    let poolEntity = getPoolCreated(dealEntity.poolAddress.toHex())
-    if (poolEntity != null) {
-      let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)
-      notificationEntity.message = `You've been added as the token holder for the ${poolName} pool. Please fund the deal.`
-    }
+    notificationEntity.message = `You've been added as the token holder for the ${poolName} pool. Please fund the deal.`
 
     notificationEntity.save()
   }
@@ -358,7 +621,7 @@ function createInvestmentWindowEnded(event: CreatePoolEvent): void {
     )
     notificationEntity.type = Notifications.InvestmentWindowEnded
     notificationEntity.pool = poolEntity.id
-    notificationEntity.triggerStart = poolEntity.purchaseExpiry as BigInt
+    notificationEntity.triggerStart = poolEntity.purchaseExpiry as BigInt as BigInt
     notificationEntity.triggerEnd = (poolEntity.purchaseExpiry as BigInt).plus(poolEntity.duration)
     notificationEntity.target = NotificationTarget.Sponsor
 
@@ -383,7 +646,7 @@ function createInvestmentWindowAlert(event: CreatePoolEvent): void {
       .div(BigInt.fromI32(4))
       .times(BigInt.fromI32(3))
     notificationEntity.triggerStart = event.block.timestamp.plus(alertTime)
-    notificationEntity.triggerEnd = poolEntity.purchaseExpiry as BigInt
+    notificationEntity.triggerEnd = poolEntity.purchaseExpiry as BigInt as BigInt
     notificationEntity.target = NotificationTarget.Sponsor
 
     let poolName = poolEntity.name.slice(poolEntity.name.indexOf('-') + 1)

@@ -10,6 +10,10 @@ export namespace DealType {
 }
 
 export namespace Notifications {
+  export const UpfrontDealFullyFunded = 'UpfrontDealFullyFunded'
+  export const HolderClaimFunds = 'HolderClaimFunds'
+  export const AcceptanceWindowAlert = 'AcceptanceWindowAlert'
+  export const AcceptanceWindowEnded = 'AcceptanceWindowEnded'
   export const InvestmentWindowAlert = 'InvestmentWindowAlert'
   export const InvestmentWindowEnded = 'InvestmentWindowEnded'
   export const DealProposed = 'DealProposed'

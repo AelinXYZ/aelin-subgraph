@@ -22,6 +22,10 @@ enum NotificationType {
   FundingWindowAlert
   FundingWindowEnded
   DealNotFunded
+  UpfrontDealFullyFunded
+  HolderClaimFunds
+  AcceptanceWindowAlert
+  AcceptanceWindowEnded
 }
 
 enum NotificationTarget {
@@ -385,6 +389,7 @@ type VestingDeal @entity {
 
   investorDealTotal: BigInt!
 
+  " Should be removed since this value changes with time "
   remainingAmountToVest: BigInt!
 
   totalVested: BigInt!
@@ -680,8 +685,6 @@ type UpfrontDeal @entity {
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
   holder: Bytes!
 
-  underlyingPerDealExchangeRate: BigInt!
-
   maxDealTotalSupply: BigInt!
 
   purchaseTokenPerDealToken: BigInt!
@@ -702,7 +705,13 @@ type UpfrontDeal @entity {
 
   totalRedeemed: BigInt!
 
-  totalInvested: BigInt!
+  totalUsersAccepted: Int!
+
+  remainingDealTokens: BigInt!
+
+  merkleRoot: Bytes
+
+  ipfsHash: String
 }
 
 type History @entity {
@@ -729,6 +738,8 @@ type User @entity {
   poolsAsHolderAmt: Int!
   dealsAccepted: [DealAccepted!]!
   dealsAcceptedAmt: Int!
+  upfrontDealsAccepted: [PoolCreated!]!
+  upfrontDealsAcceptedAmt: Int!
   vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
   allocationsStat: [UserAllocationStat!]!
 }

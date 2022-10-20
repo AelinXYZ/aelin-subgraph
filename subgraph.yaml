@@ -51,9 +51,9 @@ dataSources:
       name: AelinUpfrontDealFactory_v1
       network: goerli
       source:
-        address: "0x71300F6927DBBeAb9Ab6f4bA1b886d51961F0ef3"
+        address: "0x0562F48cD8aC921a63a2500467E93CAB308fdc65"
         abi: AelinUpfrontDealFactory
-        startBlock: 7520000
+        startBlock: 7791000
       mapping:
         kind: ethereum/events
         apiVersion: 0.0.5
@@ -66,7 +66,7 @@ dataSources:
           - name: ERC20
             file: ./abis/ERC20.json
         eventHandlers:
-          - event: CreateUpFrontDeal(indexed address,string,string,address,address,indexed address,indexed address,uint256)
+          - event: CreateUpFrontDeal(indexed address,string,string,address,address,indexed address,indexed address,uint256,bytes32,string)
             handler: handleCreateUpfrontDeal
           - event: CreateUpFrontDealConfig(indexed address,uint256,uint256,uint256,uint256,uint256,uint256,bool)
             handler: handleCreateUpfrontDealConfig
@@ -164,30 +164,30 @@ templates:
         - name: AelinUpfrontDeal
           file: ./abis/AelinUpfrontDeal.json
       eventHandlers:
-        # - event: DepositDealToken(indexed address,indexed address,uint256)
-        #   handler: handleDepositDealToken
+        - event: DepositDealToken(indexed address,indexed address,uint256)
+          handler: handleDepositDealToken
         - event: DealFullyFunded(address,uint256,uint256,uint256,uint256)
           handler: handleDealFullyFunded
         - event: WithdrewExcess(address,uint256)
           handler: handleWithdrewExcess
         - event: AcceptDeal(indexed address,uint256,uint256,uint256,uint256)
           handler: handleAcceptDeal
-        # - event: ClaimDealTokens(indexed address,uint256,uint256)
-        #   handler: handleClaimDealTokens
+        - event: ClaimDealTokens(indexed address,uint256,uint256)
+          handler: handleClaimDealTokens
         - event: SponsorClaim(indexed address,uint256)
           handler: handleSponsorClaim
         - event: HolderClaim(indexed address,address,uint256,address,uint256,uint256)
           handler: handleHolderClaim
         # - event: FeeEscrowClaim(indexed address,indexed address,uint256)
         #   handler: handleFeeEscrowClaim
-        # - event: ClaimedUnderlyingDealToken(indexed address,address,uint256)
-        #   handler: handleClaimedUnderlyingDealToken
+        - event: ClaimedUnderlyingDealToken(indexed address,address,uint256)
+          handler: handleClaimedUnderlyingDealToken
         - event: PoolWith721(indexed address,uint256,bool)
           handler: handlePoolWith721
         - event: PoolWith1155(indexed address,uint256,bool,uint256[],uint256[])
           handler: handlePoolWith1155
-        # - event: BlacklistNFT(indexed address,uint256)  MISSING!
-        #   handler: handleBlacklistNFT
+        - event: BlacklistNFT(indexed address,uint256)
+          handler: handleBlacklistNFT
         - event: SetHolder(indexed address)
           handler: handleSetHolder
         - event: Vouch(indexed address)

@@ -16,6 +16,7 @@ import { Address, BigInt } from '@graphprotocol/graph-ts'
 import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
 import { AelinDeal } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
+import { AelinPool as AelinPoolContract } from './types/templates/AelinPool/AelinPool'
 import {
   createEntity,
   createOrUpdateSponsorVestingDeal,
@@ -213,8 +214,10 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
     const dealEntity = getDeal(dealAddress.toHex())
     if (dealEntity) {
       let aelinDealContract = AelinDealContract.bind(Address.fromBytes(dealAddress))
+      let aelinPoolContract = AelinPoolContract.bind(Address.fromBytes(event.address))
       const dealTokenBalance = aelinDealContract.balanceOf(event.params.purchaser)
-      if (dealTokenBalance.equals(ZERO)) {
+      const poolTokenBalance = aelinPoolContract.balanceOf(event.params.purchaser)
+      if (dealTokenBalance.equals(ZERO) && poolTokenBalance.equals(ZERO)) {
         dealEntity.totalUsersRejected++
         dealEntity.save()
       }
