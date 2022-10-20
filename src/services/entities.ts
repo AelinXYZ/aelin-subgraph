@@ -21,10 +21,19 @@ import {
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from '../types/templates/AelinDeal/AelinDeal'
 
-import { AcceptDeal as AcceptUpfrontDealEvent } from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
+import {
+  AcceptDeal as AcceptUpfrontDealEvent,
+  ClaimDealTokens as ClaimDealTokensEvent,
+  SponsorClaim as SponsorClaimEvent,
+  ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenUpfrontDealEvent,
+  DepositDealToken as DepositUpfrontDealToken,
+  PoolWith721 as UpfrontDealWith721Event,
+  PoolWith1155 as UpfrontDealWith1155Event,
+} from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
+
+import { CreateUpFrontDeal as CreateUpFrontDealEvent } from '../types/AelinUpfrontDealFactory_v1/AelinUpfrontDealFactory'
 
 import { AelinDeal as AelinDealContract } from '../types/templates/AelinDeal/AelinDeal'
-import { AelinUpfrontDeal as AelinUpfrontDealContract } from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
 
 import {
   DealCreated,
@@ -97,7 +106,7 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       }
       break
     case Entity.DealSponsored:
-      if (event instanceof CreateDealEvent) {
+      if (event instanceof CreateDealEvent || event instanceof CreateUpFrontDealEvent) {
         createDealSponsoredEntity(event)
       }
       break
@@ -127,7 +136,7 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       }
       break
     case Entity.Deposit:
-      if (event instanceof PurchasePoolTokenEvent) {
+      if (event instanceof PurchasePoolTokenEvent || event instanceof AcceptUpfrontDealEvent) {
         createDepositEntity(event)
       }
       break
@@ -155,12 +164,12 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       if (event instanceof AcceptDealEvent) {
         createVestingDealEntity(event)
       }
-      if (event instanceof AcceptUpfrontDealEvent) {
+      if (event instanceof ClaimDealTokensEvent) {
         createVestingUpfrontDealEntity(event)
       }
       break
     case Entity.DealAccepted:
-      if (event instanceof AcceptDealEvent) {
+      if (event instanceof AcceptDealEvent || event instanceof ClaimDealTokensEvent) {
         createDealAcceptedEntity(event)
       }
       break
@@ -183,6 +192,9 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       if (event instanceof ClaimedUnderlyingDealTokenEvent) {
         createClaimedUnderlyingDealTokenEntity(event)
       }
+      if (event instanceof ClaimedUnderlyingDealTokenUpfrontDealEvent) {
+        createClaimedUnderlyingDealTokenEntity(event)
+      }
       break
     case Entity.WithdrawUnderlyingDealToken:
       if (event instanceof WithdrawUnderlyingDealTokenEvent) {
@@ -195,7 +207,7 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       }
       break
     case Entity.DealFunded:
-      if (event instanceof DealFullyFundedEvent) {
+      if (event instanceof DealFullyFundedEvent || event instanceof DepositUpfrontDealToken) {
         createDealFundedEntity(event)
       }
       break
@@ -205,7 +217,10 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       }
       break
     case Entity.Vest:
-      if (event instanceof ClaimedUnderlyingDealTokenEvent) {
+      if (
+        event instanceof ClaimedUnderlyingDealTokenEvent ||
+        event instanceof ClaimedUnderlyingDealTokenUpfrontDealEvent
+      ) {
         createVestEntity(event)
       }
       break
@@ -213,98 +228,127 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       createOrUpdateDealEntity(event)
       break
     case Entity.NftCollectionRule:
-      if (event instanceof PoolWith721Event) {
+      if (event instanceof PoolWith721Event || event instanceof UpfrontDealWith721Event) {
         createNft721CollectionRules(event)
         break
-      } else if (event instanceof PoolWith1155Event) {
+      } else if (event instanceof PoolWith1155Event || event instanceof UpfrontDealWith1155Event) {
         createNft1155CollectionRules(event)
         break
       }
     default:
-      log.error('Error in entities service. Trying to create a undefined EntityType??: {}', [])
+      log.error('Error in entities service. Trying to create a undefined EntityType??', [])
   }
 }
 
-function createNft721CollectionRules(event: PoolWith721Event): void {
-  let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
-    return
+function createNft721CollectionRules<T>(event: T): void {
+  if (event instanceof PoolWith721Event || event instanceof UpfrontDealWith721Event) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    const nftCollectionRule = new NftCollectionRule(
+      event.address.toHex() + '-' + event.params.collectionAddress.toHex(),
+    )
+    nftCollectionRule.poolAddress = event.address
+    nftCollectionRule.collectionAddress = event.params.collectionAddress
+    nftCollectionRule.purchaseAmount = event.params.purchaseAmount
+    nftCollectionRule.purchaseAmountPerToken = event.params.purchaseAmountPerToken
+    nftCollectionRule.nftType = NFTType.ERC721
+
+    poolCreatedEntity.hasNftList = true
+
+    let nftCollectionRules = poolCreatedEntity.nftCollectionRules
+    nftCollectionRules.push(nftCollectionRule.id)
+    poolCreatedEntity.nftCollectionRules = nftCollectionRules
+
+    nftCollectionRule.save()
+    poolCreatedEntity.save()
   }
-
-  const nftCollectionRule = new NftCollectionRule(
-    event.address.toHex() + '-' + event.params.collectionAddress.toHex(),
-  )
-  nftCollectionRule.poolAddress = event.address
-  nftCollectionRule.collectionAddress = event.params.collectionAddress
-  nftCollectionRule.purchaseAmount = event.params.purchaseAmount
-  nftCollectionRule.purchaseAmountPerToken = event.params.purchaseAmountPerToken
-  nftCollectionRule.nftType = NFTType.ERC721
-
-  poolCreatedEntity.hasNftList = true
-
-  let nftCollectionRules = poolCreatedEntity.nftCollectionRules
-  nftCollectionRules.push(nftCollectionRule.id)
-  poolCreatedEntity.nftCollectionRules = nftCollectionRules
-
-  nftCollectionRule.save()
-  poolCreatedEntity.save()
 }
 
-function createNft1155CollectionRules(event: PoolWith1155Event): void {
-  let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
-    return
+function createNft1155CollectionRules<T>(event: T): void {
+  if (event instanceof PoolWith1155Event || event instanceof UpfrontDealWith1155Event) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    const nftCollectionRule = new NftCollectionRule(
+      event.address.toHex() + '-' + event.params.collectionAddress.toHex(),
+    )
+    nftCollectionRule.poolAddress = event.address
+    nftCollectionRule.collectionAddress = event.params.collectionAddress
+    nftCollectionRule.purchaseAmount = event.params.purchaseAmount
+    nftCollectionRule.purchaseAmountPerToken = event.params.purchaseAmountPerToken
+    nftCollectionRule.nftType = NFTType.ERC1155
+    nftCollectionRule.erc1155TokenIds = event.params.tokenIds
+    nftCollectionRule.erc1155TokensAmtEligible = event.params.minTokensEligible
+
+    poolCreatedEntity.hasNftList = true
+
+    let nftCollectionRules = poolCreatedEntity.nftCollectionRules
+    nftCollectionRules.push(nftCollectionRule.id)
+    poolCreatedEntity.nftCollectionRules = nftCollectionRules
+
+    nftCollectionRule.save()
+    poolCreatedEntity.save()
   }
-
-  const nftCollectionRule = new NftCollectionRule(
-    event.address.toHex() + '-' + event.params.collectionAddress.toHex(),
-  )
-  nftCollectionRule.poolAddress = event.address
-  nftCollectionRule.collectionAddress = event.params.collectionAddress
-  nftCollectionRule.purchaseAmount = event.params.purchaseAmount
-  nftCollectionRule.purchaseAmountPerToken = event.params.purchaseAmountPerToken
-  nftCollectionRule.nftType = NFTType.ERC1155
-  nftCollectionRule.erc1155TokenIds = event.params.tokenIds
-  nftCollectionRule.erc1155TokensAmtEligible = event.params.minTokensEligible
-
-  poolCreatedEntity.hasNftList = true
-
-  let nftCollectionRules = poolCreatedEntity.nftCollectionRules
-  nftCollectionRules.push(nftCollectionRule.id)
-  poolCreatedEntity.nftCollectionRules = nftCollectionRules
-
-  nftCollectionRule.save()
-  poolCreatedEntity.save()
 }
 
-function createVestEntity(event: ClaimedUnderlyingDealTokenEvent): void {
-  let dealCreatedEntity = getDealCreated(event.address.toHex())
-  if (dealCreatedEntity == null) {
-    return
+function createVestEntity<T>(event: T): void {
+  if (event instanceof ClaimedUnderlyingDealTokenEvent) {
+    let dealCreatedEntity = getDealCreated(event.address.toHex())
+    if (dealCreatedEntity == null) {
+      return
+    }
+
+    let poolCreatedEntity = getPoolCreated(dealCreatedEntity.poolAddress.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    let vestEntity = new Vest(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
+
+    vestEntity.amountVested = event.params.underlyingDealTokensClaimed
+    vestEntity.pool = dealCreatedEntity.poolAddress.toHex()
+    vestEntity.userAddress = event.params.recipient
+    vestEntity.timestamp = event.block.timestamp
+    vestEntity.poolName = poolCreatedEntity.name
+
+    let historyEntity = getOrCreateHistory(event.params.recipient.toHex())
+    if (historyEntity != null) {
+      let vests = historyEntity.vests
+      vests.push(vestEntity.id)
+      historyEntity.vests = vests
+      historyEntity.save()
+    }
+
+    vestEntity.save()
+  } else if (event instanceof ClaimedUnderlyingDealTokenUpfrontDealEvent) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    let vestEntity = new Vest(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
+
+    vestEntity.amountVested = event.params.amountClaimed
+    vestEntity.pool = event.address.toHex()
+    vestEntity.userAddress = event.params.user
+    vestEntity.timestamp = event.block.timestamp
+    vestEntity.poolName = poolCreatedEntity.name
+
+    let historyEntity = getOrCreateHistory(event.params.user.toHex())
+    if (historyEntity != null) {
+      let vests = historyEntity.vests
+      vests.push(vestEntity.id)
+      historyEntity.vests = vests
+      historyEntity.save()
+    }
+
+    vestEntity.save()
   }
-
-  let poolCreatedEntity = getPoolCreated(dealCreatedEntity.poolAddress.toHex())
-  if (poolCreatedEntity == null) {
-    return
-  }
-
-  let vestEntity = new Vest(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
-
-  vestEntity.amountVested = event.params.underlyingDealTokensClaimed
-  vestEntity.pool = dealCreatedEntity.poolAddress.toHex()
-  vestEntity.userAddress = event.params.recipient
-  vestEntity.timestamp = event.block.timestamp
-  vestEntity.poolName = poolCreatedEntity.name
-
-  let historyEntity = getOrCreateHistory(event.params.recipient.toHex())
-  if (historyEntity != null) {
-    let vests = historyEntity.vests
-    vests.push(vestEntity.id)
-    historyEntity.vests = vests
-    historyEntity.save()
-  }
-
-  vestEntity.save()
 }
 
 function createDepositDealTokenEntity(event: DepositDealTokenEvent): void {
@@ -319,34 +363,64 @@ function createDepositDealTokenEntity(event: DepositDealTokenEvent): void {
   depositDealTokenEntity.save()
 }
 
-function createDealFundedEntity(event: DealFullyFundedEvent): void {
-  let poolCreatedEntity = getPoolCreated(event.params.poolAddress.toHex())
-  let dealEntity = getDeal(event.address.toHex())
+function createDealFundedEntity<T>(event: T): void {
+  if (event instanceof DealFullyFundedEvent) {
+    let poolCreatedEntity = getPoolCreated(event.params.poolAddress.toHex())
+    let dealEntity = getDeal(event.address.toHex())
 
-  if (dealEntity == null || poolCreatedEntity == null) {
-    return
+    if (dealEntity == null || poolCreatedEntity == null) {
+      return
+    }
+
+    let dealFundedEntity = new DealFunded(event.address.toHex() + '-' + dealEntity.holder.toHex())
+    dealFundedEntity.holder = dealEntity.holder
+    dealFundedEntity.poolName = poolCreatedEntity.name
+    dealFundedEntity.timestamp = event.block.timestamp
+    dealFundedEntity.pool = event.params.poolAddress.toHex()
+    dealFundedEntity.amountFunded = dealEntity.underlyingDealTokenTotal
+    dealFundedEntity.purchaseTokenSymbol = poolCreatedEntity.purchaseTokenSymbol
+    dealFundedEntity.purchaseTokenDecimals = poolCreatedEntity.purchaseTokenDecimals
+    dealFundedEntity.underlyingDealTokenSymbol = dealEntity.underlyingDealTokenSymbol
+    dealFundedEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
+
+    let historyEntity = getOrCreateHistory(dealEntity.holder.toHex())
+    if (historyEntity != null) {
+      let dealsFunded = historyEntity.dealsFunded
+      dealsFunded.push(dealFundedEntity.id)
+      historyEntity.dealsFunded = dealsFunded
+      historyEntity.save()
+    }
+    dealFundedEntity.save()
+  } else if (event instanceof DepositUpfrontDealToken) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    let upfrontDealEntity = getUpfrontDeal(event.address.toHex())
+
+    if (upfrontDealEntity == null || poolCreatedEntity == null) {
+      return
+    }
+
+    let dealFundedEntity = new DealFunded(
+      event.address.toHex() + '-' + upfrontDealEntity.holder.toHex(),
+    )
+    dealFundedEntity.holder = upfrontDealEntity.holder
+    dealFundedEntity.poolName = poolCreatedEntity.name
+    dealFundedEntity.timestamp = event.block.timestamp
+    dealFundedEntity.pool = event.address.toHex()
+    dealFundedEntity.amountFunded = upfrontDealEntity.underlyingDealTokenTotal
+    dealFundedEntity.purchaseTokenSymbol = poolCreatedEntity.purchaseTokenSymbol
+    dealFundedEntity.purchaseTokenDecimals = poolCreatedEntity.purchaseTokenDecimals
+    dealFundedEntity.underlyingDealTokenSymbol = upfrontDealEntity.underlyingDealTokenSymbol
+    dealFundedEntity.underlyingDealTokenDecimals = upfrontDealEntity.underlyingDealTokenDecimals
+
+    let historyEntity = getOrCreateHistory(upfrontDealEntity.holder.toHex())
+    if (historyEntity != null) {
+      let dealsFunded = historyEntity.dealsFunded
+      dealsFunded.push(dealFundedEntity.id)
+      historyEntity.dealsFunded = dealsFunded
+      historyEntity.save()
+    }
+    dealFundedEntity.save()
   }
-
-  let dealFundedEntity = new DealFunded(event.address.toHex() + '-' + dealEntity.holder.toHex())
-  dealFundedEntity.holder = dealEntity.holder
-  dealFundedEntity.poolName = poolCreatedEntity.name
-  dealFundedEntity.timestamp = event.block.timestamp
-  dealFundedEntity.pool = event.params.poolAddress.toHex()
-  dealFundedEntity.amountFunded = dealEntity.underlyingDealTokenTotal
-  dealFundedEntity.purchaseTokenSymbol = poolCreatedEntity.purchaseTokenSymbol
-  dealFundedEntity.purchaseTokenDecimals = poolCreatedEntity.purchaseTokenDecimals
-  dealFundedEntity.underlyingDealTokenSymbol = dealEntity.underlyingDealTokenSymbol
-  dealFundedEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
-
-  let historyEntity = getOrCreateHistory(dealEntity.holder.toHex())
-  if (historyEntity != null) {
-    let dealsFunded = historyEntity.dealsFunded
-    dealsFunded.push(dealFundedEntity.id)
-    historyEntity.dealsFunded = dealsFunded
-    historyEntity.save()
-  }
-
-  dealFundedEntity.save()
 }
 
 function createDealFullyFundedEntity(event: DealFullyFundedEvent): void {
@@ -372,23 +446,41 @@ function createWithdrawUnderlyingDealTokenEntity(event: WithdrawUnderlyingDealTo
   withdrawEntity.save()
 }
 
-function createClaimedUnderlyingDealTokenEntity(event: ClaimedUnderlyingDealTokenEvent): void {
-  let claimedEntity = new ClaimedUnderlyingDealToken(
-    event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
-  )
-  claimedEntity.dealAddress = event.address
-  claimedEntity.underlyingDealTokenAddress = event.params.underlyingDealTokenAddress
-  claimedEntity.recipient = event.params.recipient
-  claimedEntity.underlyingDealTokensClaimed = event.params.underlyingDealTokensClaimed
+function createClaimedUnderlyingDealTokenEntity<T>(event: T): void {
+  if (event instanceof ClaimedUnderlyingDealTokenEvent) {
+    let claimedEntity = new ClaimedUnderlyingDealToken(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+    claimedEntity.dealAddress = event.address
+    claimedEntity.underlyingDealTokenAddress = event.params.underlyingDealTokenAddress
+    claimedEntity.recipient = event.params.recipient
+    claimedEntity.underlyingDealTokensClaimed = event.params.underlyingDealTokensClaimed
 
-  claimedEntity.save()
+    claimedEntity.save()
 
-  let vestingDealEntity = getVestingDeal(
-    event.params.recipient.toHex() + '-' + event.address.toHex(),
-  )
-  if (vestingDealEntity) {
-    vestingDealEntity.lastClaim = event.block.timestamp
-    vestingDealEntity.save()
+    let vestingDealEntity = getVestingDeal(
+      event.params.recipient.toHex() + '-' + event.address.toHex(),
+    )
+    if (vestingDealEntity) {
+      vestingDealEntity.lastClaim = event.block.timestamp
+      vestingDealEntity.save()
+    }
+  } else if (event instanceof ClaimedUnderlyingDealTokenUpfrontDealEvent) {
+    let claimedEntity = new ClaimedUnderlyingDealToken(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+    claimedEntity.dealAddress = event.address
+    claimedEntity.underlyingDealTokenAddress = event.params.underlyingToken
+    claimedEntity.recipient = event.params.user
+    claimedEntity.underlyingDealTokensClaimed = event.params.amountClaimed
+
+    claimedEntity.save()
+
+    let vestingDealEntity = getVestingDeal(event.params.user.toHex() + '-' + event.address.toHex())
+    if (vestingDealEntity) {
+      vestingDealEntity.lastClaim = event.block.timestamp
+      vestingDealEntity.save()
+    }
   }
 }
 
@@ -442,118 +534,163 @@ function createUserAllocationStatEntity(event: PurchasePoolTokenEvent): void {
   userAllocationStatEntity.save()
 }
 
-function createDealAcceptedEntity(event: AcceptDealEvent): void {
-  let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
-    return
-  }
+function createDealAcceptedEntity<T>(event: T): void {
+  if (event instanceof AcceptDealEvent) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
 
-  const dealAddress = poolCreatedEntity.dealAddress
-  if (!dealAddress) {
-    return
-  }
+    const dealAddress = poolCreatedEntity.dealAddress
+    if (!dealAddress) {
+      return
+    }
 
-  const dealEntity = getDeal(dealAddress.toHex())
-  if (!dealEntity) {
-    return
-  }
+    const dealEntity = getDeal(dealAddress.toHex())
+    if (!dealEntity) {
+      return
+    }
 
-  let dealAcceptedEntity = new DealAccepted(
-    event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
-  )
+    let dealAcceptedEntity = new DealAccepted(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
 
-  let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
-  let dealTokenAmount = event.params.poolTokenAmount.times(
-    // @ts-ignore
-    BigInt.fromI32(10).pow(<u8>exp.toI32()),
-  )
-  let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
-  let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
+    let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
+    let dealTokenAmount = event.params.poolTokenAmount.times(
+      // @ts-ignore
+      BigInt.fromI32(10).pow(<u8>exp.toI32()),
+    )
+    let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
+    let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
 
-  dealAcceptedEntity.userAddress = event.params.purchaser
-  dealAcceptedEntity.timestamp = event.block.timestamp
-  dealAcceptedEntity.poolName = poolCreatedEntity.name
-  dealAcceptedEntity.investmentAmount = event.params.poolTokenAmount
-  dealAcceptedEntity.dealTokenAmount = dealTokenAmount
-    .times(underlyingPerDealExchangeRate)
-    .div(BigInt.fromI32(10).pow(18))
-  dealAcceptedEntity.pool = event.address.toHex()
+    dealAcceptedEntity.userAddress = event.params.purchaser
+    dealAcceptedEntity.timestamp = event.block.timestamp
+    dealAcceptedEntity.poolName = poolCreatedEntity.name
+    dealAcceptedEntity.investmentAmount = event.params.poolTokenAmount
+    dealAcceptedEntity.dealTokenAmount = dealTokenAmount
+      .times(underlyingPerDealExchangeRate)
+      .div(BigInt.fromI32(10).pow(18))
+    dealAcceptedEntity.pool = event.address.toHex()
 
-  let historyEntity = getOrCreateHistory(event.params.purchaser.toHex())
-  if (historyEntity != null) {
-    let dealsAccepted = historyEntity.dealsAccepted
-    dealsAccepted.push(dealAddress.toHex())
-    historyEntity.dealsAccepted = dealsAccepted
-    historyEntity.save()
-  }
-
-  let userEntity = getOrCreateUser(event.params.purchaser.toHex())
-  if (userEntity != null) {
-    let dealsAccepted = userEntity.dealsAccepted
-    let dealsAcceptedIndex = dealsAccepted.indexOf(dealAddress.toHex())
-    // Check if already accepted
-    if (dealsAcceptedIndex < 0) {
+    let historyEntity = getOrCreateHistory(event.params.purchaser.toHex())
+    if (historyEntity != null) {
+      let dealsAccepted = historyEntity.dealsAccepted
       dealsAccepted.push(dealAddress.toHex())
-      userEntity.dealsAccepted = dealsAccepted
-      userEntity.dealsAcceptedAmt = dealsAccepted.length
-      dealEntity.totalUsersAccepted++
-      dealEntity.save()
+      historyEntity.dealsAccepted = dealsAccepted
+      historyEntity.save()
     }
 
-    // If dealAccepted then remove it from poolsInvested to avoid duplicates/redundant info
-    let poolsInvested = userEntity.poolsInvested
-    let poolInvestedIndex = poolsInvested.indexOf(dealAcceptedEntity.pool)
-    if (poolInvestedIndex >= 0) {
-      poolsInvested.splice(poolInvestedIndex, 1)
-      userEntity.poolsInvested = poolsInvested
+    let userEntity = getOrCreateUser(event.params.purchaser.toHex())
+    if (userEntity != null) {
+      let dealsAccepted = userEntity.dealsAccepted
+      let dealsAcceptedIndex = dealsAccepted.indexOf(dealAddress.toHex())
+      // Check if already accepted
+      if (dealsAcceptedIndex < 0) {
+        dealsAccepted.push(dealAddress.toHex())
+        userEntity.dealsAccepted = dealsAccepted
+        userEntity.dealsAcceptedAmt = dealsAccepted.length
+        dealEntity.totalUsersAccepted++
+        dealEntity.save()
+      }
+
+      // If dealAccepted then remove it from poolsInvested to avoid duplicates/redundant info
+      // TODO SEE IF REMOVING THIS AFFECTS RESULTS
+      // let poolsInvested = userEntity.poolsInvested
+      // let poolInvestedIndex = poolsInvested.indexOf(dealAcceptedEntity.pool)
+      // if (poolInvestedIndex >= 0) {
+      //   poolsInvested.splice(poolInvestedIndex, 1)
+      //   userEntity.poolsInvested = poolsInvested
+      // }
+
+      userEntity.save()
     }
 
-    userEntity.save()
+    dealAcceptedEntity.save()
+  } else if (event instanceof ClaimDealTokensEvent) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    const upfrontDealEntity = getUpfrontDeal(event.address.toHex())
+    if (!upfrontDealEntity) {
+      return
+    }
+
+    let dealAcceptedEntity = new DealAccepted(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+
+    dealAcceptedEntity.userAddress = event.params.user
+    dealAcceptedEntity.timestamp = event.block.timestamp
+    dealAcceptedEntity.poolName = poolCreatedEntity.name
+
+    const amountMintedInInvestedToken = event.params.amountMinted
+      .times(upfrontDealEntity.purchaseTokenPerDealToken)
+      .div(BigInt.fromI32(10).pow(18))
+
+    dealAcceptedEntity.investmentAmount = amountMintedInInvestedToken
+      .div(ONE_HUNDRED.minus(poolCreatedEntity.sponsorFee.plus(AELIN_FEE))) // <=== Should div the sponsorFee by 10e(BASE)
+      .times(ONE_HUNDRED)
+    // .plus(event.params.amountPurchasingReturned)
+
+    dealAcceptedEntity.dealTokenAmount = event.params.amountMinted
+    dealAcceptedEntity.pool = event.address.toHex()
+
+    let historyEntity = getOrCreateHistory(event.params.user.toHex())
+    if (historyEntity != null) {
+      let dealsAccepted = historyEntity.dealsAccepted
+      dealsAccepted.push(event.address.toHex())
+      historyEntity.dealsAccepted = dealsAccepted
+      historyEntity.save()
+    }
+
+    dealAcceptedEntity.save()
   }
-
-  dealAcceptedEntity.save()
 }
 
-export function createOrUpdateSponsorVestingUpfrontDeal(event: AcceptUpfrontDealEvent): void {
-  let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  let dealEntity = getDeal(event.address.toHex())
+export function createOrUpdateSponsorVestingUpfrontDeal<T>(event: T): void {
+  if (event instanceof SponsorClaimEvent || event instanceof ClaimDealTokensEvent) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    let dealEntity = getDeal(event.address.toHex())
 
-  if (dealEntity == null || poolCreatedEntity == null) {
-    return
-  }
+    if (dealEntity == null || poolCreatedEntity == null) {
+      return
+    }
 
-  let vestingDealEntity = getVestingDeal(
-    poolCreatedEntity.sponsor.toHex() + '-' + event.address.toHex(),
-  )
-
-  let investorDealTotal = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
-
-  if (vestingDealEntity === null) {
-    vestingDealEntity = new VestingDeal(
+    let vestingDealEntity = getVestingDeal(
       poolCreatedEntity.sponsor.toHex() + '-' + event.address.toHex(),
     )
 
-    vestingDealEntity.poolName = poolCreatedEntity.name
-    vestingDealEntity.poolAddress = event.address
-    vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
-    vestingDealEntity.tokenToVestSymbol = dealEntity.underlyingDealTokenSymbol
-    vestingDealEntity.investorDealTotal = investorDealTotal
-    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
-    vestingDealEntity.totalVested = BigInt.fromI32(0)
-    vestingDealEntity.vestingPeriodStarts = dealEntity.vestingPeriodStarts
-    vestingDealEntity.vestingPeriodEnds = dealEntity.vestingPeriodStarts.plus(
-      dealEntity.vestingPeriod,
-    )
-    vestingDealEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
-    vestingDealEntity.user = poolCreatedEntity.sponsor.toHex()
-    vestingDealEntity.pool = poolCreatedEntity.id
-  } else {
-    vestingDealEntity.investorDealTotal =
-      vestingDealEntity.investorDealTotal.plus(investorDealTotal)
-    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
-  }
+    let investorDealTotal = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
 
-  vestingDealEntity.save()
+    if (vestingDealEntity === null) {
+      vestingDealEntity = new VestingDeal(
+        poolCreatedEntity.sponsor.toHex() + '-' + event.address.toHex(),
+      )
+
+      vestingDealEntity.poolName = poolCreatedEntity.name
+      vestingDealEntity.poolAddress = event.address
+      vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
+      vestingDealEntity.tokenToVestSymbol = dealEntity.underlyingDealTokenSymbol
+      vestingDealEntity.investorDealTotal = investorDealTotal
+      vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+      vestingDealEntity.totalVested = BigInt.fromI32(0)
+      vestingDealEntity.vestingPeriodStarts = dealEntity.vestingPeriodStarts
+      vestingDealEntity.vestingPeriodEnds = dealEntity.vestingPeriodStarts.plus(
+        dealEntity.vestingPeriod,
+      )
+      vestingDealEntity.underlyingDealTokenDecimals = dealEntity.underlyingDealTokenDecimals
+      vestingDealEntity.user = poolCreatedEntity.sponsor.toHex()
+      vestingDealEntity.pool = poolCreatedEntity.id
+    } else {
+      vestingDealEntity.investorDealTotal =
+        vestingDealEntity.investorDealTotal.plus(investorDealTotal)
+      vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+    }
+
+    vestingDealEntity.save()
+  }
 }
 
 export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
@@ -602,9 +739,7 @@ export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
   vestingDealEntity.save()
 }
 
-function createVestingUpfrontDealEntity(event: AcceptUpfrontDealEvent): void {
-  createOrUpdateSponsorVestingUpfrontDeal(event)
-
+function createVestingUpfrontDealEntity(event: ClaimDealTokensEvent): void {
   let vestingDealEntity = getVestingDeal(event.params.user.toHex() + '-' + event.address.toHex())
 
   if (vestingDealEntity == null) {
@@ -618,20 +753,13 @@ function createVestingUpfrontDealEntity(event: AcceptUpfrontDealEvent): void {
     return
   }
 
-  let investorDealTotal = event.params.totalDealTokens
+  let investorDealTotal = event.params.amountMinted
 
   vestingDealEntity.poolName = poolCreatedEntity.name
   vestingDealEntity.poolAddress = event.address
   vestingDealEntity.tokenToVest = dealEntity.underlyingDealToken
   vestingDealEntity.tokenToVestSymbol = dealEntity.underlyingDealTokenSymbol
-
-  let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
-
-  vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(
-    investorDealTotal
-      .times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
-      .div(ONE_HUNDRED),
-  )
+  vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(investorDealTotal)
 
   vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
   vestingDealEntity.totalVested = BigInt.fromI32(0)
@@ -753,30 +881,60 @@ function createWithdrawFromPoolEntity(event: WithdrawFromPoolEvent): void {
   withdrawFromPoolEntity.save()
 }
 
-function createDepositEntity(event: PurchasePoolTokenEvent): void {
-  let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
-    return
+function createDepositEntity<T>(event: T): void {
+  if (event instanceof PurchasePoolTokenEvent) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    let depositEntity = new Deposit(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+
+    depositEntity.userAddress = event.params.purchaser
+    depositEntity.timestamp = event.block.timestamp
+    depositEntity.poolName = poolCreatedEntity.name
+    depositEntity.sponsor = poolCreatedEntity.sponsor
+    depositEntity.amountDeposited = event.params.purchaseTokenAmount
+    depositEntity.pool = event.address.toHex()
+
+    let historyEntity = getOrCreateHistory(event.params.purchaser.toHex())
+    if (historyEntity != null) {
+      let deposits = historyEntity.deposits
+      deposits.push(depositEntity.id)
+      historyEntity.deposits = deposits
+      historyEntity.save()
+    }
+
+    depositEntity.save()
+  } else if (event instanceof AcceptUpfrontDealEvent) {
+    let poolCreatedEntity = getPoolCreated(event.address.toHex())
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    let depositEntity = new Deposit(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+
+    depositEntity.userAddress = event.params.user
+    depositEntity.timestamp = event.block.timestamp
+    depositEntity.poolName = poolCreatedEntity.name
+    depositEntity.sponsor = poolCreatedEntity.sponsor
+    depositEntity.amountDeposited = event.params.amountPurchased
+    depositEntity.pool = event.address.toHex()
+
+    let historyEntity = getOrCreateHistory(event.params.user.toHex())
+    if (historyEntity != null) {
+      let deposits = historyEntity.deposits
+      deposits.push(depositEntity.id)
+      historyEntity.deposits = deposits
+      historyEntity.save()
+    }
+
+    depositEntity.save()
   }
-
-  let depositEntity = new Deposit(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
-
-  depositEntity.userAddress = event.params.purchaser
-  depositEntity.timestamp = event.block.timestamp
-  depositEntity.poolName = poolCreatedEntity.name
-  depositEntity.sponsor = poolCreatedEntity.sponsor
-  depositEntity.amountDeposited = event.params.purchaseTokenAmount
-  depositEntity.pool = event.address.toHex()
-
-  let historyEntity = getOrCreateHistory(event.params.purchaser.toHex())
-  if (historyEntity != null) {
-    let deposits = historyEntity.deposits
-    deposits.push(depositEntity.id)
-    historyEntity.deposits = deposits
-    historyEntity.save()
-  }
-
-  depositEntity.save()
 }
 
 function createPurchasePoolTokenEntity(event: PurchasePoolTokenEvent): void {
@@ -838,33 +996,38 @@ function createDealCreatedEntity(event: CreateDealEvent): void {
   dealCreatedEntity.save()
 }
 
-function createDealSponsoredEntity(event: CreateDealEvent): void {
-  let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
-    return
+function createDealSponsoredEntity<T>(event: T): void {
+  if (event instanceof CreateDealEvent || event instanceof CreateUpFrontDealEvent) {
+    let poolAddress = event.address.toHex()
+    if (event instanceof CreateUpFrontDealEvent) {
+      poolAddress = event.params.dealAddress.toHex()
+    }
+
+    const poolCreatedEntity = getPoolCreated(poolAddress)
+    if (poolCreatedEntity == null) {
+      return
+    }
+
+    let dealSponsoredEntity = new DealSponsored(poolAddress + '-' + event.params.sponsor.toHex())
+    dealSponsoredEntity.sponsor = event.params.sponsor
+    dealSponsoredEntity.timestamp = event.block.timestamp
+    dealSponsoredEntity.poolName = poolCreatedEntity.name
+    dealSponsoredEntity.amountEarned = BigInt.fromI32(0)
+    dealSponsoredEntity.totalAccepted = BigInt.fromI32(0)
+    dealSponsoredEntity.totalInvested = BigInt.fromI32(0)
+    dealSponsoredEntity.sponsorFee = poolCreatedEntity.sponsorFee
+    dealSponsoredEntity.pool = poolAddress
+
+    let historyEntity = getOrCreateHistory(event.params.sponsor.toHex())
+    if (historyEntity != null) {
+      let dealsSponsored = historyEntity.dealsSponsored
+      dealsSponsored.push(dealSponsoredEntity.id)
+      historyEntity.dealsSponsored = dealsSponsored
+      historyEntity.save()
+    }
+
+    dealSponsoredEntity.save()
   }
-
-  let dealSponsoredEntity = new DealSponsored(
-    event.address.toHex() + '-' + event.params.sponsor.toHex(),
-  )
-  dealSponsoredEntity.sponsor = event.params.sponsor
-  dealSponsoredEntity.timestamp = event.block.timestamp
-  dealSponsoredEntity.poolName = poolCreatedEntity.name
-  dealSponsoredEntity.amountEarned = BigInt.fromI32(0)
-  dealSponsoredEntity.totalAccepted = BigInt.fromI32(0)
-  dealSponsoredEntity.totalInvested = BigInt.fromI32(0)
-  dealSponsoredEntity.sponsorFee = poolCreatedEntity.sponsorFee
-  dealSponsoredEntity.pool = event.address.toHex()
-
-  let historyEntity = getOrCreateHistory(event.params.sponsor.toHex())
-  if (historyEntity != null) {
-    let dealsSponsored = historyEntity.dealsSponsored
-    dealsSponsored.push(dealSponsoredEntity.id)
-    historyEntity.dealsSponsored = dealsSponsored
-    historyEntity.save()
-  }
-
-  dealSponsoredEntity.save()
 }
 
 function createDealDetailEntity(event: DealDetailEvent): void {
@@ -1015,7 +1178,7 @@ export function getDealFunded(address: string): DealFunded | null {
 export function getDealSponsored(address: string): DealSponsored | null {
   let dealSponsoredEntity = DealSponsored.load(address)
   if (dealSponsoredEntity == null) {
-    log.error('trying to find a ealSponsored not saved with address: {}', [])
+    log.error('trying to find a ealSponsored not saved with address', [])
     return null
   }
 

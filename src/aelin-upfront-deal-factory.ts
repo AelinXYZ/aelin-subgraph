@@ -1,4 +1,3 @@
-import { BigInt } from '@graphprotocol/graph-ts'
 import { PoolCreated, TotalPoolsCreated, UpfrontDeal } from './types/schema'
 import {
   CreateUpFrontDeal as CreateUpFrontDealEvent,
@@ -7,9 +6,16 @@ import {
 import { ONE, ZERO } from './helpers'
 import { PoolStatus, DealType } from './enum'
 import { AelinUpfrontDeal } from './types/templates'
-// import { createNotificationsForEvent } from './services/notifications'
-import { getOrCreateUser, getPoolCreated, getUpfrontDeal } from './services/entities'
+import {
+  createEntity,
+  Entity,
+  getOrCreateUser,
+  getPoolCreated,
+  getUpfrontDeal,
+} from './services/entities'
 import { getTokenDecimals, getTokenSymbol } from './services/token'
+import { createNotificationsForEvent } from './services/notifications'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
@@ -32,7 +38,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.purchaseTokenSymbol = getTokenSymbol(event.params.purchaseToken)
   poolCreatedEntity.purchaseTokenDecimals = getTokenDecimals(event.params.purchaseToken)
 
-  poolCreatedEntity.poolStatus = PoolStatus.DealOpen // ?? check this
+  poolCreatedEntity.poolStatus = PoolStatus.DealOpen
   poolCreatedEntity.filter = `${event.params.name.toLowerCase()}-${event.params.sponsor.toHex()}-${getTokenSymbol(
     event.params.purchaseToken,
   ).toLowerCase()}`
@@ -51,7 +57,6 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
     poolsSponsored.push(poolCreatedEntity.id)
     userEntity.poolsSponsored = poolsSponsored
     userEntity.poolsSponsoredAmt = poolsSponsored.length
-    // Also History.dealsSponsored
 
     userEntity.save()
   }
@@ -62,7 +67,6 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
     poolsAsHolder.push(poolCreatedEntity.id)
     userEntity.poolsAsHolder = poolsAsHolder
     userEntity.poolsAsHolderAmt = poolsAsHolder.length
-    // Also History.dealsSponsored
 
     userEntity.save()
   }
@@ -74,16 +78,18 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   upFrontDealEntity.underlyingDealTokenSymbol = getTokenSymbol(event.params.underlyingDealToken)
   upFrontDealEntity.underlyingDealTokenDecimals = getTokenDecimals(event.params.underlyingDealToken)
   upFrontDealEntity.holder = event.params.holder
+  upFrontDealEntity.merkleRoot = event.params.merkleRoot
+  upFrontDealEntity.ipfsHash = event.params.ipfsHash
 
   poolCreatedEntity.upfrontDeal = event.params.dealAddress.toHex()
 
   upFrontDealEntity.save()
   poolCreatedEntity.save()
 
+  createEntity(Entity.DealSponsored, event)
+  createNotificationsForEvent(event)
   // use templates to create a new pool to track events
   AelinUpfrontDeal.create(event.params.dealAddress)
-  // Check notification last
-  // createNotificationsForEvent(event)
 }
 export function handleCreateUpfrontDealConfig(event: CreateUpFrontDealConfigEvent): void {
   const upFrontDealEntity = getUpfrontDeal(event.params.dealAddress.toHex())
@@ -91,6 +97,7 @@ export function handleCreateUpfrontDealConfig(event: CreateUpFrontDealConfigEven
 
   if (upFrontDealEntity) {
     upFrontDealEntity.underlyingDealTokenTotal = event.params.underlyingDealTokenTotal
+    upFrontDealEntity.remainingDealTokens = event.params.underlyingDealTokenTotal
     upFrontDealEntity.purchaseTokenPerDealToken = event.params.purchaseTokenPerDealToken
     upFrontDealEntity.purchaseRaiseMinimum = event.params.purchaseRaiseMinimum
     upFrontDealEntity.vestingPeriod = event.params.vestingPeriod
@@ -98,21 +105,20 @@ export function handleCreateUpfrontDealConfig(event: CreateUpFrontDealConfigEven
     upFrontDealEntity.allowDeallocation = event.params.allowDeallocation
     upFrontDealEntity.totalAmountUnredeemed = event.params.underlyingDealTokenTotal
     upFrontDealEntity.totalRedeemed = ZERO
-    upFrontDealEntity.totalInvested = ZERO
 
     upFrontDealEntity.save()
   }
 
   if (poolCreatedEntity) {
     poolCreatedEntity.purchaseDuration = event.params.purchaseDuration
+    if (event.params.allowDeallocation === false) {
+      poolCreatedEntity.purchaseTokenCap = event.params.underlyingDealTokenTotal
+        .times(event.params.purchaseTokenPerDealToken)
+        .div(BigInt.fromI32(10).pow(18))
+    } else {
+      poolCreatedEntity.purchaseTokenCap = ZERO
+    }
+
     poolCreatedEntity.save()
   }
-
-  // let userEntity = getOrCreateUser(event.params.sponsor.toHex())
-  // if (userEntity != null) {
-  //   // Add upfrontdeal data
-  //   userEntity.save()
-  // }
-
-  // notifications
 }

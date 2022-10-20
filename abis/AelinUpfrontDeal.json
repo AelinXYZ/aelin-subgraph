@@ -40,6 +40,25 @@
         "anonymous": false,
         "inputs": [
             {
+                "indexed": true,
+                "internalType": "address",
+                "name": "collection",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "nftID",
+                "type": "uint256"
+            }
+        ],
+        "name": "BlacklistNFT",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": false,
                 "internalType": "string",
                 "name": "name",
@@ -1267,11 +1286,6 @@
             },
             {
                 "internalType": "address",
-                "name": "_dealCreator",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
                 "name": "_aelinTreasuryAddress",
                 "type": "address"
             },
@@ -1459,12 +1473,12 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "to",
+                "name": "_dst",
                 "type": "address"
             },
             {
                 "internalType": "uint256",
-                "name": "amount",
+                "name": "_amount",
                 "type": "uint256"
             }
         ],
@@ -1483,17 +1497,17 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "from",
+                "name": "_src",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "to",
+                "name": "_dst",
                 "type": "address"
             },
             {
                 "internalType": "uint256",
-                "name": "amount",
+                "name": "_amount",
                 "type": "uint256"
             }
         ],

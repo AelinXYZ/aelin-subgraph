@@ -16,8 +16,8 @@
         "upfrontDeals": [
             {
                 "name": "AelinUpfrontDealFactory_v1",
-                "address": "0x71300F6927DBBeAb9Ab6f4bA1b886d51961F0ef3",
-                "startBlock": 7520000
+                "address": "0x0562F48cD8aC921a63a2500467E93CAB308fdc65",
+                "startBlock": 7791000
             }
         ]
     }

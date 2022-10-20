@@ -2763,7 +2763,6 @@ export class UpfrontDeal extends Entity {
     this.set('underlyingDealTokenTotal', Value.fromBigInt(BigInt.zero()))
     this.set('vestingPeriod', Value.fromBigInt(BigInt.zero()))
     this.set('holder', Value.fromBytes(Bytes.empty()))
-    this.set('underlyingPerDealExchangeRate', Value.fromBigInt(BigInt.zero()))
     this.set('maxDealTotalSupply', Value.fromBigInt(BigInt.zero()))
     this.set('purchaseTokenPerDealToken', Value.fromBigInt(BigInt.zero()))
     this.set('purchaseRaiseMinimum', Value.fromBigInt(BigInt.zero()))
@@ -2772,6 +2771,9 @@ export class UpfrontDeal extends Entity {
     this.set('totalAmountUnredeemed', Value.fromBigInt(BigInt.zero()))
     this.set('holderClaim', Value.fromBoolean(false))
     this.set('sponsorClaim', Value.fromBoolean(false))
+    this.set('totalRedeemed', Value.fromBigInt(BigInt.zero()))
+    this.set('totalUsersAccepted', Value.fromI32(0))
+    this.set('remainingDealTokens', Value.fromBigInt(BigInt.zero()))
   }
 
   save(): void {
@@ -2890,15 +2892,6 @@ export class UpfrontDeal extends Entity {
     this.set('holder', Value.fromBytes(value))
   }
 
-  get underlyingPerDealExchangeRate(): BigInt {
-    let value = this.get('underlyingPerDealExchangeRate')
-    return value!.toBigInt()
-  }
-
-  set underlyingPerDealExchangeRate(value: BigInt) {
-    this.set('underlyingPerDealExchangeRate', Value.fromBigInt(value))
-  }
-
   get maxDealTotalSupply(): BigInt {
     let value = this.get('maxDealTotalSupply')
     return value!.toBigInt()
@@ -2986,6 +2979,67 @@ export class UpfrontDeal extends Entity {
 
   set sponsorClaim(value: boolean) {
     this.set('sponsorClaim', Value.fromBoolean(value))
+  }
+
+  get totalRedeemed(): BigInt {
+    let value = this.get('totalRedeemed')
+    return value!.toBigInt()
+  }
+
+  set totalRedeemed(value: BigInt) {
+    this.set('totalRedeemed', Value.fromBigInt(value))
+  }
+
+  get totalUsersAccepted(): i32 {
+    let value = this.get('totalUsersAccepted')
+    return value!.toI32()
+  }
+
+  set totalUsersAccepted(value: i32) {
+    this.set('totalUsersAccepted', Value.fromI32(value))
+  }
+
+  get remainingDealTokens(): BigInt {
+    let value = this.get('remainingDealTokens')
+    return value!.toBigInt()
+  }
+
+  set remainingDealTokens(value: BigInt) {
+    this.set('remainingDealTokens', Value.fromBigInt(value))
+  }
+
+  get merkleRoot(): Bytes | null {
+    let value = this.get('merkleRoot')
+    if (!value || value.kind == ValueKind.NULL) {
+      return null
+    } else {
+      return value.toBytes()
+    }
+  }
+
+  set merkleRoot(value: Bytes | null) {
+    if (!value) {
+      this.unset('merkleRoot')
+    } else {
+      this.set('merkleRoot', Value.fromBytes(<Bytes>value))
+    }
+  }
+
+  get ipfsHash(): string | null {
+    let value = this.get('ipfsHash')
+    if (!value || value.kind == ValueKind.NULL) {
+      return null
+    } else {
+      return value.toString()
+    }
+  }
+
+  set ipfsHash(value: string | null) {
+    if (!value) {
+      this.unset('ipfsHash')
+    } else {
+      this.set('ipfsHash', Value.fromString(<string>value))
+    }
   }
 }
 
@@ -3106,6 +3160,8 @@ export class User extends Entity {
     this.set('poolsAsHolderAmt', Value.fromI32(0))
     this.set('dealsAccepted', Value.fromStringArray(new Array(0)))
     this.set('dealsAcceptedAmt', Value.fromI32(0))
+    this.set('upfrontDealsAccepted', Value.fromStringArray(new Array(0)))
+    this.set('upfrontDealsAcceptedAmt', Value.fromI32(0))
     this.set('allocationsStat', Value.fromStringArray(new Array(0)))
   }
 
@@ -3214,6 +3270,24 @@ export class User extends Entity {
 
   set dealsAcceptedAmt(value: i32) {
     this.set('dealsAcceptedAmt', Value.fromI32(value))
+  }
+
+  get upfrontDealsAccepted(): Array<string> {
+    let value = this.get('upfrontDealsAccepted')
+    return value!.toStringArray()
+  }
+
+  set upfrontDealsAccepted(value: Array<string>) {
+    this.set('upfrontDealsAccepted', Value.fromStringArray(value))
+  }
+
+  get upfrontDealsAcceptedAmt(): i32 {
+    let value = this.get('upfrontDealsAcceptedAmt')
+    return value!.toI32()
+  }
+
+  set upfrontDealsAcceptedAmt(value: i32) {
+    this.set('upfrontDealsAcceptedAmt', Value.fromI32(value))
   }
 
   get vestingDeals(): Array<string> {
