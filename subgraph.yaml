@@ -5,11 +5,11 @@ schema:
 dataSources:
     - kind: ethereum/contract
       name: AelinPoolFactory
-      network: goerli
+      network: mainnet
       source:
-        address: "0xCA4d64B67486867a9E867D0E38E1F1e99B718EEb"
+        address: "0x5541DA82549D732878c4104C9887c408790397AF"
         abi: AelinPoolFactory
-        startBlock: 6457748
+        startBlock: 13846412
       mapping:
         kind: ethereum/events
         apiVersion: 0.0.5
@@ -26,12 +26,56 @@ dataSources:
             handler: handleCreatePool
         file: ./src/aelin-pool-factory.ts
     - kind: ethereum/contract
-      name: AelinPoolFactory_v4
-      network: goerli
+      name: AelinPoolFactory_v2
+      network: mainnet
       source:
-        address: "0xb52736cE26345942134b11083e88A0DD9Ef1be5A"
+        address: "0x91fCeA33D02d11621b7f90ebd5E44eD393eD7b5e"
         abi: AelinPoolFactory
-        startBlock: 7340000
+        startBlock: 13948162
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinPoolFactory
+            file: ./abis/AelinPoolFactory_v2.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+            handler: handleCreatePool
+        file: ./src/aelin-pool-factory.ts
+    - kind: ethereum/contract
+      name: AelinPoolFactory_v3
+      network: mainnet
+      source:
+        address: "0x2C0979B0de5F99c2bde1E698AeCA13b55695951E"
+        abi: AelinPoolFactory
+        startBlock: 13996006
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinPoolFactory
+            file: ./abis/AelinPoolFactory_v3.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+            handler: handleCreatePool
+        file: ./src/aelin-pool-factory.ts
+    - kind: ethereum/contract
+      name: AelinPoolFactory_v4
+      network: mainnet
+      source:
+        address: "0x722969A3fdc778a5cC7CbC8DC8Ae3e96a288f853"
+        abi: AelinPoolFactory
+        startBlock: 15361430
       mapping:
         kind: ethereum/events
         apiVersion: 0.0.5
@@ -49,11 +93,11 @@ dataSources:
         file: ./src/aelin-pool-factory.ts
     - kind: ethereum/contract
       name: AelinUpfrontDealFactory_v1
-      network: goerli
+      network: mainnet
       source:
-        address: "0x0562F48cD8aC921a63a2500467E93CAB308fdc65"
+        address: "0x97EfdB29C0D6daCDc0BB334Cc227AE03A1a7c01E"
         abi: AelinUpfrontDealFactory
-        startBlock: 7791000
+        startBlock: 15834071
       mapping:
         kind: ethereum/events
         apiVersion: 0.0.5
@@ -75,7 +119,7 @@ dataSources:
 templates:
   - name: AelinPool
     kind: ethereum/contract
-    network: goerli
+    network: mainnet
     source:
       abi: AelinPool
     mapping:
@@ -121,7 +165,7 @@ templates:
 
   - name: AelinDeal
     kind: ethereum/contract
-    network: goerli
+    network: mainnet
     source:
       abi: AelinDeal
     mapping:
@@ -150,7 +194,7 @@ templates:
 
   - name: AelinUpfrontDeal
     kind: ethereum/contract
-    network: goerli
+    network: mainnet
     source:
       abi: AelinUpfrontDeal
     mapping:

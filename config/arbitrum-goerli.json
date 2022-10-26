@@ -1,0 +1,13 @@
+{
+  "network": "arbitrum-goerli",
+  "dataSources": {
+    "sponsorPools": [],
+    "upfrontDeals": [
+      {
+        "name": "AelinUpfrontDealFactory_v1",
+        "address": "0x1D29411889e3B37702E1Fe3BdA61f9C54704d852",
+        "startBlock": 755515
+      }
+    ]
+  }
+}
