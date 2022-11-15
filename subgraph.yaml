@@ -1,106 +1,130 @@
-specVersion: 0.0.4
-description: Fundraising on Ethereum
+specVersion: 0.0.2
+description: Fundraising on Ethereum.
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum/contract
-    name: AelinPoolFactory
-    network: optimism
-    source:
-      address: "0x87525307974a312AF13a78041F88B0BAe23ebb10"
-      abi: AelinPoolFactory
-      startBlock: 1487918
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - PoolCreated
-      abis:
-        - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
-          handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
-  - kind: ethereum/contract
-    name: AelinPoolFactory_v2
-    network: optimism
-    source:
-      address: "0x914FfC8dc0678911AAE77f51B8489d6e214Da20F"
-      abi: AelinPoolFactory
-      startBlock: 1971285
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - PoolCreated
-      abis:
-        - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
-          handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
-  - kind: ethereum/contract
-    name: AelinPoolFactory_v3
-    network: optimism
-    source:
-      address: "0x9219f9f65B007Fd3bA0b53762861f54062531a31"
-      abi: AelinPoolFactory
-      startBlock: 2266169
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - PoolCreated
-      abis:
-        - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
-          handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
-  - kind: ethereum/contract
-    name: AelinPoolFactory_v4
-    network: optimism
-    source:
-      address: "0x8B35551d6459a3d49B9A5A0D7333c6D7E0cCbBd9"
-      abi: AelinPoolFactory
-      startBlock: 19552522
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - PoolCreated
-      abis:
-        - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
-          handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
+    - kind: ethereum/contract
+      name: AelinPoolFactory
+      network: mainnet
+      source:
+        address: "0x5541DA82549D732878c4104C9887c408790397AF"
+        abi: AelinPoolFactory
+        startBlock: 13846412
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinPoolFactory
+            file: ./abis/AelinPoolFactory.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+            handler: handleCreatePool
+        file: ./src/aelin-pool-factory.ts
+    - kind: ethereum/contract
+      name: AelinPoolFactory_v2
+      network: mainnet
+      source:
+        address: "0x91fCeA33D02d11621b7f90ebd5E44eD393eD7b5e"
+        abi: AelinPoolFactory
+        startBlock: 13948162
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinPoolFactory
+            file: ./abis/AelinPoolFactory_v2.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+            handler: handleCreatePool
+        file: ./src/aelin-pool-factory.ts
+    - kind: ethereum/contract
+      name: AelinPoolFactory_v3
+      network: mainnet
+      source:
+        address: "0x2C0979B0de5F99c2bde1E698AeCA13b55695951E"
+        abi: AelinPoolFactory
+        startBlock: 13996006
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinPoolFactory
+            file: ./abis/AelinPoolFactory_v3.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+            handler: handleCreatePool
+        file: ./src/aelin-pool-factory.ts
+    - kind: ethereum/contract
+      name: AelinPoolFactory_v4
+      network: mainnet
+      source:
+        address: "0x722969A3fdc778a5cC7CbC8DC8Ae3e96a288f853"
+        abi: AelinPoolFactory
+        startBlock: 15361430
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinPoolFactory
+            file: ./abis/AelinPoolFactory_v4.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+            handler: handleCreatePool
+        file: ./src/aelin-pool-factory.ts
+    - kind: ethereum/contract
+      name: AelinUpfrontDealFactory_v1
+      network: mainnet
+      source:
+        address: "0x97EfdB29C0D6daCDc0BB334Cc227AE03A1a7c01E"
+        abi: AelinUpfrontDealFactory
+        startBlock: 15834071
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinUpfrontDealFactory
+            file: ./abis/AelinUpfrontDealFactory_v1.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreateUpFrontDeal(indexed address,string,string,address,address,indexed address,indexed address,uint256,bytes32,string)
+            handler: handleCreateUpfrontDeal
+          - event: CreateUpFrontDealConfig(indexed address,uint256,uint256,uint256,uint256,uint256,uint256,bool)
+            handler: handleCreateUpfrontDealConfig
+        file: ./src/aelin-upfront-deal-factory.ts
 
 templates:
   - name: AelinPool
     kind: ethereum/contract
-    network: optimism
+    network: mainnet
     source:
       abi: AelinPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/aelin-pool.ts
       entities:
@@ -141,12 +165,12 @@ templates:
 
   - name: AelinDeal
     kind: ethereum/contract
-    network: optimism
+    network: mainnet
     source:
       abi: AelinDeal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       file: ./src/aelin-deal.ts
       entities:
@@ -167,3 +191,52 @@ templates:
           handler: handleClaimedUnderlyingDealToken
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleDealTransfer
+
+  - name: AelinUpfrontDeal
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: AelinUpfrontDeal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/aelin-upfront-deal.ts
+      entities:
+        - AelinUpfrontDeal
+      abis:
+        - name: AelinUpfrontDeal
+          file: ./abis/AelinUpfrontDeal.json
+      eventHandlers:
+        - event: DepositDealToken(indexed address,indexed address,uint256)
+          handler: handleDepositDealToken
+        - event: DealFullyFunded(address,uint256,uint256,uint256,uint256)
+          handler: handleDealFullyFunded
+        - event: WithdrewExcess(address,uint256)
+          handler: handleWithdrewExcess
+        - event: AcceptDeal(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleAcceptDeal
+        - event: ClaimDealTokens(indexed address,uint256,uint256)
+          handler: handleClaimDealTokens
+        - event: SponsorClaim(indexed address,uint256)
+          handler: handleSponsorClaim
+        - event: HolderClaim(indexed address,address,uint256,address,uint256,uint256)
+          handler: handleHolderClaim
+        # - event: FeeEscrowClaim(indexed address,indexed address,uint256)
+        #   handler: handleFeeEscrowClaim
+        - event: ClaimedUnderlyingDealToken(indexed address,address,uint256)
+          handler: handleClaimedUnderlyingDealToken
+        - event: PoolWith721(indexed address,uint256,bool)
+          handler: handlePoolWith721
+        - event: PoolWith1155(indexed address,uint256,bool,uint256[],uint256[])
+          handler: handlePoolWith1155
+        - event: BlacklistNFT(indexed address,uint256)
+          handler: handleBlacklistNFT
+        - event: SetHolder(indexed address)
+          handler: handleSetHolder
+        - event: Vouch(indexed address)
+          handler: handleVouch
+        - event: Disavow(indexed address)
+          handler: handleDisavow
+      
+            

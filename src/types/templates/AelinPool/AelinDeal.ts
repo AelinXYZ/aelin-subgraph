@@ -7,1615 +7,1441 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
-} from "@graphprotocol/graph-ts";
+  BigInt,
+} from '@graphprotocol/graph-ts'
 
 export class AelinToken extends ethereum.Event {
   get params(): AelinToken__Params {
-    return new AelinToken__Params(this);
+    return new AelinToken__Params(this)
   }
 }
 
 export class AelinToken__Params {
-  _event: AelinToken;
+  _event: AelinToken
 
   constructor(event: AelinToken) {
-    this._event = event;
+    this._event = event
   }
 
   get name(): string {
-    return this._event.parameters[0].value.toString();
+    return this._event.parameters[0].value.toString()
   }
 
   get symbol(): string {
-    return this._event.parameters[1].value.toString();
+    return this._event.parameters[1].value.toString()
   }
 
   get decimals(): i32 {
-    return this._event.parameters[2].value.toI32();
+    return this._event.parameters[2].value.toI32()
   }
 }
 
 export class Approval extends ethereum.Event {
   get params(): Approval__Params {
-    return new Approval__Params(this);
+    return new Approval__Params(this)
   }
 }
 
 export class Approval__Params {
-  _event: Approval;
+  _event: Approval
 
   constructor(event: Approval) {
-    this._event = event;
+    this._event = event
   }
 
   get owner(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 
   get spender(): Address {
-    return this._event.parameters[1].value.toAddress();
+    return this._event.parameters[1].value.toAddress()
   }
 
   get value(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt()
   }
 }
 
 export class ClaimedUnderlyingDealToken extends ethereum.Event {
   get params(): ClaimedUnderlyingDealToken__Params {
-    return new ClaimedUnderlyingDealToken__Params(this);
+    return new ClaimedUnderlyingDealToken__Params(this)
   }
 }
 
 export class ClaimedUnderlyingDealToken__Params {
-  _event: ClaimedUnderlyingDealToken;
+  _event: ClaimedUnderlyingDealToken
 
   constructor(event: ClaimedUnderlyingDealToken) {
-    this._event = event;
+    this._event = event
   }
 
   get underlyingDealTokenAddress(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 
   get recipient(): Address {
-    return this._event.parameters[1].value.toAddress();
+    return this._event.parameters[1].value.toAddress()
   }
 
   get underlyingDealTokensClaimed(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt()
   }
 }
 
 export class DealFullyFunded extends ethereum.Event {
   get params(): DealFullyFunded__Params {
-    return new DealFullyFunded__Params(this);
+    return new DealFullyFunded__Params(this)
   }
 }
 
 export class DealFullyFunded__Params {
-  _event: DealFullyFunded;
+  _event: DealFullyFunded
 
   constructor(event: DealFullyFunded) {
-    this._event = event;
+    this._event = event
   }
 
   get poolAddress(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 
   get proRataRedemptionStart(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
+    return this._event.parameters[1].value.toBigInt()
   }
 
   get proRataRedemptionExpiry(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt()
   }
 
   get openRedemptionStart(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+    return this._event.parameters[3].value.toBigInt()
   }
 
   get openRedemptionExpiry(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
+    return this._event.parameters[4].value.toBigInt()
   }
 }
 
 export class DepositDealToken extends ethereum.Event {
   get params(): DepositDealToken__Params {
-    return new DepositDealToken__Params(this);
+    return new DepositDealToken__Params(this)
   }
 }
 
 export class DepositDealToken__Params {
-  _event: DepositDealToken;
+  _event: DepositDealToken
 
   constructor(event: DepositDealToken) {
-    this._event = event;
+    this._event = event
   }
 
   get underlyingDealTokenAddress(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 
   get depositor(): Address {
-    return this._event.parameters[1].value.toAddress();
+    return this._event.parameters[1].value.toAddress()
   }
 
   get underlyingDealTokenAmount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt()
   }
 }
 
 export class SetHolder extends ethereum.Event {
   get params(): SetHolder__Params {
-    return new SetHolder__Params(this);
+    return new SetHolder__Params(this)
   }
 }
 
 export class SetHolder__Params {
-  _event: SetHolder;
+  _event: SetHolder
 
   constructor(event: SetHolder) {
-    this._event = event;
+    this._event = event
   }
 
   get holder(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 }
 
 export class Transfer extends ethereum.Event {
   get params(): Transfer__Params {
-    return new Transfer__Params(this);
+    return new Transfer__Params(this)
   }
 }
 
 export class Transfer__Params {
-  _event: Transfer;
+  _event: Transfer
 
   constructor(event: Transfer) {
-    this._event = event;
+    this._event = event
   }
 
   get from(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 
   get to(): Address {
-    return this._event.parameters[1].value.toAddress();
+    return this._event.parameters[1].value.toAddress()
   }
 
   get value(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt()
   }
 }
 
 export class WithdrawUnderlyingDealToken extends ethereum.Event {
   get params(): WithdrawUnderlyingDealToken__Params {
-    return new WithdrawUnderlyingDealToken__Params(this);
+    return new WithdrawUnderlyingDealToken__Params(this)
   }
 }
 
 export class WithdrawUnderlyingDealToken__Params {
-  _event: WithdrawUnderlyingDealToken;
+  _event: WithdrawUnderlyingDealToken
 
   constructor(event: WithdrawUnderlyingDealToken) {
-    this._event = event;
+    this._event = event
   }
 
   get underlyingDealTokenAddress(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 
   get depositor(): Address {
-    return this._event.parameters[1].value.toAddress();
+    return this._event.parameters[1].value.toAddress()
   }
 
   get underlyingDealTokenAmount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[2].value.toBigInt()
   }
 }
 
 export class AelinDeal__claimableTokensResult {
-  value0: BigInt;
-  value1: BigInt;
+  value0: BigInt
+  value1: BigInt
 
   constructor(value0: BigInt, value1: BigInt) {
-    this.value0 = value0;
-    this.value1 = value1;
+    this.value0 = value0
+    this.value1 = value1
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromUnsignedBigInt(this.value0));
-    map.set("value1", ethereum.Value.fromUnsignedBigInt(this.value1));
-    return map;
-  }
-
-  getUnderlyingClaimable(): BigInt {
-    return this.value0;
-  }
-
-  getDealTokensClaimable(): BigInt {
-    return this.value1;
+    let map = new TypedMap<string, ethereum.Value>()
+    map.set('value0', ethereum.Value.fromUnsignedBigInt(this.value0))
+    map.set('value1', ethereum.Value.fromUnsignedBigInt(this.value1))
+    return map
   }
 }
 
 export class AelinDeal extends ethereum.SmartContract {
   static bind(address: Address): AelinDeal {
-    return new AelinDeal("AelinDeal", address);
+    return new AelinDeal('AelinDeal', address)
   }
 
   aelinPool(): Address {
-    let result = super.call("aelinPool", "aelinPool():(address)", []);
+    let result = super.call('aelinPool', 'aelinPool():(address)', [])
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
   try_aelinPool(): ethereum.CallResult<Address> {
-    let result = super.tryCall("aelinPool", "aelinPool():(address)", []);
+    let result = super.tryCall('aelinPool', 'aelinPool():(address)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
   allowance(owner: Address, spender: Address): BigInt {
-    let result = super.call(
-      "allowance",
-      "allowance(address,address):(uint256)",
-      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(spender)]
-    );
+    let result = super.call('allowance', 'allowance(address,address):(uint256)', [
+      ethereum.Value.fromAddress(owner),
+      ethereum.Value.fromAddress(spender),
+    ])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_allowance(owner: Address, spender: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "allowance",
-      "allowance(address,address):(uint256)",
-      [ethereum.Value.fromAddress(owner), ethereum.Value.fromAddress(spender)]
-    );
+    let result = super.tryCall('allowance', 'allowance(address,address):(uint256)', [
+      ethereum.Value.fromAddress(owner),
+      ethereum.Value.fromAddress(spender),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   amountVested(param0: Address): BigInt {
-    let result = super.call("amountVested", "amountVested(address):(uint256)", [
-      ethereum.Value.fromAddress(param0)
-    ]);
+    let result = super.call('amountVested', 'amountVested(address):(uint256)', [
+      ethereum.Value.fromAddress(param0),
+    ])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_amountVested(param0: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "amountVested",
-      "amountVested(address):(uint256)",
-      [ethereum.Value.fromAddress(param0)]
-    );
+    let result = super.tryCall('amountVested', 'amountVested(address):(uint256)', [
+      ethereum.Value.fromAddress(param0),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   approve(spender: Address, amount: BigInt): boolean {
-    let result = super.call("approve", "approve(address,uint256):(bool)", [
+    let result = super.call('approve', 'approve(address,uint256):(bool)', [
       ethereum.Value.fromAddress(spender),
-      ethereum.Value.fromUnsignedBigInt(amount)
-    ]);
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
   try_approve(spender: Address, amount: BigInt): ethereum.CallResult<boolean> {
-    let result = super.tryCall("approve", "approve(address,uint256):(bool)", [
+    let result = super.tryCall('approve', 'approve(address,uint256):(bool)', [
       ethereum.Value.fromAddress(spender),
-      ethereum.Value.fromUnsignedBigInt(amount)
-    ]);
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   balanceOf(account: Address): BigInt {
-    let result = super.call("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(account)
-    ]);
+    let result = super.call('balanceOf', 'balanceOf(address):(uint256)', [
+      ethereum.Value.fromAddress(account),
+    ])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_balanceOf(account: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(account)
-    ]);
+    let result = super.tryCall('balanceOf', 'balanceOf(address):(uint256)', [
+      ethereum.Value.fromAddress(account),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   calledInitialize(): boolean {
-    let result = super.call(
-      "calledInitialize",
-      "calledInitialize():(bool)",
-      []
-    );
+    let result = super.call('calledInitialize', 'calledInitialize():(bool)', [])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
   try_calledInitialize(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "calledInitialize",
-      "calledInitialize():(bool)",
-      []
-    );
+    let result = super.tryCall('calledInitialize', 'calledInitialize():(bool)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   claim(): BigInt {
-    let result = super.call("claim", "claim():(uint256)", []);
+    let result = super.call('claim', 'claim():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_claim(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("claim", "claim():(uint256)", []);
+    let result = super.tryCall('claim', 'claim():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   claimableTokens(purchaser: Address): AelinDeal__claimableTokensResult {
-    let result = super.call(
-      "claimableTokens",
-      "claimableTokens(address):(uint256,uint256)",
-      [ethereum.Value.fromAddress(purchaser)]
-    );
+    let result = super.call('claimableTokens', 'claimableTokens(address):(uint256,uint256)', [
+      ethereum.Value.fromAddress(purchaser),
+    ])
 
-    return new AelinDeal__claimableTokensResult(
-      result[0].toBigInt(),
-      result[1].toBigInt()
-    );
+    return new AelinDeal__claimableTokensResult(result[0].toBigInt(), result[1].toBigInt())
   }
 
-  try_claimableTokens(
-    purchaser: Address
-  ): ethereum.CallResult<AelinDeal__claimableTokensResult> {
-    let result = super.tryCall(
-      "claimableTokens",
-      "claimableTokens(address):(uint256,uint256)",
-      [ethereum.Value.fromAddress(purchaser)]
-    );
+  try_claimableTokens(purchaser: Address): ethereum.CallResult<AelinDeal__claimableTokensResult> {
+    let result = super.tryCall('claimableTokens', 'claimableTokens(address):(uint256,uint256)', [
+      ethereum.Value.fromAddress(purchaser),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
+    let value = result.value
     return ethereum.CallResult.fromValue(
-      new AelinDeal__claimableTokensResult(
-        value[0].toBigInt(),
-        value[1].toBigInt()
-      )
-    );
+      new AelinDeal__claimableTokensResult(value[0].toBigInt(), value[1].toBigInt()),
+    )
   }
 
   decimals(): i32 {
-    let result = super.call("decimals", "decimals():(uint8)", []);
+    let result = super.call('decimals', 'decimals():(uint8)', [])
 
-    return result[0].toI32();
+    return result[0].toI32()
   }
 
   try_decimals(): ethereum.CallResult<i32> {
-    let result = super.tryCall("decimals", "decimals():(uint8)", []);
+    let result = super.tryCall('decimals', 'decimals():(uint8)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toI32());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toI32())
   }
 
   decreaseAllowance(spender: Address, subtractedValue: BigInt): boolean {
-    let result = super.call(
-      "decreaseAllowance",
-      "decreaseAllowance(address,uint256):(bool)",
-      [
-        ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(subtractedValue)
-      ]
-    );
+    let result = super.call('decreaseAllowance', 'decreaseAllowance(address,uint256):(bool)', [
+      ethereum.Value.fromAddress(spender),
+      ethereum.Value.fromUnsignedBigInt(subtractedValue),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
-  try_decreaseAllowance(
-    spender: Address,
-    subtractedValue: BigInt
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "decreaseAllowance",
-      "decreaseAllowance(address,uint256):(bool)",
-      [
-        ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(subtractedValue)
-      ]
-    );
+  try_decreaseAllowance(spender: Address, subtractedValue: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall('decreaseAllowance', 'decreaseAllowance(address,uint256):(bool)', [
+      ethereum.Value.fromAddress(spender),
+      ethereum.Value.fromUnsignedBigInt(subtractedValue),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   depositComplete(): boolean {
-    let result = super.call("depositComplete", "depositComplete():(bool)", []);
+    let result = super.call('depositComplete', 'depositComplete():(bool)', [])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
   try_depositComplete(): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "depositComplete",
-      "depositComplete():(bool)",
-      []
-    );
+    let result = super.tryCall('depositComplete', 'depositComplete():(bool)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   depositUnderlying(_underlyingDealTokenAmount: BigInt): boolean {
-    let result = super.call(
-      "depositUnderlying",
-      "depositUnderlying(uint256):(bool)",
-      [ethereum.Value.fromUnsignedBigInt(_underlyingDealTokenAmount)]
-    );
+    let result = super.call('depositUnderlying', 'depositUnderlying(uint256):(bool)', [
+      ethereum.Value.fromUnsignedBigInt(_underlyingDealTokenAmount),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
-  try_depositUnderlying(
-    _underlyingDealTokenAmount: BigInt
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "depositUnderlying",
-      "depositUnderlying(uint256):(bool)",
-      [ethereum.Value.fromUnsignedBigInt(_underlyingDealTokenAmount)]
-    );
+  try_depositUnderlying(_underlyingDealTokenAmount: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall('depositUnderlying', 'depositUnderlying(uint256):(bool)', [
+      ethereum.Value.fromUnsignedBigInt(_underlyingDealTokenAmount),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   futureHolder(): Address {
-    let result = super.call("futureHolder", "futureHolder():(address)", []);
+    let result = super.call('futureHolder', 'futureHolder():(address)', [])
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
   try_futureHolder(): ethereum.CallResult<Address> {
-    let result = super.tryCall("futureHolder", "futureHolder():(address)", []);
+    let result = super.tryCall('futureHolder', 'futureHolder():(address)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
   holder(): Address {
-    let result = super.call("holder", "holder():(address)", []);
+    let result = super.call('holder', 'holder():(address)', [])
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
   try_holder(): ethereum.CallResult<Address> {
-    let result = super.tryCall("holder", "holder():(address)", []);
+    let result = super.tryCall('holder', 'holder():(address)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
   holderFundingExpiry(): BigInt {
-    let result = super.call(
-      "holderFundingExpiry",
-      "holderFundingExpiry():(uint256)",
-      []
-    );
+    let result = super.call('holderFundingExpiry', 'holderFundingExpiry():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_holderFundingExpiry(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "holderFundingExpiry",
-      "holderFundingExpiry():(uint256)",
-      []
-    );
+    let result = super.tryCall('holderFundingExpiry', 'holderFundingExpiry():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   increaseAllowance(spender: Address, addedValue: BigInt): boolean {
-    let result = super.call(
-      "increaseAllowance",
-      "increaseAllowance(address,uint256):(bool)",
-      [
-        ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(addedValue)
-      ]
-    );
+    let result = super.call('increaseAllowance', 'increaseAllowance(address,uint256):(bool)', [
+      ethereum.Value.fromAddress(spender),
+      ethereum.Value.fromUnsignedBigInt(addedValue),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
-  try_increaseAllowance(
-    spender: Address,
-    addedValue: BigInt
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "increaseAllowance",
-      "increaseAllowance(address,uint256):(bool)",
-      [
-        ethereum.Value.fromAddress(spender),
-        ethereum.Value.fromUnsignedBigInt(addedValue)
-      ]
-    );
+  try_increaseAllowance(spender: Address, addedValue: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall('increaseAllowance', 'increaseAllowance(address,uint256):(bool)', [
+      ethereum.Value.fromAddress(spender),
+      ethereum.Value.fromUnsignedBigInt(addedValue),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   maxTotalSupply(): BigInt {
-    let result = super.call("maxTotalSupply", "maxTotalSupply():(uint256)", []);
+    let result = super.call('maxTotalSupply', 'maxTotalSupply():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_maxTotalSupply(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "maxTotalSupply",
-      "maxTotalSupply():(uint256)",
-      []
-    );
+    let result = super.tryCall('maxTotalSupply', 'maxTotalSupply():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   name(): string {
-    let result = super.call("name", "name():(string)", []);
+    let result = super.call('name', 'name():(string)', [])
 
-    return result[0].toString();
+    return result[0].toString()
   }
 
   try_name(): ethereum.CallResult<string> {
-    let result = super.tryCall("name", "name():(string)", []);
+    let result = super.tryCall('name', 'name():(string)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toString())
   }
 
   openRedemptionExpiry(): BigInt {
-    let result = super.call(
-      "openRedemptionExpiry",
-      "openRedemptionExpiry():(uint256)",
-      []
-    );
+    let result = super.call('openRedemptionExpiry', 'openRedemptionExpiry():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_openRedemptionExpiry(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "openRedemptionExpiry",
-      "openRedemptionExpiry():(uint256)",
-      []
-    );
+    let result = super.tryCall('openRedemptionExpiry', 'openRedemptionExpiry():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   openRedemptionPeriod(): BigInt {
-    let result = super.call(
-      "openRedemptionPeriod",
-      "openRedemptionPeriod():(uint256)",
-      []
-    );
+    let result = super.call('openRedemptionPeriod', 'openRedemptionPeriod():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_openRedemptionPeriod(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "openRedemptionPeriod",
-      "openRedemptionPeriod():(uint256)",
-      []
-    );
+    let result = super.tryCall('openRedemptionPeriod', 'openRedemptionPeriod():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   openRedemptionStart(): BigInt {
-    let result = super.call(
-      "openRedemptionStart",
-      "openRedemptionStart():(uint256)",
-      []
-    );
+    let result = super.call('openRedemptionStart', 'openRedemptionStart():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_openRedemptionStart(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "openRedemptionStart",
-      "openRedemptionStart():(uint256)",
-      []
-    );
+    let result = super.tryCall('openRedemptionStart', 'openRedemptionStart():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   proRataRedemptionExpiry(): BigInt {
-    let result = super.call(
-      "proRataRedemptionExpiry",
-      "proRataRedemptionExpiry():(uint256)",
-      []
-    );
+    let result = super.call('proRataRedemptionExpiry', 'proRataRedemptionExpiry():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_proRataRedemptionExpiry(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "proRataRedemptionExpiry",
-      "proRataRedemptionExpiry():(uint256)",
-      []
-    );
+    let result = super.tryCall('proRataRedemptionExpiry', 'proRataRedemptionExpiry():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   proRataRedemptionPeriod(): BigInt {
-    let result = super.call(
-      "proRataRedemptionPeriod",
-      "proRataRedemptionPeriod():(uint256)",
-      []
-    );
+    let result = super.call('proRataRedemptionPeriod', 'proRataRedemptionPeriod():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_proRataRedemptionPeriod(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "proRataRedemptionPeriod",
-      "proRataRedemptionPeriod():(uint256)",
-      []
-    );
+    let result = super.tryCall('proRataRedemptionPeriod', 'proRataRedemptionPeriod():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   proRataRedemptionStart(): BigInt {
-    let result = super.call(
-      "proRataRedemptionStart",
-      "proRataRedemptionStart():(uint256)",
-      []
-    );
+    let result = super.call('proRataRedemptionStart', 'proRataRedemptionStart():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_proRataRedemptionStart(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "proRataRedemptionStart",
-      "proRataRedemptionStart():(uint256)",
-      []
-    );
+    let result = super.tryCall('proRataRedemptionStart', 'proRataRedemptionStart():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   symbol(): string {
-    let result = super.call("symbol", "symbol():(string)", []);
+    let result = super.call('symbol', 'symbol():(string)', [])
 
-    return result[0].toString();
+    return result[0].toString()
   }
 
   try_symbol(): ethereum.CallResult<string> {
-    let result = super.tryCall("symbol", "symbol():(string)", []);
+    let result = super.tryCall('symbol', 'symbol():(string)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toString());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toString())
   }
 
   totalSupply(): BigInt {
-    let result = super.call("totalSupply", "totalSupply():(uint256)", []);
+    let result = super.call('totalSupply', 'totalSupply():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_totalSupply(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("totalSupply", "totalSupply():(uint256)", []);
+    let result = super.tryCall('totalSupply', 'totalSupply():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   totalUnderlyingClaimed(): BigInt {
-    let result = super.call(
-      "totalUnderlyingClaimed",
-      "totalUnderlyingClaimed():(uint256)",
-      []
-    );
+    let result = super.call('totalUnderlyingClaimed', 'totalUnderlyingClaimed():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_totalUnderlyingClaimed(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "totalUnderlyingClaimed",
-      "totalUnderlyingClaimed():(uint256)",
-      []
-    );
+    let result = super.tryCall('totalUnderlyingClaimed', 'totalUnderlyingClaimed():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   transfer(recipient: Address, amount: BigInt): boolean {
-    let result = super.call("transfer", "transfer(address,uint256):(bool)", [
+    let result = super.call('transfer', 'transfer(address,uint256):(bool)', [
       ethereum.Value.fromAddress(recipient),
-      ethereum.Value.fromUnsignedBigInt(amount)
-    ]);
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
-  try_transfer(
-    recipient: Address,
-    amount: BigInt
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall("transfer", "transfer(address,uint256):(bool)", [
+  try_transfer(recipient: Address, amount: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall('transfer', 'transfer(address,uint256):(bool)', [
       ethereum.Value.fromAddress(recipient),
-      ethereum.Value.fromUnsignedBigInt(amount)
-    ]);
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   transferFrom(sender: Address, recipient: Address, amount: BigInt): boolean {
-    let result = super.call(
-      "transferFrom",
-      "transferFrom(address,address,uint256):(bool)",
-      [
-        ethereum.Value.fromAddress(sender),
-        ethereum.Value.fromAddress(recipient),
-        ethereum.Value.fromUnsignedBigInt(amount)
-      ]
-    );
+    let result = super.call('transferFrom', 'transferFrom(address,address,uint256):(bool)', [
+      ethereum.Value.fromAddress(sender),
+      ethereum.Value.fromAddress(recipient),
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
   try_transferFrom(
     sender: Address,
     recipient: Address,
-    amount: BigInt
+    amount: BigInt,
   ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "transferFrom",
-      "transferFrom(address,address,uint256):(bool)",
-      [
-        ethereum.Value.fromAddress(sender),
-        ethereum.Value.fromAddress(recipient),
-        ethereum.Value.fromUnsignedBigInt(amount)
-      ]
-    );
+    let result = super.tryCall('transferFrom', 'transferFrom(address,address,uint256):(bool)', [
+      ethereum.Value.fromAddress(sender),
+      ethereum.Value.fromAddress(recipient),
+      ethereum.Value.fromUnsignedBigInt(amount),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   transferFromMax(sender: Address, recipient: Address): boolean {
-    let result = super.call(
-      "transferFromMax",
-      "transferFromMax(address,address):(bool)",
-      [
-        ethereum.Value.fromAddress(sender),
-        ethereum.Value.fromAddress(recipient)
-      ]
-    );
+    let result = super.call('transferFromMax', 'transferFromMax(address,address):(bool)', [
+      ethereum.Value.fromAddress(sender),
+      ethereum.Value.fromAddress(recipient),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
-  try_transferFromMax(
-    sender: Address,
-    recipient: Address
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "transferFromMax",
-      "transferFromMax(address,address):(bool)",
-      [
-        ethereum.Value.fromAddress(sender),
-        ethereum.Value.fromAddress(recipient)
-      ]
-    );
+  try_transferFromMax(sender: Address, recipient: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall('transferFromMax', 'transferFromMax(address,address):(bool)', [
+      ethereum.Value.fromAddress(sender),
+      ethereum.Value.fromAddress(recipient),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   transferMax(recipient: Address): boolean {
-    let result = super.call("transferMax", "transferMax(address):(bool)", [
-      ethereum.Value.fromAddress(recipient)
-    ]);
+    let result = super.call('transferMax', 'transferMax(address):(bool)', [
+      ethereum.Value.fromAddress(recipient),
+    ])
 
-    return result[0].toBoolean();
+    return result[0].toBoolean()
   }
 
   try_transferMax(recipient: Address): ethereum.CallResult<boolean> {
-    let result = super.tryCall("transferMax", "transferMax(address):(bool)", [
-      ethereum.Value.fromAddress(recipient)
-    ]);
+    let result = super.tryCall('transferMax', 'transferMax(address):(bool)', [
+      ethereum.Value.fromAddress(recipient),
+    ])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   underlyingDealToken(): Address {
-    let result = super.call(
-      "underlyingDealToken",
-      "underlyingDealToken():(address)",
-      []
-    );
+    let result = super.call('underlyingDealToken', 'underlyingDealToken():(address)', [])
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
   try_underlyingDealToken(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "underlyingDealToken",
-      "underlyingDealToken():(address)",
-      []
-    );
+    let result = super.tryCall('underlyingDealToken', 'underlyingDealToken():(address)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
   underlyingDealTokenTotal(): BigInt {
-    let result = super.call(
-      "underlyingDealTokenTotal",
-      "underlyingDealTokenTotal():(uint256)",
-      []
-    );
+    let result = super.call('underlyingDealTokenTotal', 'underlyingDealTokenTotal():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_underlyingDealTokenTotal(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "underlyingDealTokenTotal",
-      "underlyingDealTokenTotal():(uint256)",
-      []
-    );
+      'underlyingDealTokenTotal',
+      'underlyingDealTokenTotal():(uint256)',
+      [],
+    )
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   underlyingPerDealExchangeRate(): BigInt {
     let result = super.call(
-      "underlyingPerDealExchangeRate",
-      "underlyingPerDealExchangeRate():(uint256)",
-      []
-    );
+      'underlyingPerDealExchangeRate',
+      'underlyingPerDealExchangeRate():(uint256)',
+      [],
+    )
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_underlyingPerDealExchangeRate(): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "underlyingPerDealExchangeRate",
-      "underlyingPerDealExchangeRate():(uint256)",
-      []
-    );
+      'underlyingPerDealExchangeRate',
+      'underlyingPerDealExchangeRate():(uint256)',
+      [],
+    )
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   vestingCliff(): BigInt {
-    let result = super.call("vestingCliff", "vestingCliff():(uint256)", []);
+    let result = super.call('vestingCliff', 'vestingCliff():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_vestingCliff(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("vestingCliff", "vestingCliff():(uint256)", []);
+    let result = super.tryCall('vestingCliff', 'vestingCliff():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   vestingExpiry(): BigInt {
-    let result = super.call("vestingExpiry", "vestingExpiry():(uint256)", []);
+    let result = super.call('vestingExpiry', 'vestingExpiry():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_vestingExpiry(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "vestingExpiry",
-      "vestingExpiry():(uint256)",
-      []
-    );
+    let result = super.tryCall('vestingExpiry', 'vestingExpiry():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
   vestingPeriod(): BigInt {
-    let result = super.call("vestingPeriod", "vestingPeriod():(uint256)", []);
+    let result = super.call('vestingPeriod', 'vestingPeriod():(uint256)', [])
 
-    return result[0].toBigInt();
+    return result[0].toBigInt()
   }
 
   try_vestingPeriod(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "vestingPeriod",
-      "vestingPeriod():(uint256)",
-      []
-    );
+    let result = super.tryCall('vestingPeriod', 'vestingPeriod():(uint256)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 }
 
 export class ConstructorCall extends ethereum.Call {
   get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
+    return new ConstructorCall__Inputs(this)
   }
 
   get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
+    return new ConstructorCall__Outputs(this)
   }
 }
 
 export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
+  _call: ConstructorCall
 
   constructor(call: ConstructorCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
+  _call: ConstructorCall
 
   constructor(call: ConstructorCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class AcceptHolderCall extends ethereum.Call {
   get inputs(): AcceptHolderCall__Inputs {
-    return new AcceptHolderCall__Inputs(this);
+    return new AcceptHolderCall__Inputs(this)
   }
 
   get outputs(): AcceptHolderCall__Outputs {
-    return new AcceptHolderCall__Outputs(this);
+    return new AcceptHolderCall__Outputs(this)
   }
 }
 
 export class AcceptHolderCall__Inputs {
-  _call: AcceptHolderCall;
+  _call: AcceptHolderCall
 
   constructor(call: AcceptHolderCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class AcceptHolderCall__Outputs {
-  _call: AcceptHolderCall;
+  _call: AcceptHolderCall
 
   constructor(call: AcceptHolderCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class ApproveCall extends ethereum.Call {
   get inputs(): ApproveCall__Inputs {
-    return new ApproveCall__Inputs(this);
+    return new ApproveCall__Inputs(this)
   }
 
   get outputs(): ApproveCall__Outputs {
-    return new ApproveCall__Outputs(this);
+    return new ApproveCall__Outputs(this)
   }
 }
 
 export class ApproveCall__Inputs {
-  _call: ApproveCall;
+  _call: ApproveCall
 
   constructor(call: ApproveCall) {
-    this._call = call;
+    this._call = call
   }
 
   get spender(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get amount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt()
   }
 }
 
 export class ApproveCall__Outputs {
-  _call: ApproveCall;
+  _call: ApproveCall
 
   constructor(call: ApproveCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class ClaimCall extends ethereum.Call {
   get inputs(): ClaimCall__Inputs {
-    return new ClaimCall__Inputs(this);
+    return new ClaimCall__Inputs(this)
   }
 
   get outputs(): ClaimCall__Outputs {
-    return new ClaimCall__Outputs(this);
+    return new ClaimCall__Outputs(this)
   }
 }
 
 export class ClaimCall__Inputs {
-  _call: ClaimCall;
+  _call: ClaimCall
 
   constructor(call: ClaimCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class ClaimCall__Outputs {
-  _call: ClaimCall;
+  _call: ClaimCall
 
   constructor(call: ClaimCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): BigInt {
-    return this._call.outputValues[0].value.toBigInt();
+    return this._call.outputValues[0].value.toBigInt()
   }
 }
 
 export class DecreaseAllowanceCall extends ethereum.Call {
   get inputs(): DecreaseAllowanceCall__Inputs {
-    return new DecreaseAllowanceCall__Inputs(this);
+    return new DecreaseAllowanceCall__Inputs(this)
   }
 
   get outputs(): DecreaseAllowanceCall__Outputs {
-    return new DecreaseAllowanceCall__Outputs(this);
+    return new DecreaseAllowanceCall__Outputs(this)
   }
 }
 
 export class DecreaseAllowanceCall__Inputs {
-  _call: DecreaseAllowanceCall;
+  _call: DecreaseAllowanceCall
 
   constructor(call: DecreaseAllowanceCall) {
-    this._call = call;
+    this._call = call
   }
 
   get spender(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get subtractedValue(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt()
   }
 }
 
 export class DecreaseAllowanceCall__Outputs {
-  _call: DecreaseAllowanceCall;
+  _call: DecreaseAllowanceCall
 
   constructor(call: DecreaseAllowanceCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class DepositUnderlyingCall extends ethereum.Call {
   get inputs(): DepositUnderlyingCall__Inputs {
-    return new DepositUnderlyingCall__Inputs(this);
+    return new DepositUnderlyingCall__Inputs(this)
   }
 
   get outputs(): DepositUnderlyingCall__Outputs {
-    return new DepositUnderlyingCall__Outputs(this);
+    return new DepositUnderlyingCall__Outputs(this)
   }
 }
 
 export class DepositUnderlyingCall__Inputs {
-  _call: DepositUnderlyingCall;
+  _call: DepositUnderlyingCall
 
   constructor(call: DepositUnderlyingCall) {
-    this._call = call;
+    this._call = call
   }
 
   get _underlyingDealTokenAmount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+    return this._call.inputValues[0].value.toBigInt()
   }
 }
 
 export class DepositUnderlyingCall__Outputs {
-  _call: DepositUnderlyingCall;
+  _call: DepositUnderlyingCall
 
   constructor(call: DepositUnderlyingCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class IncreaseAllowanceCall extends ethereum.Call {
   get inputs(): IncreaseAllowanceCall__Inputs {
-    return new IncreaseAllowanceCall__Inputs(this);
+    return new IncreaseAllowanceCall__Inputs(this)
   }
 
   get outputs(): IncreaseAllowanceCall__Outputs {
-    return new IncreaseAllowanceCall__Outputs(this);
+    return new IncreaseAllowanceCall__Outputs(this)
   }
 }
 
 export class IncreaseAllowanceCall__Inputs {
-  _call: IncreaseAllowanceCall;
+  _call: IncreaseAllowanceCall
 
   constructor(call: IncreaseAllowanceCall) {
-    this._call = call;
+    this._call = call
   }
 
   get spender(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get addedValue(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt()
   }
 }
 
 export class IncreaseAllowanceCall__Outputs {
-  _call: IncreaseAllowanceCall;
+  _call: IncreaseAllowanceCall
 
   constructor(call: IncreaseAllowanceCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class InitializeCall extends ethereum.Call {
   get inputs(): InitializeCall__Inputs {
-    return new InitializeCall__Inputs(this);
+    return new InitializeCall__Inputs(this)
   }
 
   get outputs(): InitializeCall__Outputs {
-    return new InitializeCall__Outputs(this);
+    return new InitializeCall__Outputs(this)
   }
 }
 
 export class InitializeCall__Inputs {
-  _call: InitializeCall;
+  _call: InitializeCall
 
   constructor(call: InitializeCall) {
-    this._call = call;
+    this._call = call
   }
 
   get _name(): string {
-    return this._call.inputValues[0].value.toString();
+    return this._call.inputValues[0].value.toString()
   }
 
   get _symbol(): string {
-    return this._call.inputValues[1].value.toString();
+    return this._call.inputValues[1].value.toString()
   }
 
   get _underlyingDealToken(): Address {
-    return this._call.inputValues[2].value.toAddress();
+    return this._call.inputValues[2].value.toAddress()
   }
 
   get _underlyingDealTokenTotal(): BigInt {
-    return this._call.inputValues[3].value.toBigInt();
+    return this._call.inputValues[3].value.toBigInt()
   }
 
   get _vestingPeriod(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
+    return this._call.inputValues[4].value.toBigInt()
   }
 
   get _vestingCliff(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
+    return this._call.inputValues[5].value.toBigInt()
   }
 
   get _proRataRedemptionPeriod(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
+    return this._call.inputValues[6].value.toBigInt()
   }
 
   get _openRedemptionPeriod(): BigInt {
-    return this._call.inputValues[7].value.toBigInt();
+    return this._call.inputValues[7].value.toBigInt()
   }
 
   get _holder(): Address {
-    return this._call.inputValues[8].value.toAddress();
+    return this._call.inputValues[8].value.toAddress()
   }
 
   get _maxDealTotalSupply(): BigInt {
-    return this._call.inputValues[9].value.toBigInt();
+    return this._call.inputValues[9].value.toBigInt()
   }
 
   get _holderFundingDuration(): BigInt {
-    return this._call.inputValues[10].value.toBigInt();
+    return this._call.inputValues[10].value.toBigInt()
   }
 }
 
 export class InitializeCall__Outputs {
-  _call: InitializeCall;
+  _call: InitializeCall
 
   constructor(call: InitializeCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class MintCall extends ethereum.Call {
   get inputs(): MintCall__Inputs {
-    return new MintCall__Inputs(this);
+    return new MintCall__Inputs(this)
   }
 
   get outputs(): MintCall__Outputs {
-    return new MintCall__Outputs(this);
+    return new MintCall__Outputs(this)
   }
 }
 
 export class MintCall__Inputs {
-  _call: MintCall;
+  _call: MintCall
 
   constructor(call: MintCall) {
-    this._call = call;
+    this._call = call
   }
 
   get dst(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get dealTokenAmount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt()
   }
 }
 
 export class MintCall__Outputs {
-  _call: MintCall;
+  _call: MintCall
 
   constructor(call: MintCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class SetHolderCall extends ethereum.Call {
   get inputs(): SetHolderCall__Inputs {
-    return new SetHolderCall__Inputs(this);
+    return new SetHolderCall__Inputs(this)
   }
 
   get outputs(): SetHolderCall__Outputs {
-    return new SetHolderCall__Outputs(this);
+    return new SetHolderCall__Outputs(this)
   }
 }
 
 export class SetHolderCall__Inputs {
-  _call: SetHolderCall;
+  _call: SetHolderCall
 
   constructor(call: SetHolderCall) {
-    this._call = call;
+    this._call = call
   }
 
   get _holder(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 }
 
 export class SetHolderCall__Outputs {
-  _call: SetHolderCall;
+  _call: SetHolderCall
 
   constructor(call: SetHolderCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class TransferCall extends ethereum.Call {
   get inputs(): TransferCall__Inputs {
-    return new TransferCall__Inputs(this);
+    return new TransferCall__Inputs(this)
   }
 
   get outputs(): TransferCall__Outputs {
-    return new TransferCall__Outputs(this);
+    return new TransferCall__Outputs(this)
   }
 }
 
 export class TransferCall__Inputs {
-  _call: TransferCall;
+  _call: TransferCall
 
   constructor(call: TransferCall) {
-    this._call = call;
+    this._call = call
   }
 
   get recipient(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get amount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
+    return this._call.inputValues[1].value.toBigInt()
   }
 }
 
 export class TransferCall__Outputs {
-  _call: TransferCall;
+  _call: TransferCall
 
   constructor(call: TransferCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class TransferFromCall extends ethereum.Call {
   get inputs(): TransferFromCall__Inputs {
-    return new TransferFromCall__Inputs(this);
+    return new TransferFromCall__Inputs(this)
   }
 
   get outputs(): TransferFromCall__Outputs {
-    return new TransferFromCall__Outputs(this);
+    return new TransferFromCall__Outputs(this)
   }
 }
 
 export class TransferFromCall__Inputs {
-  _call: TransferFromCall;
+  _call: TransferFromCall
 
   constructor(call: TransferFromCall) {
-    this._call = call;
+    this._call = call
   }
 
   get sender(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get recipient(): Address {
-    return this._call.inputValues[1].value.toAddress();
+    return this._call.inputValues[1].value.toAddress()
   }
 
   get amount(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
+    return this._call.inputValues[2].value.toBigInt()
   }
 }
 
 export class TransferFromCall__Outputs {
-  _call: TransferFromCall;
+  _call: TransferFromCall
 
   constructor(call: TransferFromCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class TransferFromMaxCall extends ethereum.Call {
   get inputs(): TransferFromMaxCall__Inputs {
-    return new TransferFromMaxCall__Inputs(this);
+    return new TransferFromMaxCall__Inputs(this)
   }
 
   get outputs(): TransferFromMaxCall__Outputs {
-    return new TransferFromMaxCall__Outputs(this);
+    return new TransferFromMaxCall__Outputs(this)
   }
 }
 
 export class TransferFromMaxCall__Inputs {
-  _call: TransferFromMaxCall;
+  _call: TransferFromMaxCall
 
   constructor(call: TransferFromMaxCall) {
-    this._call = call;
+    this._call = call
   }
 
   get sender(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get recipient(): Address {
-    return this._call.inputValues[1].value.toAddress();
+    return this._call.inputValues[1].value.toAddress()
   }
 }
 
 export class TransferFromMaxCall__Outputs {
-  _call: TransferFromMaxCall;
+  _call: TransferFromMaxCall
 
   constructor(call: TransferFromMaxCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class TransferMaxCall extends ethereum.Call {
   get inputs(): TransferMaxCall__Inputs {
-    return new TransferMaxCall__Inputs(this);
+    return new TransferMaxCall__Inputs(this)
   }
 
   get outputs(): TransferMaxCall__Outputs {
-    return new TransferMaxCall__Outputs(this);
+    return new TransferMaxCall__Outputs(this)
   }
 }
 
 export class TransferMaxCall__Inputs {
-  _call: TransferMaxCall;
+  _call: TransferMaxCall
 
   constructor(call: TransferMaxCall) {
-    this._call = call;
+    this._call = call
   }
 
   get recipient(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 }
 
 export class TransferMaxCall__Outputs {
-  _call: TransferMaxCall;
+  _call: TransferMaxCall
 
   constructor(call: TransferMaxCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
+    return this._call.outputValues[0].value.toBoolean()
   }
 }
 
 export class WithdrawCall extends ethereum.Call {
   get inputs(): WithdrawCall__Inputs {
-    return new WithdrawCall__Inputs(this);
+    return new WithdrawCall__Inputs(this)
   }
 
   get outputs(): WithdrawCall__Outputs {
-    return new WithdrawCall__Outputs(this);
+    return new WithdrawCall__Outputs(this)
   }
 }
 
 export class WithdrawCall__Inputs {
-  _call: WithdrawCall;
+  _call: WithdrawCall
 
   constructor(call: WithdrawCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class WithdrawCall__Outputs {
-  _call: WithdrawCall;
+  _call: WithdrawCall
 
   constructor(call: WithdrawCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class WithdrawExpiryCall extends ethereum.Call {
   get inputs(): WithdrawExpiryCall__Inputs {
-    return new WithdrawExpiryCall__Inputs(this);
+    return new WithdrawExpiryCall__Inputs(this)
   }
 
   get outputs(): WithdrawExpiryCall__Outputs {
-    return new WithdrawExpiryCall__Outputs(this);
+    return new WithdrawExpiryCall__Outputs(this)
   }
 }
 
 export class WithdrawExpiryCall__Inputs {
-  _call: WithdrawExpiryCall;
+  _call: WithdrawExpiryCall
 
   constructor(call: WithdrawExpiryCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class WithdrawExpiryCall__Outputs {
-  _call: WithdrawExpiryCall;
+  _call: WithdrawExpiryCall
 
   constructor(call: WithdrawExpiryCall) {
-    this._call = call;
+    this._call = call
   }
 }

@@ -7,25 +7,45 @@
     "codegen": "graph codegen --debug --output-dir src/types/",
     "build": "graph build --debug",
     "auth-hosted": "graph auth --product hosted-service $AELIN_GRAPH_ACCESS_TOKEN",
+    "auth-hosted:alex": "graph auth --product hosted-service $ALEX_GRAPH_ACCESS_TOKEN",
     "deploy-hosted:kovan": "graph deploy --product hosted-service aelin-xyz/aelin-kovan",
     "deploy-hosted:mainnet": "graph deploy --product hosted-service aelin-xyz/aelin-mainnet",
     "deploy-hosted:optimism": "graph deploy --product hosted-service aelin-xyz/aelin-optimism",
     "deploy-hosted:kovan:linus": "npm run prepare:kovan && graph deploy --product hosted-service 0xlinus/boot-node",
     "deploy-hosted:mainnet:linus": "npm run prepare:mainnet && graph deploy --product hosted-service 0xlinus/boot-node-mainnet",
+    "deploy-hosted:mainnet:alex": "npm run prepare:mainnet && graph deploy --product hosted-service alextheboredape/aelin-mainnet",
     "deploy-hosted:optimism:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/boot-node-optimism",
-    "deploy-hosted:optimism:stating:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/optimism-staging",
+    "deploy-hosted:optimism:alex": "npm run prepare:optimism && graph deploy --product hosted-service alextheboredape/aelin-optimism",
     "deploy-hosted:goerli:linus": "npm run prepare:goerli && graph deploy --product hosted-service 0xlinus/boot-node-goerli",
+    "deploy-hosted:goerli:alex": "npm run prepare:goerli && graph deploy --product hosted-service alextheboredape/aelin-goerli",
+    "deploy-hosted:arbitrum-goerli:alex": "npm run prepare:arbitrum-goerli && graph deploy --product hosted-service alextheboredape/arbitrum-goerli",
+    "deploy-hosted:optimism:stating:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/optimism-staging",
     "deploy-all-linus": "npm run deploy-hosted:kovan:linus && npm run deploy-hosted:mainnet:linus && npm run deploy-hosted:optimism:linus && npm run deploy-hosted:goerli:linus",
     "deploy": "graph deploy aelin/aelin-mega --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy aelin/aelin-mega --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
     "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
     "prepare:optimism": "mustache config/optimism.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "prepare:kovan": "mustache config/kovan.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
-    "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml && npm run codegen"
+    "prepare:kovan": "npm run verify-abis kovan && mustache config/kovan.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "prepare:goerli": "mustache config/goerli.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "prepare:arbitrum-goerli": "mustache config/arbitrum-goerli.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "verify-abis": "node config/verify-abis.js",
+    "lint:fix": "eslint --fix \"./**/*.{js,jsx,ts,tsx}\"",
+    "prepare": "husky install",
+    "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx}\""
   },
   "devDependencies": {
-    "@graphprotocol/graph-ts": "0.27.0",
-    "@graphprotocol/graph-cli": "0.33.0"
+    "@graphprotocol/graph-cli": "0.25.0",
+    "@graphprotocol/graph-ts": "0.25.0",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.5",
+    "prettier": "^2.5.1",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "babel-polyfill": "6.26.0",
@@ -34,5 +54,11 @@
     "truffle": "5.4.22",
     "truffle-contract": "4.0.31",
     "truffle-hdwallet-provider": "1.0.17"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ]
   }
 }

@@ -1,689 +1,769 @@
 enum PoolStatus {
-	PoolOpen
-	FundingDeal
-	DealOpen
+  PoolOpen
+  FundingDeal
+  DealOpen
+}
+
+enum DealType {
+  UpfrontDeal
+  SponsorDeal
 }
 
 enum NotificationType {
-	InvestmentWindowAlert
-	InvestmentWindowEnded
-	DealProposed
-	HolderSet
-	SponsorFeesReady
-	VestingCliffBegun
-	WithdrawUnredeemed
-	DealTokensVestingBegun
-	AllDealTokensVested
-	FundingWindowAlert
-	FundingWindowEnded
-	DealNotFunded
+  InvestmentWindowAlert
+  InvestmentWindowEnded
+  DealProposed
+  HolderSet
+  SponsorFeesReady
+  VestingCliffBegun
+  WithdrawUnredeemed
+  DealTokensVestingBegun
+  AllDealTokensVested
+  FundingWindowAlert
+  FundingWindowEnded
+  DealNotFunded
+  UpfrontDealFullyFunded
+  HolderClaimFunds
+  AcceptanceWindowAlert
+  AcceptanceWindowEnded
 }
 
 enum NotificationTarget {
-	DealInvestor
-	PoolInvestor
-	Sponsor
-	Holder
+  DealInvestor
+  PoolInvestor
+  Sponsor
+  Holder
 }
 
 enum NFTType {
-	ERC721
-	ERC1155
+  ERC721
+  ERC1155
 }
 
 type PoolCreated @entity {
-	" the address of the pool "
-	id: ID!
+  " the address of the pool "
+  id: ID!
 
-	" represents the pool token name `aePool-${name}` "
-	name: String!
+  dealType: DealType!
 
-	" represents the pool token symbol `aeP-${symbol}` "
-	symbol: String!
+  " represents the pool token name `aePool-${name}` "
+  name: String!
 
-	" the cap on the amount of purchase tokens in the pool. If 0 - that means uncapped "
-	purchaseTokenCap: BigInt!
+  " represents the pool token symbol `aeP-${symbol}` "
+  symbol: String!
 
-	" the address of the purchase token "
-	purchaseToken: Bytes!
+  " the cap on the amount of purchase tokens in the pool. If 0 - that means uncapped "
+  purchaseTokenCap: BigInt!
 
-	" the symbol of the purchase token "
-	purchaseTokenSymbol: String!
+  " the address of the purchase token "
+  purchaseToken: Bytes!
 
-	" the duration of the pool assuming no deal is presented when purchasers can withdraw all of their locked funds "
-	duration: BigInt!
+  " the symbol of the purchase token "
+  purchaseTokenSymbol: String!
 
-	" the fee paid to the sponsor when a purchaser accepts a deal "
-	sponsorFee: BigInt!
+  " the duration of the pool assuming no deal is presented when purchasers can withdraw all of their locked funds "
+  duration: BigInt!
 
-	" the address of the sponsor for fee payments. only the msg.sender of the createPool method can be the sponsor "
-	sponsor: Bytes!
+  " the fee paid to the sponsor when a purchaser accepts a deal "
+  sponsorFee: BigInt!
 
-	" the amount of time a purchaser gets to enter. After which the purchase period is locked. "
-	purchaseDuration: BigInt!
+  " the address of the sponsor for fee payments. only the msg.sender of the createPool method can be the sponsor "
+  sponsor: Bytes!
 
-	" the timestamp a purchaser can no longer enter the pool. After which the purchase period is locked. "
-	purchaseExpiry: BigInt!
+  " the amount of time a purchaser gets to enter. After which the purchase period is locked. "
+  purchaseDuration: BigInt
 
-	" the number of decimals on the purchase token "
-	purchaseTokenDecimals: Int
+  " the timestamp a purchaser can no longer enter the pool. After which the purchase period is locked. "
+  purchaseExpiry: BigInt
 
-	" the block timestamp when the pool was created"
-	timestamp: BigInt!
+  " the number of decimals on the purchase token "
+  purchaseTokenDecimals: Int
 
-	" if there is an allow list on the pool "
-	hasAllowList: Boolean!
+  " the block timestamp when the pool was created"
+  timestamp: BigInt!
 
-	" the current status of the pool "
-	poolStatus: PoolStatus!
+  " if there is an allow list on the pool "
+  hasAllowList: Boolean!
 
-	" the total amount of contributions to the pool "
-	contributions: BigInt!
+  " the current status of the pool "
+  poolStatus: PoolStatus!
 
-	" the total supply of pool tokens "
-	totalSupply: BigInt!
+  " the total amount of contributions to the pool "
+  contributions: BigInt!
 
-	" the address of the current proposed deal on the pool "
-	dealAddress: Bytes
+  " the total supply of pool tokens "
+  totalSupply: BigInt!
 
-	" details of the created deal "
-	deal: Deal
+  " the address of the current proposed deal on the pool "
+  dealAddress: Bytes
 
-	totalAmountAccepted: BigInt!
+  " details of the created deal "
+  deal: Deal
 
-	totalAmountFunded: BigInt!
+  totalAmountAccepted: BigInt!
 
-	totalAmountWithdrawn: BigInt!
+  totalAmountFunded: BigInt!
 
-	totalAmountEarnedBySponsor: BigInt!
+  totalAmountWithdrawn: BigInt!
 
-	dealsCreated: Int!
+  totalAmountEarnedBySponsor: BigInt!
 
-	vestingStarts: BigInt!
+  dealsCreated: Int!
 
-	vestingEnds: BigInt!
+  vestingStarts: BigInt
 
-	holder: Bytes!
+  vestingEnds: BigInt
 
-	"poolName-sponsorAddress-purchaseTokenSymbol"
-	filter: String!
+  holder: Bytes!
 
-	totalUsersInvested: Int!
+  "poolName-sponsorAddress-purchaseTokenSymbol"
+  filter: String!
 
-	totalAddressesInvested: [String!]!
+  totalUsersInvested: Int!
 
-	hasNftList: Boolean!
+  totalAddressesInvested: [String!]!
 
-	nftCollectionRules: [NftCollectionRule!]!
+  hasNftList: Boolean!
+
+  nftCollectionRules: [NftCollectionRule!]!
+
+  " details of the created upfront deal "
+  upfrontDeal: UpfrontDeal
 }
 
 type TotalPoolsCreated @entity {
-	" the id is always just 1 "
-	id: ID!
+  " the id is always just 1 "
+  id: ID!
 
-	" the number of pools created - we use this for pagination "
-	count: BigInt!
+  " the number of pools created - we use this for pagination "
+  count: BigInt!
 }
 
 type PurchasePoolToken @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the pool token purchaser "
-	purchaser: Bytes!
+  " the address of the pool token purchaser "
+  purchaser: Bytes!
 
-	" the address of the pool "
-	poolAddress: Bytes!
+  " the address of the pool "
+  poolAddress: Bytes!
 
-	" the amount of purchase tokens spent "
-	purchaseTokenAmount: BigInt!
+  " the amount of purchase tokens spent "
+  purchaseTokenAmount: BigInt!
 
-	" the timestamp the purchase was made "
-	timestamp: BigInt!
+  " the timestamp the purchase was made "
+  timestamp: BigInt!
 }
 
 type WithdrawFromPool @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the pool token purchaser "
-	purchaser: Bytes!
+  " the address of the pool token purchaser "
+  purchaser: Bytes!
 
-	" the address of the pool "
-	poolAddress: Bytes!
+  " the address of the pool "
+  poolAddress: Bytes!
 
-	" the amount of purchase tokens spent "
-	purchaseTokenAmount: BigInt!
+  " the amount of purchase tokens spent "
+  purchaseTokenAmount: BigInt!
 }
 
 type AcceptDeal @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the deal token purchaser "
-	purchaser: Bytes!
+  " the address of the deal token purchaser "
+  purchaser: Bytes!
 
-	" the address of the pool "
-	poolAddress: Bytes!
+  " the address of the pool "
+  poolAddress: Bytes!
 
-	" the address of the deal "
-	dealAddress: Bytes!
+  " the address of the deal "
+  dealAddress: Bytes!
 
-	" the fee going to the sponsor "
-	sponsorFee: BigInt!
+  " the fee going to the sponsor "
+  sponsorFee: BigInt!
 
-	" the fee going to Aelin stakers "
-	aelinFee: BigInt!
+  " the fee going to Aelin stakers "
+  aelinFee: BigInt!
 
-	" the amount of pool tokens spent. will also equal the amount of deal tokens received "
-	poolTokenAmount: BigInt!
+  " the amount of pool tokens spent. will also equal the amount of deal tokens received "
+  poolTokenAmount: BigInt!
 }
 
 type DealCreated @entity {
-	" the address of the deal "
-	id: ID!
+  " the address of the deal "
+  id: ID!
 
-	" the name of the deal "
-	name: String!
+  " the name of the deal "
+  name: String!
 
-	" the symbol of the deal "
-	symbol: String!
+  " the symbol of the deal "
+  symbol: String!
 
-	" the address of the pool "
-	poolAddress: Bytes!
+  " the address of the pool "
+  poolAddress: Bytes!
 
-	" the address of the sponsor "
-	sponsor: Bytes!
+  " the address of the sponsor "
+  sponsor: Bytes!
 }
 
 type DealDetail @entity {
-	" the address of the deal "
-	id: ID!
+  " the address of the deal "
+  id: ID!
 
-	" the underlying deal token address "
-	underlyingDealToken: Bytes!
+  " the underlying deal token address "
+  underlyingDealToken: Bytes!
 
-	" the underlying deal token symbol "
-	underlyingDealTokenSymbol: String!
+  " the underlying deal token symbol "
+  underlyingDealTokenSymbol: String!
 
-	" the underlying deal token decimals "
-	underlyingDealTokenDecimals: Int!
+  " the underlying deal token decimals "
+  underlyingDealTokenDecimals: Int!
 
-	" the underlying deal token totalSupply "
-	underlyingDealTokenTotalSupply: BigInt!
+  " the underlying deal token totalSupply "
+  underlyingDealTokenTotalSupply: BigInt!
 
-	" the total amount of purchse tokens for the deal "
-	purchaseTokenTotalForDeal: BigInt!
+  " the total amount of purchse tokens for the deal "
+  purchaseTokenTotalForDeal: BigInt!
 
-	" the total amount of underlying deal tokens available for the deal "
-	underlyingDealTokenTotal: BigInt!
+  " the total amount of underlying deal tokens available for the deal "
+  underlyingDealTokenTotal: BigInt!
 
-	" the vesting period which is linear for all deals in v1 "
-	vestingPeriod: BigInt!
+  " the vesting period which is linear for all deals in v1 "
+  vestingPeriod: BigInt!
 
-	" the vesting cliff after which linear vesting starts "
-	vestingCliff: BigInt!
+  " the vesting cliff after which linear vesting starts "
+  vestingCliff: BigInt!
 
-	" the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
-	proRataRedemptionPeriod: BigInt!
+  " the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
+  proRataRedemptionPeriod: BigInt!
 
-	" the timestamp when the pro rata redemption period starts "
-	proRataRedemptionPeriodStart: BigInt
+  " the timestamp when the pro rata redemption period starts "
+  proRataRedemptionPeriodStart: BigInt
 
-	" after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
-	openRedemptionPeriod: BigInt!
+  " after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
+  openRedemptionPeriod: BigInt!
 
-	" the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
-	holder: Bytes!
+  " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
+  holder: Bytes!
 
-	" is the deal fully funded "
-	isDealFunded: Boolean!
+  " is the deal fully funded "
+  isDealFunded: Boolean!
 
-	" the exipration of the holder funding period "
-	holderFundingExpiration: BigInt!
+  " the exipration of the holder funding period "
+  holderFundingExpiration: BigInt!
 
-	" the duration of the holder funding period "
-	holderFundingDuration: BigInt!
+  " the duration of the holder funding period "
+  holderFundingDuration: BigInt!
 }
 
 type SetSponsor @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the new sponsor "
-	sponsor: Bytes!
+  " the address of the new sponsor "
+  sponsor: Bytes!
 }
 
 type SetHolder @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the new holder "
-	holder: Bytes!
+  " the address of the new holder "
+  holder: Bytes!
 }
 
 type AelinToken @entity {
-	" the address the token "
-	id: ID!
+  " the address the token "
+  id: ID!
 
-	" the name of the token "
-	name: String!
+  " the name of the token "
+  name: String!
 
-	" the symbol of the token "
-	symbol: String!
+  " the symbol of the token "
+  symbol: String!
 
-	" the number of decimals of the token "
-	decimals: Int!
+  " the number of decimals of the token "
+  decimals: Int!
 }
 
 type DealFullyFunded @entity {
-	" the address of the deal "
-	id: ID!
+  " the address of the deal "
+  id: ID!
 
-	" the address of the pool "
-	poolAddress: Bytes!
+  " the address of the pool "
+  poolAddress: Bytes!
 
-	" the start of the pro rata redemption period "
-	proRataRedemptionStart: BigInt!
+  " the start of the pro rata redemption period "
+  proRataRedemptionStart: BigInt!
 
-	" the start of the open redemption period "
-	openRedemptionStart: BigInt!
+  " the start of the open redemption period "
+  openRedemptionStart: BigInt!
 
-	" the end of the pro rata redemption period "
-	proRataRedemptionExpiry: BigInt!
+  " the end of the pro rata redemption period "
+  proRataRedemptionExpiry: BigInt!
 
-	" the end of the open redemption period "
-	openRedemptionExpiry: BigInt!
+  " the end of the open redemption period "
+  openRedemptionExpiry: BigInt!
 }
 
 type DepositDealToken @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the underlying deal token "
-	underlyingDealTokenAddress: Bytes!
+  " the address of the underlying deal token "
+  underlyingDealTokenAddress: Bytes!
 
-	" the address of the depositor "
-	depositor: Bytes!
+  " the address of the depositor "
+  depositor: Bytes!
 
-	" the address of the deal contract "
-	dealContract: Bytes!
+  " the address of the deal contract "
+  dealContract: Bytes!
 
-	" the amount of underlying deal tokens deposited "
-	underlyingDealTokenAmount: BigInt!
+  " the amount of underlying deal tokens deposited "
+  underlyingDealTokenAmount: BigInt!
 }
 
 type WithdrawUnderlyingDealToken @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the underlying deal token "
-	underlyingDealTokenAddress: Bytes!
+  " the address of the underlying deal token "
+  underlyingDealTokenAddress: Bytes!
 
-	" the address of the depositor "
-	depositor: Bytes!
+  " the address of the depositor "
+  depositor: Bytes!
 
-	" the address of the deal contract "
-	dealContract: Bytes!
+  " the address of the deal contract "
+  dealContract: Bytes!
 
-	" the amount of underlying deal tokens deposited "
-	underlyingDealTokenAmount: BigInt!
+  " the amount of underlying deal tokens deposited "
+  underlyingDealTokenAmount: BigInt!
 }
 
 type Transfer @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the sender "
-	from: Bytes!
+  " the sender "
+  from: Bytes!
 
-	" the recipient "
-	to: Bytes!
+  " the recipient "
+  to: Bytes!
 
-	" the amount sent "
-	value: BigInt!
+  " the amount sent "
+  value: BigInt!
 }
 
 type ClaimedUnderlyingDealToken @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of the underlying deal token "
-	underlyingDealTokenAddress: Bytes!
+  " the address of the underlying deal token "
+  underlyingDealTokenAddress: Bytes!
 
-	" address of the claim recipient. when sending deal tokens, both the sender and recipient need to claim their vested tokens; gas fees are paid by the sender "
-	recipient: Bytes!
+  " address of the claim recipient. when sending deal tokens, both the sender and recipient need to claim their vested tokens; gas fees are paid by the sender "
+  recipient: Bytes!
 
-	" the number of underlying deal tokens claimed "
-	underlyingDealTokensClaimed: BigInt!
+  " the number of underlying deal tokens claimed "
+  underlyingDealTokensClaimed: BigInt!
 
-	" the address of the deal contract "
-	dealAddress: Bytes!
+  " the address of the deal contract "
+  dealAddress: Bytes!
 }
 
 type VestingDeal @entity {
-	" userAddress - dealAddress "
-	id: ID!
+  " userAddress - dealAddress "
+  id: ID!
 
-	user: User!
+  user: User!
 
-	poolName: String!
+  poolName: String!
 
-	tokenToVest: Bytes!
+  tokenToVest: Bytes!
 
-	tokenToVestSymbol: String!
+  tokenToVestSymbol: String!
 
-	investorDealTotal: BigInt!
+  investorDealTotal: BigInt!
 
-	remainingAmountToVest: BigInt!
+  " Should be removed since this value changes with time "
+  remainingAmountToVest: BigInt!
 
-	totalVested: BigInt!
+  totalVested: BigInt!
 
-	vestingPeriodEnds: BigInt!
+  vestingPeriodEnds: BigInt!
 
-	vestingPeriodStarts: BigInt!
+  vestingPeriodStarts: BigInt!
 
-	poolAddress: Bytes!
+  poolAddress: Bytes!
 
-	underlyingDealTokenDecimals: Int!
+  underlyingDealTokenDecimals: Int!
 
-	pool: PoolCreated!
+  pool: PoolCreated!
 
-	"timestamp of the last time the user claimed"
-	lastClaim: BigInt!
+  "timestamp of the last time the user claimed"
+  lastClaim: BigInt!
 }
 
 type TotalDealsBySponsor @entity {
-	" sponsor address "
-	id: ID!
+  " sponsor address "
+  id: ID!
 
-	" number of deals created "
-	count: Int!
+  " number of deals created "
+  count: Int!
 }
 
 type Deposit @entity {
-	" the transaction hash + event log index of the PurchasePoolTokenEvent event "
-	id: ID!
+  " the transaction hash + event log index of the PurchasePoolTokenEvent event "
+  id: ID!
 
-	" the address of user depositing "
-	userAddress: Bytes!
+  " the address of user depositing "
+  userAddress: Bytes!
 
-	" the block timestamp when the user deposited"
-	timestamp: BigInt!
+  " the block timestamp when the user deposited"
+  timestamp: BigInt!
 
-	poolName: String!
+  poolName: String!
 
-	sponsor: Bytes!
+  sponsor: Bytes!
 
-	" amount of purchase tokens deposited "
-	amountDeposited: BigInt!
+  " amount of purchase tokens deposited "
+  amountDeposited: BigInt!
 
-	" pool where the funds are deposited "
-	pool: PoolCreated!
+  " pool where the funds are deposited "
+  pool: PoolCreated!
 }
 
 type UserAllocationStat @entity {
-	" userAddress - poolAddress "
-	id: ID!
+  " userAddress - poolAddress "
+  id: ID!
 
-	userAddress: Bytes!
+  userAddress: Bytes!
 
-	totalWithdrawn: BigInt!
+  totalWithdrawn: BigInt!
 
-	totalAccepted: BigInt!
+  totalAccepted: BigInt!
 
-	poolTokenBalance: BigInt!
+  poolTokenBalance: BigInt!
 
-	remainingProRataAllocation: BigInt!
+  remainingProRataAllocation: BigInt!
 
-	pool: PoolCreated!
+  pool: PoolCreated!
 }
 
 type DealAccepted @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	" the address of user accepting the deal "
-	userAddress: Bytes!
+  " the address of user accepting the deal "
+  userAddress: Bytes!
 
-	" the block timestamp when the user deposited"
-	timestamp: BigInt!
+  " the block timestamp when the user deposited"
+  timestamp: BigInt!
 
-	poolName: String!
+  poolName: String!
 
-	" amount of purchase tokens invested "
-	investmentAmount: BigInt!
+  " amount of purchase tokens invested "
+  investmentAmount: BigInt!
 
-	" amount of deal tokens "
-	dealTokenAmount: BigInt!
+  " amount of deal tokens "
+  dealTokenAmount: BigInt!
 
-	" pool where the funds are deposited "
-	pool: PoolCreated!
+  " pool where the funds are deposited "
+  pool: PoolCreated!
 }
 
 type DealSponsored @entity {
-	" poolAddress + sponsorAddress"
-	id: ID!
+  " poolAddress + sponsorAddress"
+  id: ID!
 
-	" the address of the sponsor "
-	sponsor: Bytes!
+  " the address of the sponsor "
+  sponsor: Bytes!
 
-	" the block timestamp when the user deposited"
-	timestamp: BigInt!
+  " the block timestamp when the user deposited"
+  timestamp: BigInt!
 
-	" represents the pool token name `aePool-${name}` "
-	poolName: String!
+  " represents the pool token name `aePool-${name}` "
+  poolName: String!
 
-	amountEarned: BigInt!
+  amountEarned: BigInt!
 
-	totalAccepted: BigInt!
+  totalAccepted: BigInt!
 
-	totalInvested: BigInt!
+  totalInvested: BigInt!
 
-	sponsorFee: BigInt!
+  sponsorFee: BigInt!
 
-	pool: PoolCreated!
+  pool: PoolCreated!
 }
 
 type Vest @entity {
-	" the transaction hash + event log index of the purchase event "
-	id: ID!
+  " the transaction hash + event log index of the purchase event "
+  id: ID!
 
-	poolName: String!
+  poolName: String!
 
-	" the address of user depositing "
-	userAddress: Bytes!
+  " the address of user depositing "
+  userAddress: Bytes!
 
-	" the block timestamp when the user deposited"
-	timestamp: BigInt!
+  " the block timestamp when the user deposited"
+  timestamp: BigInt!
 
-	amountVested: BigInt!
+  amountVested: BigInt!
 
-	pool: PoolCreated!
+  pool: PoolCreated!
 }
 
 type DealFunded @entity {
-	" the transaction hash + event log index "
-	id: ID!
+  " the transaction hash + event log index "
+  id: ID!
 
-	holder: Bytes!
+  holder: Bytes!
 
-	timestamp: BigInt!
+  timestamp: BigInt!
 
-	poolName: String!
+  poolName: String!
 
-	amountRaised: BigInt!
+  amountRaised: BigInt!
 
-	purchaseTokenSymbol: String!
+  purchaseTokenSymbol: String!
 
-	purchaseTokenDecimals: Int!
+  purchaseTokenDecimals: Int!
 
-	amountFunded: BigInt!
+  amountFunded: BigInt!
 
-	underlyingDealTokenSymbol: String!
+  underlyingDealTokenSymbol: String!
 
-	underlyingDealTokenDecimals: Int!
+  underlyingDealTokenDecimals: Int!
 
-	pool: PoolCreated!
+  pool: PoolCreated!
 }
 
 type Withdraw @entity {
-	" the transaction hash + event log index of the WithdrawFromPoolEvent event "
-	id: ID!
+  " the transaction hash + event log index of the WithdrawFromPoolEvent event "
+  id: ID!
 
-	" the address of user withdrawing "
-	userAddress: Bytes!
+  " the address of user withdrawing "
+  userAddress: Bytes!
 
-	" the block timestamp when the user withdrew"
-	timestamp: BigInt!
+  " the block timestamp when the user withdrew"
+  timestamp: BigInt!
 
-	poolName: String!
+  poolName: String!
 
-	" withdrawn amount of purchase tokens "
-	amountWithdrawn: BigInt!
+  " withdrawn amount of purchase tokens "
+  amountWithdrawn: BigInt!
 
-	" pool where the funds are withdrawn "
-	sponsorFee: BigInt!
+  " pool where the funds are withdrawn "
+  sponsorFee: BigInt!
 
-	pool: PoolCreated!
+  pool: PoolCreated!
 }
 
 type Deal @entity {
-	" the address of the deal "
-	id: ID!
+  " the address of the deal "
+  id: ID!
 
-	" the name of the deal "
-	name: String!
+  " the name of the deal "
+  name: String!
 
-	" the symbol of the deal "
-	symbol: String!
+  " the symbol of the deal "
+  symbol: String!
 
-	" the address of the pool "
-	poolAddress: Bytes!
+  " the address of the pool "
+  poolAddress: Bytes!
 
-	" the underlying deal token address "
-	underlyingDealToken: Bytes!
+  " the underlying deal token address "
+  underlyingDealToken: Bytes!
 
-	" the underlying deal token symbol "
-	underlyingDealTokenSymbol: String!
+  " the underlying deal token symbol "
+  underlyingDealTokenSymbol: String!
 
-	" the underlying deal token decimals "
-	underlyingDealTokenDecimals: Int!
+  " the underlying deal token decimals "
+  underlyingDealTokenDecimals: Int!
 
-	" the underlying deal token totalSupply "
-	underlyingDealTokenTotalSupply: BigInt!
+  " the underlying deal token totalSupply "
+  underlyingDealTokenTotalSupply: BigInt!
 
-	" the total amount of purchse tokens for the deal "
-	purchaseTokenTotalForDeal: BigInt!
+  " the total amount of purchse tokens for the deal "
+  purchaseTokenTotalForDeal: BigInt!
 
-	" the total amount of underlying deal tokens available for the deal "
-	underlyingDealTokenTotal: BigInt!
+  " the total amount of underlying deal tokens available for the deal "
+  underlyingDealTokenTotal: BigInt!
 
-	" the vesting period which is linear for all deals in v1 "
-	vestingPeriod: BigInt!
+  " the vesting period which is linear for all deals in v1 "
+  vestingPeriod: BigInt!
 
-	" the vesting cliff after which linear vesting starts "
-	vestingCliff: BigInt!
+  " the vesting cliff after which linear vesting starts "
+  vestingCliff: BigInt!
 
-	vestingPeriodStarts: BigInt!
+  vestingPeriodStarts: BigInt!
 
-	" the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
-	proRataRedemptionPeriod: BigInt!
+  " the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
+  proRataRedemptionPeriod: BigInt!
 
-	" the timestamp when the pro rata redemption period starts "
-	proRataRedemptionPeriodStart: BigInt
+  " the timestamp when the pro rata redemption period starts "
+  proRataRedemptionPeriodStart: BigInt
 
-	" after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
-	openRedemptionPeriod: BigInt!
+  " after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
+  openRedemptionPeriod: BigInt!
 
-	" the start of the pro rata redemption period "
-	proRataRedemptionStart: BigInt!
+  " the start of the pro rata redemption period "
+  proRataRedemptionStart: BigInt!
 
-	" the start of the open redemption period "
-	openRedemptionStart: BigInt!
+  " the start of the open redemption period "
+  openRedemptionStart: BigInt!
 
-	" the end of the pro rata redemption period "
-	proRataRedemptionExpiry: BigInt!
+  " the end of the pro rata redemption period "
+  proRataRedemptionExpiry: BigInt!
 
-	" the end of the open redemption period "
-	openRedemptionExpiry: BigInt!
+  " the end of the open redemption period "
+  openRedemptionExpiry: BigInt!
 
-	" the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
-	holder: Bytes!
+  " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
+  holder: Bytes!
 
-	" is the deal fully funded "
-	isDealFunded: Boolean!
+  " is the deal fully funded "
+  isDealFunded: Boolean!
 
-	" the exipration of the holder funding period "
-	holderFundingExpiration: BigInt!
+  " the exipration of the holder funding period "
+  holderFundingExpiration: BigInt!
 
-	" the duration of the holder funding period "
-	holderFundingDuration: BigInt!
+  " the duration of the holder funding period "
+  holderFundingDuration: BigInt!
 
-	underlyingPerDealExchangeRate: BigInt!
+  underlyingPerDealExchangeRate: BigInt!
 
-	totalAmountUnredeemed: BigInt!
+  totalAmountUnredeemed: BigInt!
 
-	" the block timestamp when the deal was created"
-	timestamp: BigInt!
+  " the block timestamp when the deal was created"
+  timestamp: BigInt!
 
-	dealFundedAt: BigInt!
+  dealFundedAt: BigInt!
 
-	totalUsersAccepted: Int!
+  totalUsersAccepted: Int!
 
-	totalUsersRejected: Int!
+  totalUsersRejected: Int!
 
-	maxDealTotalSupply: BigInt!
+  maxDealTotalSupply: BigInt!
+}
+
+type UpfrontDeal @entity {
+  " the address of the deal "
+  id: ID!
+
+  " the name of the deal "
+  name: String!
+
+  " the symbol of the deal "
+  symbol: String!
+
+  " the underlying deal token address "
+  underlyingDealToken: Bytes!
+
+  " the underlying deal token symbol "
+  underlyingDealTokenSymbol: String!
+
+  " the underlying deal token decimals "
+  underlyingDealTokenDecimals: Int!
+
+  " the underlying deal token totalSupply "
+  underlyingDealTokenTotalSupply: BigInt!
+
+  " the total amount of purchse tokens for the deal "
+  purchaseTokenTotalForDeal: BigInt!
+
+  " the total amount of underlying deal tokens available for the deal "
+  underlyingDealTokenTotal: BigInt!
+
+  " the vesting period which is linear for all deals in v1 "
+  vestingPeriod: BigInt!
+
+  " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
+  holder: Bytes!
+
+  maxDealTotalSupply: BigInt!
+
+  purchaseTokenPerDealToken: BigInt!
+
+  purchaseRaiseMinimum: BigInt!
+
+  vestingCliffPeriod: BigInt!
+
+  allowDeallocation: Boolean!
+
+  dealStart: BigInt
+
+  totalAmountUnredeemed: BigInt!
+
+  holderClaim: Boolean
+
+  sponsorClaim: Boolean
+
+  totalRedeemed: BigInt!
+
+  totalUsersAccepted: Int!
+
+  remainingDealTokens: BigInt!
+
+  merkleRoot: Bytes
+
+  ipfsHash: String
 }
 
 type History @entity {
-	"userAddress"
-	id: ID!
-	user: User!
-	deposits: [Deposit!]!
-	dealsAccepted: [DealAccepted!]!
-	withdraws: [Withdraw!]!
-	vests: [Vest!]!
-	dealsSponsored: [DealSponsored!]!
-	dealsFunded: [DealFunded!]!
+  "userAddress"
+  id: ID!
+  user: User!
+  deposits: [Deposit!]!
+  dealsAccepted: [DealAccepted!]!
+  withdraws: [Withdraw!]!
+  vests: [Vest!]!
+  dealsSponsored: [DealSponsored!]!
+  dealsFunded: [DealFunded!]!
 }
 
 type User @entity {
-	"userAddress"
-	id: ID!
-	history: History! @derivedFrom(field: "user")
-	poolsInvested: [PoolCreated!]!
-	poolsInvestedAmt: Int!
-	poolsSponsored: [PoolCreated!]!
-	poolsSponsoredAmt: Int!
-	poolsAsHolder: [PoolCreated!]!
-	poolsAsHolderAmt: Int!
-	dealsAccepted: [DealAccepted!]!
-	dealsAcceptedAmt: Int!
-	vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
-	allocationsStat: [UserAllocationStat!]!
+  "userAddress"
+  id: ID!
+  history: History! @derivedFrom(field: "user")
+  poolsInvested: [PoolCreated!]!
+  poolsInvestedAmt: Int!
+  poolsSponsored: [PoolCreated!]!
+  poolsSponsoredAmt: Int!
+  poolsAsHolder: [PoolCreated!]!
+  poolsAsHolderAmt: Int!
+  dealsAccepted: [DealAccepted!]!
+  dealsAcceptedAmt: Int!
+  upfrontDealsAccepted: [PoolCreated!]!
+  upfrontDealsAcceptedAmt: Int!
+  vestingDeals: [VestingDeal!]! @derivedFrom(field: "user")
+  allocationsStat: [UserAllocationStat!]!
 }
 
 type Notification @entity {
-	"poolAddress - NotificationType"
-	id: ID!
-	type: NotificationType!
-	message: String!
-	pool: PoolCreated!
-	triggerStart: BigInt!
-	triggerEnd: BigInt!
-	target: NotificationTarget!
+  "poolAddress - NotificationType"
+  id: ID!
+  type: NotificationType!
+  message: String!
+  pool: PoolCreated!
+  triggerStart: BigInt!
+  triggerEnd: BigInt!
+  target: NotificationTarget!
 }
 
 type NftCollectionRule @entity {
-	"poolAddress - collectionAddress"
-	id: ID!
-	poolAddress: Bytes!
-	nftType: NFTType!
-	collectionAddress: Bytes!
-	purchaseAmount: BigInt!
-	purchaseAmountPerToken: Boolean!
-	erc1155TokenIds: [BigInt!]!
-	erc721Blacklisted: [BigInt!]!
-	erc1155TokensAmtEligible: [BigInt!]!
+  "poolAddress - collectionAddress"
+  id: ID!
+  poolAddress: Bytes!
+  nftType: NFTType!
+  collectionAddress: Bytes!
+  purchaseAmount: BigInt!
+  purchaseAmountPerToken: Boolean!
+  erc1155TokenIds: [BigInt!]!
+  erc721Blacklisted: [BigInt!]!
+  erc1155TokensAmtEligible: [BigInt!]!
 }

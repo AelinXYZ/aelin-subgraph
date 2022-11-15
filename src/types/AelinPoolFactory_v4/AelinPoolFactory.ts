@@ -7,297 +7,354 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt
-} from "@graphprotocol/graph-ts";
+  BigInt,
+} from '@graphprotocol/graph-ts'
 
 export class CreatePool extends ethereum.Event {
   get params(): CreatePool__Params {
-    return new CreatePool__Params(this);
+    return new CreatePool__Params(this)
   }
 }
 
 export class CreatePool__Params {
-  _event: CreatePool;
+  _event: CreatePool
 
   constructor(event: CreatePool) {
-    this._event = event;
+    this._event = event
   }
 
   get poolAddress(): Address {
-    return this._event.parameters[0].value.toAddress();
+    return this._event.parameters[0].value.toAddress()
   }
 
   get name(): string {
-    return this._event.parameters[1].value.toString();
+    return this._event.parameters[1].value.toString()
   }
 
   get symbol(): string {
-    return this._event.parameters[2].value.toString();
+    return this._event.parameters[2].value.toString()
   }
 
   get purchaseTokenCap(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+    return this._event.parameters[3].value.toBigInt()
   }
 
   get purchaseToken(): Address {
-    return this._event.parameters[4].value.toAddress();
+    return this._event.parameters[4].value.toAddress()
   }
 
   get duration(): BigInt {
-    return this._event.parameters[5].value.toBigInt();
+    return this._event.parameters[5].value.toBigInt()
   }
 
   get sponsorFee(): BigInt {
-    return this._event.parameters[6].value.toBigInt();
+    return this._event.parameters[6].value.toBigInt()
   }
 
   get sponsor(): Address {
-    return this._event.parameters[7].value.toAddress();
+    return this._event.parameters[7].value.toAddress()
   }
 
   get purchaseDuration(): BigInt {
-    return this._event.parameters[8].value.toBigInt();
+    return this._event.parameters[8].value.toBigInt()
   }
 
   get hasAllowList(): boolean {
-    return this._event.parameters[9].value.toBoolean();
+    return this._event.parameters[9].value.toBoolean()
+  }
+}
+
+export class AelinPoolFactory__createPoolInput_poolDataStruct extends ethereum.Tuple {
+  get name(): string {
+    return this[0].toString()
+  }
+
+  get symbol(): string {
+    return this[1].toString()
+  }
+
+  get purchaseTokenCap(): BigInt {
+    return this[2].toBigInt()
+  }
+
+  get purchaseToken(): Address {
+    return this[3].toAddress()
+  }
+
+  get duration(): BigInt {
+    return this[4].toBigInt()
+  }
+
+  get sponsorFee(): BigInt {
+    return this[5].toBigInt()
+  }
+
+  get purchaseDuration(): BigInt {
+    return this[6].toBigInt()
+  }
+
+  get allowListAddresses(): Array<Address> {
+    return this[7].toAddressArray()
+  }
+
+  get allowListAmounts(): Array<BigInt> {
+    return this[8].toBigIntArray()
+  }
+
+  get nftCollectionRules(): Array<AelinPoolFactory__createPoolInput_poolDataNftCollectionRulesStruct> {
+    return this[9].toTupleArray<AelinPoolFactory__createPoolInput_poolDataNftCollectionRulesStruct>()
+  }
+}
+
+export class AelinPoolFactory__createPoolInput_poolDataNftCollectionRulesStruct extends ethereum.Tuple {
+  get purchaseAmount(): BigInt {
+    return this[0].toBigInt()
+  }
+
+  get collectionAddress(): Address {
+    return this[1].toAddress()
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    return this[2].toBoolean()
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this[3].toBigIntArray()
+  }
+
+  get minTokensEligible(): Array<BigInt> {
+    return this[4].toBigIntArray()
   }
 }
 
 export class AelinPoolFactory extends ethereum.SmartContract {
   static bind(address: Address): AelinPoolFactory {
-    return new AelinPoolFactory("AelinPoolFactory", address);
+    return new AelinPoolFactory('AelinPoolFactory', address)
   }
 
   AELIN_DEAL_LOGIC(): Address {
-    let result = super.call(
-      "AELIN_DEAL_LOGIC",
-      "AELIN_DEAL_LOGIC():(address)",
-      []
-    );
+    let result = super.call('AELIN_DEAL_LOGIC', 'AELIN_DEAL_LOGIC():(address)', [])
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
   try_AELIN_DEAL_LOGIC(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "AELIN_DEAL_LOGIC",
-      "AELIN_DEAL_LOGIC():(address)",
-      []
-    );
+    let result = super.tryCall('AELIN_DEAL_LOGIC', 'AELIN_DEAL_LOGIC():(address)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
+  }
+
+  AELIN_ESCROW_LOGIC(): Address {
+    let result = super.call('AELIN_ESCROW_LOGIC', 'AELIN_ESCROW_LOGIC():(address)', [])
+
+    return result[0].toAddress()
+  }
+
+  try_AELIN_ESCROW_LOGIC(): ethereum.CallResult<Address> {
+    let result = super.tryCall('AELIN_ESCROW_LOGIC', 'AELIN_ESCROW_LOGIC():(address)', [])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
   AELIN_POOL_LOGIC(): Address {
-    let result = super.call(
-      "AELIN_POOL_LOGIC",
-      "AELIN_POOL_LOGIC():(address)",
-      []
-    );
+    let result = super.call('AELIN_POOL_LOGIC', 'AELIN_POOL_LOGIC():(address)', [])
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
   try_AELIN_POOL_LOGIC(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "AELIN_POOL_LOGIC",
-      "AELIN_POOL_LOGIC():(address)",
-      []
-    );
+    let result = super.tryCall('AELIN_POOL_LOGIC', 'AELIN_POOL_LOGIC():(address)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
-  AELIN_REWARDS(): Address {
-    let result = super.call("AELIN_REWARDS", "AELIN_REWARDS():(address)", []);
+  AELIN_TREASURY(): Address {
+    let result = super.call('AELIN_TREASURY', 'AELIN_TREASURY():(address)', [])
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
-  try_AELIN_REWARDS(): ethereum.CallResult<Address> {
-    let result = super.tryCall(
-      "AELIN_REWARDS",
-      "AELIN_REWARDS():(address)",
-      []
-    );
+  try_AELIN_TREASURY(): ethereum.CallResult<Address> {
+    let result = super.tryCall('AELIN_TREASURY', 'AELIN_TREASURY():(address)', [])
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
-  createPool(
-    _name: string,
-    _symbol: string,
-    _purchaseTokenCap: BigInt,
-    _purchaseToken: Address,
-    _duration: BigInt,
-    _sponsorFee: BigInt,
-    _purchaseDuration: BigInt,
-    _allowList: Array<Address>,
-    _allowListAmounts: Array<BigInt>
-  ): Address {
+  createPool(_poolData: AelinPoolFactory__createPoolInput_poolDataStruct): Address {
     let result = super.call(
-      "createPool",
-      "createPool(string,string,uint256,address,uint256,uint256,uint256,address[],uint256[]):(address)",
-      [
-        ethereum.Value.fromString(_name),
-        ethereum.Value.fromString(_symbol),
-        ethereum.Value.fromUnsignedBigInt(_purchaseTokenCap),
-        ethereum.Value.fromAddress(_purchaseToken),
-        ethereum.Value.fromUnsignedBigInt(_duration),
-        ethereum.Value.fromUnsignedBigInt(_sponsorFee),
-        ethereum.Value.fromUnsignedBigInt(_purchaseDuration),
-        ethereum.Value.fromAddressArray(_allowList),
-        ethereum.Value.fromUnsignedBigIntArray(_allowListAmounts)
-      ]
-    );
+      'createPool',
+      'createPool((string,string,uint256,address,uint256,uint256,uint256,address[],uint256[],(uint256,address,bool,uint256[],uint256[])[])):(address)',
+      [ethereum.Value.fromTuple(_poolData)],
+    )
 
-    return result[0].toAddress();
+    return result[0].toAddress()
   }
 
   try_createPool(
-    _name: string,
-    _symbol: string,
-    _purchaseTokenCap: BigInt,
-    _purchaseToken: Address,
-    _duration: BigInt,
-    _sponsorFee: BigInt,
-    _purchaseDuration: BigInt,
-    _allowList: Array<Address>,
-    _allowListAmounts: Array<BigInt>
+    _poolData: AelinPoolFactory__createPoolInput_poolDataStruct,
   ): ethereum.CallResult<Address> {
     let result = super.tryCall(
-      "createPool",
-      "createPool(string,string,uint256,address,uint256,uint256,uint256,address[],uint256[]):(address)",
-      [
-        ethereum.Value.fromString(_name),
-        ethereum.Value.fromString(_symbol),
-        ethereum.Value.fromUnsignedBigInt(_purchaseTokenCap),
-        ethereum.Value.fromAddress(_purchaseToken),
-        ethereum.Value.fromUnsignedBigInt(_duration),
-        ethereum.Value.fromUnsignedBigInt(_sponsorFee),
-        ethereum.Value.fromUnsignedBigInt(_purchaseDuration),
-        ethereum.Value.fromAddressArray(_allowList),
-        ethereum.Value.fromUnsignedBigIntArray(_allowListAmounts)
-      ]
-    );
+      'createPool',
+      'createPool((string,string,uint256,address,uint256,uint256,uint256,address[],uint256[],(uint256,address,bool,uint256[],uint256[])[])):(address)',
+      [ethereum.Value.fromTuple(_poolData)],
+    )
     if (result.reverted) {
-      return new ethereum.CallResult();
+      return new ethereum.CallResult()
     }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 }
 
 export class ConstructorCall extends ethereum.Call {
   get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
+    return new ConstructorCall__Inputs(this)
   }
 
   get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
+    return new ConstructorCall__Outputs(this)
   }
 }
 
 export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
+  _call: ConstructorCall
 
   constructor(call: ConstructorCall) {
-    this._call = call;
+    this._call = call
   }
 
   get _aelinPoolLogic(): Address {
-    return this._call.inputValues[0].value.toAddress();
+    return this._call.inputValues[0].value.toAddress()
   }
 
   get _aelinDealLogic(): Address {
-    return this._call.inputValues[1].value.toAddress();
+    return this._call.inputValues[1].value.toAddress()
   }
 
-  get _aelinRewards(): Address {
-    return this._call.inputValues[2].value.toAddress();
+  get _aelinTreasury(): Address {
+    return this._call.inputValues[2].value.toAddress()
+  }
+
+  get _aelinEscrow(): Address {
+    return this._call.inputValues[3].value.toAddress()
   }
 }
 
 export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
+  _call: ConstructorCall
 
   constructor(call: ConstructorCall) {
-    this._call = call;
+    this._call = call
   }
 }
 
 export class CreatePoolCall extends ethereum.Call {
   get inputs(): CreatePoolCall__Inputs {
-    return new CreatePoolCall__Inputs(this);
+    return new CreatePoolCall__Inputs(this)
   }
 
   get outputs(): CreatePoolCall__Outputs {
-    return new CreatePoolCall__Outputs(this);
+    return new CreatePoolCall__Outputs(this)
   }
 }
 
 export class CreatePoolCall__Inputs {
-  _call: CreatePoolCall;
+  _call: CreatePoolCall
 
   constructor(call: CreatePoolCall) {
-    this._call = call;
+    this._call = call
   }
 
-  get _name(): string {
-    return this._call.inputValues[0].value.toString();
-  }
-
-  get _symbol(): string {
-    return this._call.inputValues[1].value.toString();
-  }
-
-  get _purchaseTokenCap(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-
-  get _purchaseToken(): Address {
-    return this._call.inputValues[3].value.toAddress();
-  }
-
-  get _duration(): BigInt {
-    return this._call.inputValues[4].value.toBigInt();
-  }
-
-  get _sponsorFee(): BigInt {
-    return this._call.inputValues[5].value.toBigInt();
-  }
-
-  get _purchaseDuration(): BigInt {
-    return this._call.inputValues[6].value.toBigInt();
-  }
-
-  get _allowList(): Array<Address> {
-    return this._call.inputValues[7].value.toAddressArray();
-  }
-
-  get _allowListAmounts(): Array<BigInt> {
-    return this._call.inputValues[8].value.toBigIntArray();
+  get _poolData(): CreatePoolCall_poolDataStruct {
+    return changetype<CreatePoolCall_poolDataStruct>(this._call.inputValues[0].value.toTuple())
   }
 }
 
 export class CreatePoolCall__Outputs {
-  _call: CreatePoolCall;
+  _call: CreatePoolCall
 
   constructor(call: CreatePoolCall) {
-    this._call = call;
+    this._call = call
   }
 
   get value0(): Address {
-    return this._call.outputValues[0].value.toAddress();
+    return this._call.outputValues[0].value.toAddress()
+  }
+}
+
+export class CreatePoolCall_poolDataStruct extends ethereum.Tuple {
+  get name(): string {
+    return this[0].toString()
+  }
+
+  get symbol(): string {
+    return this[1].toString()
+  }
+
+  get purchaseTokenCap(): BigInt {
+    return this[2].toBigInt()
+  }
+
+  get purchaseToken(): Address {
+    return this[3].toAddress()
+  }
+
+  get duration(): BigInt {
+    return this[4].toBigInt()
+  }
+
+  get sponsorFee(): BigInt {
+    return this[5].toBigInt()
+  }
+
+  get purchaseDuration(): BigInt {
+    return this[6].toBigInt()
+  }
+
+  get allowListAddresses(): Array<Address> {
+    return this[7].toAddressArray()
+  }
+
+  get allowListAmounts(): Array<BigInt> {
+    return this[8].toBigIntArray()
+  }
+
+  get nftCollectionRules(): Array<CreatePoolCall_poolDataNftCollectionRulesStruct> {
+    return this[9].toTupleArray<CreatePoolCall_poolDataNftCollectionRulesStruct>()
+  }
+}
+
+export class CreatePoolCall_poolDataNftCollectionRulesStruct extends ethereum.Tuple {
+  get purchaseAmount(): BigInt {
+    return this[0].toBigInt()
+  }
+
+  get collectionAddress(): Address {
+    return this[1].toAddress()
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    return this[2].toBoolean()
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this[3].toBigIntArray()
+  }
+
+  get minTokensEligible(): Array<BigInt> {
+    return this[4].toBigIntArray()
   }
 }

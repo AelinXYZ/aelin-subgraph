@@ -1,15 +1,24 @@
 {
-    "network": "goerli",
-    "dataSources": [
-        {
-            "name": "AelinPoolFactory",
-            "address": "0xCA4d64B67486867a9E867D0E38E1F1e99B718EEb",
-            "startBlock": 6457748
-        },
-        {
-            "name": "AelinPoolFactory_V4",
-            "address": "0xb52736cE26345942134b11083e88A0DD9Ef1be5A",
-            "startBlock": 7340000
-        }
+  "network": "goerli",
+  "dataSources": {
+    "sponsorPools": [
+      {
+        "name": "AelinPoolFactory",
+        "address": "0xCA4d64B67486867a9E867D0E38E1F1e99B718EEb",
+        "startBlock": 6457748
+      },
+      {
+        "name": "AelinPoolFactory_v4",
+        "address": "0xb52736cE26345942134b11083e88A0DD9Ef1be5A",
+        "startBlock": 7340000
+      }
+    ],
+    "upfrontDeals": [
+      {
+        "name": "AelinUpfrontDealFactory_v1",
+        "address": "0x50c4EEa08AE5544B622C96683823CeCdC8b0e8BA",
+        "startBlock": 7809952
+      }
     ]
+  }
 }

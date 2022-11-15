@@ -1,31 +1,59 @@
 specVersion: 0.0.2
-description: Fundraising on Ethereum
+description: Fundraising on Ethereum.
 schema:
   file: ./schema.graphql
 dataSources:
   {{#dataSources}}
-  - kind: ethereum/contract
-    name: {{name}}
-    network: {{network}}
-    source:
-      address: "{{address}}"
-      abi: AelinPoolFactory
-      startBlock: {{startBlock}}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - PoolCreated
-      abis:
-        - name: AelinPoolFactory
-          file: ./abis/AelinPoolFactory.json
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
-          handler: handleCreatePool
-      file: ./src/aelin-pool-factory.ts
+    {{#sponsorPools}}
+    - kind: ethereum/contract
+      name: {{name}}
+      network: {{network}}
+      source:
+        address: "{{address}}"
+        abi: AelinPoolFactory
+        startBlock: {{startBlock}}
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinPoolFactory
+            file: ./abis/{{name}}.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreatePool(indexed address,string,string,uint256,indexed address,uint256,uint256,indexed address,uint256,bool)
+            handler: handleCreatePool
+        file: ./src/aelin-pool-factory.ts
+    {{/sponsorPools}}
+    {{#upfrontDeals}}
+    - kind: ethereum/contract
+      name: {{name}}
+      network: {{network}}
+      source:
+        address: "{{address}}"
+        abi: AelinUpfrontDealFactory
+        startBlock: {{startBlock}}
+      mapping:
+        kind: ethereum/events
+        apiVersion: 0.0.5
+        language: wasm/assemblyscript
+        entities:
+          - PoolCreated
+        abis:
+          - name: AelinUpfrontDealFactory
+            file: ./abis/{{name}}.json
+          - name: ERC20
+            file: ./abis/ERC20.json
+        eventHandlers:
+          - event: CreateUpFrontDeal(indexed address,string,string,address,address,indexed address,indexed address,uint256,bytes32,string)
+            handler: handleCreateUpfrontDeal
+          - event: CreateUpFrontDealConfig(indexed address,uint256,uint256,uint256,uint256,uint256,uint256,bool)
+            handler: handleCreateUpfrontDealConfig
+        file: ./src/aelin-upfront-deal-factory.ts
+    {{/upfrontDeals}}
   {{/dataSources}}
 
 templates:
@@ -103,3 +131,52 @@ templates:
           handler: handleClaimedUnderlyingDealToken
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleDealTransfer
+
+  - name: AelinUpfrontDeal
+    kind: ethereum/contract
+    network: {{network}}
+    source:
+      abi: AelinUpfrontDeal
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/aelin-upfront-deal.ts
+      entities:
+        - AelinUpfrontDeal
+      abis:
+        - name: AelinUpfrontDeal
+          file: ./abis/AelinUpfrontDeal.json
+      eventHandlers:
+        - event: DepositDealToken(indexed address,indexed address,uint256)
+          handler: handleDepositDealToken
+        - event: DealFullyFunded(address,uint256,uint256,uint256,uint256)
+          handler: handleDealFullyFunded
+        - event: WithdrewExcess(address,uint256)
+          handler: handleWithdrewExcess
+        - event: AcceptDeal(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleAcceptDeal
+        - event: ClaimDealTokens(indexed address,uint256,uint256)
+          handler: handleClaimDealTokens
+        - event: SponsorClaim(indexed address,uint256)
+          handler: handleSponsorClaim
+        - event: HolderClaim(indexed address,address,uint256,address,uint256,uint256)
+          handler: handleHolderClaim
+        # - event: FeeEscrowClaim(indexed address,indexed address,uint256)
+        #   handler: handleFeeEscrowClaim
+        - event: ClaimedUnderlyingDealToken(indexed address,address,uint256)
+          handler: handleClaimedUnderlyingDealToken
+        - event: PoolWith721(indexed address,uint256,bool)
+          handler: handlePoolWith721
+        - event: PoolWith1155(indexed address,uint256,bool,uint256[],uint256[])
+          handler: handlePoolWith1155
+        - event: BlacklistNFT(indexed address,uint256)
+          handler: handleBlacklistNFT
+        - event: SetHolder(indexed address)
+          handler: handleSetHolder
+        - event: Vouch(indexed address)
+          handler: handleVouch
+        - event: Disavow(indexed address)
+          handler: handleDisavow
+      
+            
