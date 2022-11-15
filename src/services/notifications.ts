@@ -18,7 +18,7 @@ import {
 } from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
 import { Notification } from '../types/schema'
 import { getDeal, getPoolCreated, getUpfrontDeal } from './entities'
-import { BigInt, log, store } from '@graphprotocol/graph-ts'
+import { BigInt, store } from '@graphprotocol/graph-ts'
 import { Notifications, NotificationTarget } from '../enum'
 import { ZERO } from '../helpers'
 
