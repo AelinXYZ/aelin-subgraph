@@ -102,6 +102,10 @@ templates:
           handler: handlePoolWith1155
         - event: BlacklistNFT(indexed address,uint256)
           handler: handleBlacklistNFT
+        - event: Vouch(indexed address)
+          handler: handleVouch
+        - event: Disavow(indexed address)
+          handler: handleDisavow
 
   - name: AelinDeal
     kind: ethereum/contract
@@ -178,5 +182,8 @@ templates:
           handler: handleVouch
         - event: Disavow(indexed address)
           handler: handleDisavow
-      
+        - event: Vouch(indexed address)
+          handler: handleVouch
+        - event: Disavow(indexed address)
+          handler: handleDisavow
             
