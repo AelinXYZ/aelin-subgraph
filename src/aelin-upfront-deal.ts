@@ -23,6 +23,8 @@ import {
   PoolWith1155 as PoolWith1155Event,
   PoolWith721 as PoolWith721Event,
   BlacklistNFT as BlacklistNFTEvent,
+  Vouch as VouchEvent,
+  Disavow as DisavowEvent,
 } from './types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
 
 export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
@@ -255,5 +257,42 @@ export function handleBlacklistNFT(event: BlacklistNFTEvent): void {
     blackListedNfts.push(event.params.nftID)
     nftCollectionRuleEntity.erc721Blacklisted = blackListedNfts
     nftCollectionRuleEntity.save()
+  }
+}
+
+export function handleVouch(event: VouchEvent): void {
+  const poolCreatedEntity = getPoolCreated(event.address.toHex())
+  const userEntity = getOrCreateUser(event.params.voucher.toHex())
+  if (!userEntity || !poolCreatedEntity) {
+    return
+  }
+
+  const poolsVouched = userEntity.poolsVouched
+  poolsVouched.push(event.address.toHex())
+  userEntity.poolsVouched = poolsVouched
+  poolCreatedEntity.totalVouchers++
+
+  poolCreatedEntity.save()
+  userEntity.save()
+}
+
+export function handleDisavow(event: DisavowEvent): void {
+  const poolCreatedEntity = getPoolCreated(event.address.toHex())
+  const userEntity = getOrCreateUser(event.params.voucher.toHex())
+  if (!userEntity || !poolCreatedEntity) {
+    return
+  }
+
+  const poolsVouched = userEntity.poolsVouched
+  let poolVouchedIndex = poolsVouched.indexOf(event.address.toHex())
+  if (poolVouchedIndex >= 0) {
+    poolsVouched.splice(poolVouchedIndex, 1)
+    userEntity.poolsVouched = poolsVouched
+    if (poolCreatedEntity.totalVouchers > 0) {
+      poolCreatedEntity.totalVouchers--
+      poolCreatedEntity.save()
+    }
+
+    userEntity.save()
   }
 }

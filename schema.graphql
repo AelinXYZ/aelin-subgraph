@@ -129,6 +129,8 @@ type PoolCreated @entity {
 
   " details of the created upfront deal "
   upfrontDeal: UpfrontDeal
+
+  totalVouchers: Int!
 }
 
 type TotalPoolsCreated @entity {
@@ -730,6 +732,7 @@ type User @entity {
   "userAddress"
   id: ID!
   history: History! @derivedFrom(field: "user")
+  poolsVouched: [PoolCreated!]!
   poolsInvested: [PoolCreated!]!
   poolsInvestedAmt: Int!
   poolsSponsored: [PoolCreated!]!

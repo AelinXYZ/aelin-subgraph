@@ -47,6 +47,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
     event.params.purchaseToken,
   ).toLowerCase()}`
   poolCreatedEntity.hasNftList = false
+  poolCreatedEntity.totalVouchers = 0
 
   poolCreatedEntity.save()
 
