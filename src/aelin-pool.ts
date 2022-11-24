@@ -372,6 +372,7 @@ export function handleVouch(event: VouchEvent): void {
   const poolsVouched = userEntity.poolsVouched
   poolsVouched.push(event.address.toHex())
   userEntity.poolsVouched = poolsVouched
+  userEntity.poolsVouchedAmt = poolsVouched.length
   poolCreatedEntity.totalVouchers++
 
   poolCreatedEntity.save()
@@ -390,6 +391,7 @@ export function handleDisavow(event: DisavowEvent): void {
   if (poolVouchedIndex >= 0) {
     poolsVouched.splice(poolVouchedIndex, 1)
     userEntity.poolsVouched = poolsVouched
+    userEntity.poolsVouchedAmt = poolsVouched.length
     if (poolCreatedEntity.totalVouchers > 0) {
       poolCreatedEntity.totalVouchers--
       poolCreatedEntity.save()

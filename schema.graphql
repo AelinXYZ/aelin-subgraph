@@ -733,6 +733,7 @@ type User @entity {
   id: ID!
   history: History! @derivedFrom(field: "user")
   poolsVouched: [PoolCreated!]!
+  poolsVouchedAmt: Int!
   poolsInvested: [PoolCreated!]!
   poolsInvestedAmt: Int!
   poolsSponsored: [PoolCreated!]!
