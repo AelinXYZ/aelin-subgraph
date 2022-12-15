@@ -144,8 +144,8 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
       poolCreatedEntity.totalUsersInvested++
       totalAddressesInvested.push(event.params.purchaser.toHex())
       poolCreatedEntity.totalAddressesInvested = totalAddressesInvested
-      poolCreatedEntity.save()
     }
+    poolCreatedEntity.save()
   }
 
   /**
