@@ -214,6 +214,14 @@ export class CreateUpFrontDeal__Params {
   get sponsorFee(): BigInt {
     return this._event.parameters[7].value.toBigInt()
   }
+
+  get merkleRoot(): Bytes {
+    return this._event.parameters[8].value.toBytes()
+  }
+
+  get ipfsHash(): string {
+    return this._event.parameters[9].value.toString()
+  }
 }
 
 export class CreateUpFrontDealConfig extends ethereum.Event {
@@ -618,6 +626,8 @@ export class AelinUpfrontDeal__dealDataResult {
   value4: Address
   value5: Address
   value6: BigInt
+  value7: Bytes
+  value8: string
 
   constructor(
     value0: string,
@@ -627,6 +637,8 @@ export class AelinUpfrontDeal__dealDataResult {
     value4: Address,
     value5: Address,
     value6: BigInt,
+    value7: Bytes,
+    value8: string,
   ) {
     this.value0 = value0
     this.value1 = value1
@@ -635,6 +647,8 @@ export class AelinUpfrontDeal__dealDataResult {
     this.value4 = value4
     this.value5 = value5
     this.value6 = value6
+    this.value7 = value7
+    this.value8 = value8
   }
 
   toMap(): TypedMap<string, ethereum.Value> {
@@ -646,6 +660,8 @@ export class AelinUpfrontDeal__dealDataResult {
     map.set('value4', ethereum.Value.fromAddress(this.value4))
     map.set('value5', ethereum.Value.fromAddress(this.value5))
     map.set('value6', ethereum.Value.fromUnsignedBigInt(this.value6))
+    map.set('value7', ethereum.Value.fromFixedBytes(this.value7))
+    map.set('value8', ethereum.Value.fromString(this.value8))
     return map
   }
 }
@@ -937,7 +953,7 @@ export class AelinUpfrontDeal extends ethereum.SmartContract {
   dealData(): AelinUpfrontDeal__dealDataResult {
     let result = super.call(
       'dealData',
-      'dealData():(string,string,address,address,address,address,uint256)',
+      'dealData():(string,string,address,address,address,address,uint256,bytes32,string)',
       [],
     )
 
@@ -949,13 +965,15 @@ export class AelinUpfrontDeal extends ethereum.SmartContract {
       result[4].toAddress(),
       result[5].toAddress(),
       result[6].toBigInt(),
+      result[7].toBytes(),
+      result[8].toString(),
     )
   }
 
   try_dealData(): ethereum.CallResult<AelinUpfrontDeal__dealDataResult> {
     let result = super.tryCall(
       'dealData',
-      'dealData():(string,string,address,address,address,address,uint256)',
+      'dealData():(string,string,address,address,address,address,uint256,bytes32,string)',
       [],
     )
     if (result.reverted) {
@@ -971,6 +989,8 @@ export class AelinUpfrontDeal extends ethereum.SmartContract {
         value[4].toAddress(),
         value[5].toAddress(),
         value[6].toBigInt(),
+        value[7].toBytes(),
+        value[8].toString(),
       ),
     )
   }
@@ -1240,6 +1260,25 @@ export class AelinUpfrontDeal extends ethereum.SmartContract {
     }
     let value = result.value
     return ethereum.CallResult.fromValue(value[0].toBigInt())
+  }
+
+  hasPurchasedMerkle(_index: BigInt): boolean {
+    let result = super.call('hasPurchasedMerkle', 'hasPurchasedMerkle(uint256):(bool)', [
+      ethereum.Value.fromUnsignedBigInt(_index),
+    ])
+
+    return result[0].toBoolean()
+  }
+
+  try_hasPurchasedMerkle(_index: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall('hasPurchasedMerkle', 'hasPurchasedMerkle(uint256):(bool)', [
+      ethereum.Value.fromUnsignedBigInt(_index),
+    ])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
   increaseAllowance(spender: Address, addedValue: BigInt): boolean {
@@ -1519,8 +1558,12 @@ export class AcceptDealCall__Inputs {
     return this._call.inputValues[0].value.toTupleArray<AcceptDealCall_nftPurchaseListStruct>()
   }
 
+  get _merkleData(): AcceptDealCall_merkleDataStruct {
+    return changetype<AcceptDealCall_merkleDataStruct>(this._call.inputValues[1].value.toTuple())
+  }
+
   get _purchaseTokenAmount(): BigInt {
-    return this._call.inputValues[1].value.toBigInt()
+    return this._call.inputValues[2].value.toBigInt()
   }
 }
 
@@ -1539,6 +1582,24 @@ export class AcceptDealCall_nftPurchaseListStruct extends ethereum.Tuple {
 
   get tokenIds(): Array<BigInt> {
     return this[1].toBigIntArray()
+  }
+}
+
+export class AcceptDealCall_merkleDataStruct extends ethereum.Tuple {
+  get index(): BigInt {
+    return this[0].toBigInt()
+  }
+
+  get account(): Address {
+    return this[1].toAddress()
+  }
+
+  get amount(): BigInt {
+    return this[2].toBigInt()
+  }
+
+  get merkleProof(): Array<Bytes> {
+    return this[3].toBytesArray()
   }
 }
 
@@ -1893,6 +1954,14 @@ export class InitializeCall_dealDataStruct extends ethereum.Tuple {
 
   get sponsorFee(): BigInt {
     return this[6].toBigInt()
+  }
+
+  get merkleRoot(): Bytes {
+    return this[7].toBytes()
+  }
+
+  get ipfsHash(): string {
+    return this[8].toString()
   }
 }
 

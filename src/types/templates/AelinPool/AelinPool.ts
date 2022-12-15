@@ -70,6 +70,28 @@ export class AelinToken__Params {
   }
 }
 
+export class AllowlistAddress extends ethereum.Event {
+  get params(): AllowlistAddress__Params {
+    return new AllowlistAddress__Params(this)
+  }
+}
+
+export class AllowlistAddress__Params {
+  _event: AllowlistAddress
+
+  constructor(event: AllowlistAddress) {
+    this._event = event
+  }
+
+  get purchaser(): Address {
+    return this._event.parameters[0].value.toAddress()
+  }
+
+  get allowlistAmount(): BigInt {
+    return this._event.parameters[1].value.toBigInt()
+  }
+}
+
 export class Approval extends ethereum.Event {
   get params(): Approval__Params {
     return new Approval__Params(this)
@@ -93,6 +115,28 @@ export class Approval__Params {
 
   get value(): BigInt {
     return this._event.parameters[2].value.toBigInt()
+  }
+}
+
+export class BlacklistNFT extends ethereum.Event {
+  get params(): BlacklistNFT__Params {
+    return new BlacklistNFT__Params(this)
+  }
+}
+
+export class BlacklistNFT__Params {
+  _event: BlacklistNFT
+
+  constructor(event: BlacklistNFT) {
+    this._event = event
+  }
+
+  get collection(): Address {
+    return this._event.parameters[0].value.toAddress()
+  }
+
+  get nftID(): BigInt {
+    return this._event.parameters[1].value.toBigInt()
   }
 }
 
@@ -180,6 +224,84 @@ export class DealDetail__Params {
   }
 }
 
+export class Disavow extends ethereum.Event {
+  get params(): Disavow__Params {
+    return new Disavow__Params(this)
+  }
+}
+
+export class Disavow__Params {
+  _event: Disavow
+
+  constructor(event: Disavow) {
+    this._event = event
+  }
+
+  get voucher(): Address {
+    return this._event.parameters[0].value.toAddress()
+  }
+}
+
+export class PoolWith1155 extends ethereum.Event {
+  get params(): PoolWith1155__Params {
+    return new PoolWith1155__Params(this)
+  }
+}
+
+export class PoolWith1155__Params {
+  _event: PoolWith1155
+
+  constructor(event: PoolWith1155) {
+    this._event = event
+  }
+
+  get collectionAddress(): Address {
+    return this._event.parameters[0].value.toAddress()
+  }
+
+  get purchaseAmount(): BigInt {
+    return this._event.parameters[1].value.toBigInt()
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    return this._event.parameters[2].value.toBoolean()
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this._event.parameters[3].value.toBigIntArray()
+  }
+
+  get minTokensEligible(): Array<BigInt> {
+    return this._event.parameters[4].value.toBigIntArray()
+  }
+}
+
+export class PoolWith721 extends ethereum.Event {
+  get params(): PoolWith721__Params {
+    return new PoolWith721__Params(this)
+  }
+}
+
+export class PoolWith721__Params {
+  _event: PoolWith721
+
+  constructor(event: PoolWith721) {
+    this._event = event
+  }
+
+  get collectionAddress(): Address {
+    return this._event.parameters[0].value.toAddress()
+  }
+
+  get purchaseAmount(): BigInt {
+    return this._event.parameters[1].value.toBigInt()
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    return this._event.parameters[2].value.toBoolean()
+  }
+}
+
 export class PurchasePoolToken extends ethereum.Event {
   get params(): PurchasePoolToken__Params {
     return new PurchasePoolToken__Params(this)
@@ -246,6 +368,24 @@ export class Transfer__Params {
   }
 }
 
+export class Vouch extends ethereum.Event {
+  get params(): Vouch__Params {
+    return new Vouch__Params(this)
+  }
+}
+
+export class Vouch__Params {
+  _event: Vouch
+
+  constructor(event: Vouch) {
+    this._event = event
+  }
+
+  get voucher(): Address {
+    return this._event.parameters[0].value.toAddress()
+  }
+}
+
 export class WithdrawFromPool extends ethereum.Event {
   get params(): WithdrawFromPool__Params {
     return new WithdrawFromPool__Params(this)
@@ -268,85 +408,23 @@ export class WithdrawFromPool__Params {
   }
 }
 
-export class PoolWith721 extends ethereum.Event {
-  get params(): PoolWith721__Params {
-    return new PoolWith721__Params(this)
-  }
-}
+export class AelinPool__nftCollectionDetailsResult {
+  value0: BigInt
+  value1: Address
+  value2: boolean
 
-export class PoolWith721__Params {
-  _event: PoolWith721
-
-  constructor(event: PoolWith721) {
-    this._event = event
+  constructor(value0: BigInt, value1: Address, value2: boolean) {
+    this.value0 = value0
+    this.value1 = value1
+    this.value2 = value2
   }
 
-  get collectionAddress(): Address {
-    return this._event.parameters[0].value.toAddress()
-  }
-
-  get purchaseAmount(): BigInt {
-    return this._event.parameters[1].value.toBigInt()
-  }
-
-  get purchaseAmountPerToken(): boolean {
-    return this._event.parameters[2].value.toBoolean()
-  }
-}
-
-export class PoolWith1155 extends ethereum.Event {
-  get params(): PoolWith1155__Params {
-    return new PoolWith1155__Params(this)
-  }
-}
-
-export class PoolWith1155__Params {
-  _event: PoolWith1155
-
-  constructor(event: PoolWith1155) {
-    this._event = event
-  }
-
-  get collectionAddress(): Address {
-    return this._event.parameters[0].value.toAddress()
-  }
-
-  get purchaseAmount(): BigInt {
-    return this._event.parameters[1].value.toBigInt()
-  }
-
-  get purchaseAmountPerToken(): boolean {
-    return this._event.parameters[2].value.toBoolean()
-  }
-
-  get tokenIds(): Array<BigInt> {
-    return this._event.parameters[3].value.toBigIntArray()
-  }
-
-  get minTokensEligible(): Array<BigInt> {
-    return this._event.parameters[4].value.toBigIntArray()
-  }
-}
-
-export class BlacklistNFT extends ethereum.Event {
-  get params(): BlacklistNFT__Params {
-    return new BlacklistNFT__Params(this)
-  }
-}
-
-export class BlacklistNFT__Params {
-  _event: BlacklistNFT
-
-  constructor(event: BlacklistNFT) {
-    this._event = event
-  }
-
-  get collection(): Address {
-    return this._event.parameters[0].value.toAddress()
-  }
-
-  get nftID(): BigInt {
-    return this._event.parameters[1].value.toBigInt()
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>()
+    map.set('value0', ethereum.Value.fromUnsignedBigInt(this.value0))
+    map.set('value1', ethereum.Value.fromAddress(this.value1))
+    map.set('value2', ethereum.Value.fromBoolean(this.value2))
+    return map
   }
 }
 
@@ -385,14 +463,29 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress())
   }
 
-  aelinRewardsAddress(): Address {
-    let result = super.call('aelinRewardsAddress', 'aelinRewardsAddress():(address)', [])
+  aelinEscrowLogicAddress(): Address {
+    let result = super.call('aelinEscrowLogicAddress', 'aelinEscrowLogicAddress():(address)', [])
 
     return result[0].toAddress()
   }
 
-  try_aelinRewardsAddress(): ethereum.CallResult<Address> {
-    let result = super.tryCall('aelinRewardsAddress', 'aelinRewardsAddress():(address)', [])
+  try_aelinEscrowLogicAddress(): ethereum.CallResult<Address> {
+    let result = super.tryCall('aelinEscrowLogicAddress', 'aelinEscrowLogicAddress():(address)', [])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toAddress())
+  }
+
+  aelinTreasuryAddress(): Address {
+    let result = super.call('aelinTreasuryAddress', 'aelinTreasuryAddress():(address)', [])
+
+    return result[0].toAddress()
+  }
+
+  try_aelinTreasuryAddress(): ethereum.CallResult<Address> {
+    let result = super.tryCall('aelinTreasuryAddress', 'aelinTreasuryAddress():(address)', [])
     if (result.reverted) {
       return new ethereum.CallResult()
     }
@@ -459,6 +552,25 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
+  amountWithdrawn(param0: Address): BigInt {
+    let result = super.call('amountWithdrawn', 'amountWithdrawn(address):(uint256)', [
+      ethereum.Value.fromAddress(param0),
+    ])
+
+    return result[0].toBigInt()
+  }
+
+  try_amountWithdrawn(param0: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall('amountWithdrawn', 'amountWithdrawn(address):(uint256)', [
+      ethereum.Value.fromAddress(param0),
+    ])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
+  }
+
   approve(spender: Address, amount: BigInt): boolean {
     let result = super.call('approve', 'approve(address,uint256):(bool)', [
       ethereum.Value.fromAddress(spender),
@@ -499,27 +611,12 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
-  calledInitialize(): boolean {
-    let result = super.call('calledInitialize', 'calledInitialize():(bool)', [])
-
-    return result[0].toBoolean()
-  }
-
-  try_calledInitialize(): ethereum.CallResult<boolean> {
-    let result = super.tryCall('calledInitialize', 'calledInitialize():(bool)', [])
-    if (result.reverted) {
-      return new ethereum.CallResult()
-    }
-    let value = result.value
-    return ethereum.CallResult.fromValue(value[0].toBoolean())
-  }
-
   createDeal(
     _underlyingDealToken: Address,
     _purchaseTokenTotalForDeal: BigInt,
     _underlyingDealTokenTotal: BigInt,
     _vestingPeriod: BigInt,
-    _vestingCliff: BigInt,
+    _vestingCliffPeriod: BigInt,
     _proRataRedemptionPeriod: BigInt,
     _openRedemptionPeriod: BigInt,
     _holder: Address,
@@ -533,7 +630,7 @@ export class AelinPool extends ethereum.SmartContract {
         ethereum.Value.fromUnsignedBigInt(_purchaseTokenTotalForDeal),
         ethereum.Value.fromUnsignedBigInt(_underlyingDealTokenTotal),
         ethereum.Value.fromUnsignedBigInt(_vestingPeriod),
-        ethereum.Value.fromUnsignedBigInt(_vestingCliff),
+        ethereum.Value.fromUnsignedBigInt(_vestingCliffPeriod),
         ethereum.Value.fromUnsignedBigInt(_proRataRedemptionPeriod),
         ethereum.Value.fromUnsignedBigInt(_openRedemptionPeriod),
         ethereum.Value.fromAddress(_holder),
@@ -549,7 +646,7 @@ export class AelinPool extends ethereum.SmartContract {
     _purchaseTokenTotalForDeal: BigInt,
     _underlyingDealTokenTotal: BigInt,
     _vestingPeriod: BigInt,
-    _vestingCliff: BigInt,
+    _vestingCliffPeriod: BigInt,
     _proRataRedemptionPeriod: BigInt,
     _openRedemptionPeriod: BigInt,
     _holder: Address,
@@ -563,7 +660,7 @@ export class AelinPool extends ethereum.SmartContract {
         ethereum.Value.fromUnsignedBigInt(_purchaseTokenTotalForDeal),
         ethereum.Value.fromUnsignedBigInt(_underlyingDealTokenTotal),
         ethereum.Value.fromUnsignedBigInt(_vestingPeriod),
-        ethereum.Value.fromUnsignedBigInt(_vestingCliff),
+        ethereum.Value.fromUnsignedBigInt(_vestingCliffPeriod),
         ethereum.Value.fromUnsignedBigInt(_proRataRedemptionPeriod),
         ethereum.Value.fromUnsignedBigInt(_openRedemptionPeriod),
         ethereum.Value.fromAddress(_holder),
@@ -643,6 +740,21 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
+  hasNftList(): boolean {
+    let result = super.call('hasNftList', 'hasNftList():(bool)', [])
+
+    return result[0].toBoolean()
+  }
+
+  try_hasNftList(): ethereum.CallResult<boolean> {
+    let result = super.tryCall('hasNftList', 'hasNftList():(bool)', [])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
+  }
+
   holder(): Address {
     let result = super.call('holder', 'holder():(address)', [])
 
@@ -694,17 +806,17 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
-  maxDealAccept(purchaser: Address): BigInt {
+  maxDealAccept(_purchaser: Address): BigInt {
     let result = super.call('maxDealAccept', 'maxDealAccept(address):(uint256)', [
-      ethereum.Value.fromAddress(purchaser),
+      ethereum.Value.fromAddress(_purchaser),
     ])
 
     return result[0].toBigInt()
   }
 
-  try_maxDealAccept(purchaser: Address): ethereum.CallResult<BigInt> {
+  try_maxDealAccept(_purchaser: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall('maxDealAccept', 'maxDealAccept(address):(uint256)', [
-      ethereum.Value.fromAddress(purchaser),
+      ethereum.Value.fromAddress(_purchaser),
     ])
     if (result.reverted) {
       return new ethereum.CallResult()
@@ -713,36 +825,17 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
-  maxProRataAvail(purchaser: Address): BigInt {
-    let result = super.call('maxProRataAvail', 'maxProRataAvail(address):(uint256)', [
-      ethereum.Value.fromAddress(purchaser),
-    ])
-
-    return result[0].toBigInt()
-  }
-
-  try_maxProRataAvail(purchaser: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall('maxProRataAvail', 'maxProRataAvail(address):(uint256)', [
-      ethereum.Value.fromAddress(purchaser),
-    ])
-    if (result.reverted) {
-      return new ethereum.CallResult()
-    }
-    let value = result.value
-    return ethereum.CallResult.fromValue(value[0].toBigInt())
-  }
-
-  maxProRataAmount(purchaser: Address): BigInt {
+  maxProRataAmount(_purchaser: Address): BigInt {
     let result = super.call('maxProRataAmount', 'maxProRataAmount(address):(uint256)', [
-      ethereum.Value.fromAddress(purchaser),
+      ethereum.Value.fromAddress(_purchaser),
     ])
 
     return result[0].toBigInt()
   }
 
-  try_maxProRataAmount(purchaser: Address): ethereum.CallResult<BigInt> {
+  try_maxProRataAmount(_purchaser: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall('maxProRataAmount', 'maxProRataAmount(address):(uint256)', [
-      ethereum.Value.fromAddress(purchaser),
+      ethereum.Value.fromAddress(_purchaser),
     ])
     if (result.reverted) {
       return new ethereum.CallResult()
@@ -764,6 +857,100 @@ export class AelinPool extends ethereum.SmartContract {
     }
     let value = result.value
     return ethereum.CallResult.fromValue(value[0].toString())
+  }
+
+  nftCollectionDetails(param0: Address): AelinPool__nftCollectionDetailsResult {
+    let result = super.call(
+      'nftCollectionDetails',
+      'nftCollectionDetails(address):(uint256,address,bool)',
+      [ethereum.Value.fromAddress(param0)],
+    )
+
+    return new AelinPool__nftCollectionDetailsResult(
+      result[0].toBigInt(),
+      result[1].toAddress(),
+      result[2].toBoolean(),
+    )
+  }
+
+  try_nftCollectionDetails(
+    param0: Address,
+  ): ethereum.CallResult<AelinPool__nftCollectionDetailsResult> {
+    let result = super.tryCall(
+      'nftCollectionDetails',
+      'nftCollectionDetails(address):(uint256,address,bool)',
+      [ethereum.Value.fromAddress(param0)],
+    )
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(
+      new AelinPool__nftCollectionDetailsResult(
+        value[0].toBigInt(),
+        value[1].toAddress(),
+        value[2].toBoolean(),
+      ),
+    )
+  }
+
+  nftId(param0: Address, param1: BigInt): boolean {
+    let result = super.call('nftId', 'nftId(address,uint256):(bool)', [
+      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromUnsignedBigInt(param1),
+    ])
+
+    return result[0].toBoolean()
+  }
+
+  try_nftId(param0: Address, param1: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall('nftId', 'nftId(address,uint256):(bool)', [
+      ethereum.Value.fromAddress(param0),
+      ethereum.Value.fromUnsignedBigInt(param1),
+    ])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
+  }
+
+  nftWalletUsedForPurchase(param0: Address, param1: Address): boolean {
+    let result = super.call(
+      'nftWalletUsedForPurchase',
+      'nftWalletUsedForPurchase(address,address):(bool)',
+      [ethereum.Value.fromAddress(param0), ethereum.Value.fromAddress(param1)],
+    )
+
+    return result[0].toBoolean()
+  }
+
+  try_nftWalletUsedForPurchase(param0: Address, param1: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      'nftWalletUsedForPurchase',
+      'nftWalletUsedForPurchase(address,address):(bool)',
+      [ethereum.Value.fromAddress(param0), ethereum.Value.fromAddress(param1)],
+    )
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBoolean())
+  }
+
+  numberOfDeals(): i32 {
+    let result = super.call('numberOfDeals', 'numberOfDeals():(uint8)', [])
+
+    return result[0].toI32()
+  }
+
+  try_numberOfDeals(): ethereum.CallResult<i32> {
+    let result = super.tryCall('numberOfDeals', 'numberOfDeals():(uint8)', [])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toI32())
   }
 
   openPeriodEligible(param0: Address): boolean {
@@ -973,6 +1160,21 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
+  totalAmountWithdrawn(): BigInt {
+    let result = super.call('totalAmountWithdrawn', 'totalAmountWithdrawn():(uint256)', [])
+
+    return result[0].toBigInt()
+  }
+
+  try_totalAmountWithdrawn(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall('totalAmountWithdrawn', 'totalAmountWithdrawn():(uint256)', [])
+    if (result.reverted) {
+      return new ethereum.CallResult()
+    }
+    let value = result.value
+    return ethereum.CallResult.fromValue(value[0].toBigInt())
+  }
+
   totalSupply(): BigInt {
     let result = super.call('totalSupply', 'totalSupply():(uint256)', [])
 
@@ -988,19 +1190,19 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt())
   }
 
-  transfer(dst: Address, amount: BigInt): boolean {
+  transfer(_dst: Address, _amount: BigInt): boolean {
     let result = super.call('transfer', 'transfer(address,uint256):(bool)', [
-      ethereum.Value.fromAddress(dst),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
 
     return result[0].toBoolean()
   }
 
-  try_transfer(dst: Address, amount: BigInt): ethereum.CallResult<boolean> {
+  try_transfer(_dst: Address, _amount: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall('transfer', 'transfer(address,uint256):(bool)', [
-      ethereum.Value.fromAddress(dst),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
     if (result.reverted) {
       return new ethereum.CallResult()
@@ -1009,21 +1211,21 @@ export class AelinPool extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean())
   }
 
-  transferFrom(src: Address, dst: Address, amount: BigInt): boolean {
+  transferFrom(_src: Address, _dst: Address, _amount: BigInt): boolean {
     let result = super.call('transferFrom', 'transferFrom(address,address,uint256):(bool)', [
-      ethereum.Value.fromAddress(src),
-      ethereum.Value.fromAddress(dst),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_src),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
 
     return result[0].toBoolean()
   }
 
-  try_transferFrom(src: Address, dst: Address, amount: BigInt): ethereum.CallResult<boolean> {
+  try_transferFrom(_src: Address, _dst: Address, _amount: BigInt): ethereum.CallResult<boolean> {
     let result = super.tryCall('transferFrom', 'transferFrom(address,address,uint256):(bool)', [
-      ethereum.Value.fromAddress(src),
-      ethereum.Value.fromAddress(dst),
-      ethereum.Value.fromUnsignedBigInt(amount),
+      ethereum.Value.fromAddress(_src),
+      ethereum.Value.fromAddress(_dst),
+      ethereum.Value.fromUnsignedBigInt(_amount),
     ])
     if (result.reverted) {
       return new ethereum.CallResult()
@@ -1076,7 +1278,7 @@ export class AcceptDealTokensCall__Inputs {
     this._call = call
   }
 
-  get poolTokenAmount(): BigInt {
+  get _poolTokenAmount(): BigInt {
     return this._call.inputValues[0].value.toBigInt()
   }
 }
@@ -1212,7 +1414,7 @@ export class CreateDealCall__Inputs {
     return this._call.inputValues[3].value.toBigInt()
   }
 
-  get _vestingCliff(): BigInt {
+  get _vestingCliffPeriod(): BigInt {
     return this._call.inputValues[4].value.toBigInt()
   }
 
@@ -1283,6 +1485,32 @@ export class DecreaseAllowanceCall__Outputs {
   }
 }
 
+export class DisavowCall extends ethereum.Call {
+  get inputs(): DisavowCall__Inputs {
+    return new DisavowCall__Inputs(this)
+  }
+
+  get outputs(): DisavowCall__Outputs {
+    return new DisavowCall__Outputs(this)
+  }
+}
+
+export class DisavowCall__Inputs {
+  _call: DisavowCall
+
+  constructor(call: DisavowCall) {
+    this._call = call
+  }
+}
+
+export class DisavowCall__Outputs {
+  _call: DisavowCall
+
+  constructor(call: DisavowCall) {
+    this._call = call
+  }
+}
+
 export class IncreaseAllowanceCall extends ethereum.Call {
   get inputs(): IncreaseAllowanceCall__Inputs {
     return new IncreaseAllowanceCall__Inputs(this)
@@ -1338,44 +1566,24 @@ export class InitializeCall__Inputs {
     this._call = call
   }
 
-  get _name(): string {
-    return this._call.inputValues[0].value.toString()
-  }
-
-  get _symbol(): string {
-    return this._call.inputValues[1].value.toString()
-  }
-
-  get _purchaseTokenCap(): BigInt {
-    return this._call.inputValues[2].value.toBigInt()
-  }
-
-  get _purchaseToken(): Address {
-    return this._call.inputValues[3].value.toAddress()
-  }
-
-  get _duration(): BigInt {
-    return this._call.inputValues[4].value.toBigInt()
-  }
-
-  get _sponsorFee(): BigInt {
-    return this._call.inputValues[5].value.toBigInt()
+  get _poolData(): InitializeCall_poolDataStruct {
+    return changetype<InitializeCall_poolDataStruct>(this._call.inputValues[0].value.toTuple())
   }
 
   get _sponsor(): Address {
-    return this._call.inputValues[6].value.toAddress()
-  }
-
-  get _purchaseDuration(): BigInt {
-    return this._call.inputValues[7].value.toBigInt()
+    return this._call.inputValues[1].value.toAddress()
   }
 
   get _aelinDealLogicAddress(): Address {
-    return this._call.inputValues[8].value.toAddress()
+    return this._call.inputValues[2].value.toAddress()
   }
 
-  get _aelinRewardsAddress(): Address {
-    return this._call.inputValues[9].value.toAddress()
+  get _aelinTreasuryAddress(): Address {
+    return this._call.inputValues[3].value.toAddress()
+  }
+
+  get _aelinEscrowLogicAddress(): Address {
+    return this._call.inputValues[4].value.toAddress()
   }
 }
 
@@ -1384,6 +1592,70 @@ export class InitializeCall__Outputs {
 
   constructor(call: InitializeCall) {
     this._call = call
+  }
+}
+
+export class InitializeCall_poolDataStruct extends ethereum.Tuple {
+  get name(): string {
+    return this[0].toString()
+  }
+
+  get symbol(): string {
+    return this[1].toString()
+  }
+
+  get purchaseTokenCap(): BigInt {
+    return this[2].toBigInt()
+  }
+
+  get purchaseToken(): Address {
+    return this[3].toAddress()
+  }
+
+  get duration(): BigInt {
+    return this[4].toBigInt()
+  }
+
+  get sponsorFee(): BigInt {
+    return this[5].toBigInt()
+  }
+
+  get purchaseDuration(): BigInt {
+    return this[6].toBigInt()
+  }
+
+  get allowListAddresses(): Array<Address> {
+    return this[7].toAddressArray()
+  }
+
+  get allowListAmounts(): Array<BigInt> {
+    return this[8].toBigIntArray()
+  }
+
+  get nftCollectionRules(): Array<InitializeCall_poolDataNftCollectionRulesStruct> {
+    return this[9].toTupleArray<InitializeCall_poolDataNftCollectionRulesStruct>()
+  }
+}
+
+export class InitializeCall_poolDataNftCollectionRulesStruct extends ethereum.Tuple {
+  get purchaseAmount(): BigInt {
+    return this[0].toBigInt()
+  }
+
+  get collectionAddress(): Address {
+    return this[1].toAddress()
+  }
+
+  get purchaseAmountPerToken(): boolean {
+    return this[2].toBoolean()
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this[3].toBigIntArray()
+  }
+
+  get minTokensEligible(): Array<BigInt> {
+    return this[4].toBigIntArray()
   }
 }
 
@@ -1414,6 +1686,50 @@ export class PurchasePoolTokensCall__Outputs {
 
   constructor(call: PurchasePoolTokensCall) {
     this._call = call
+  }
+}
+
+export class PurchasePoolTokensWithNftCall extends ethereum.Call {
+  get inputs(): PurchasePoolTokensWithNftCall__Inputs {
+    return new PurchasePoolTokensWithNftCall__Inputs(this)
+  }
+
+  get outputs(): PurchasePoolTokensWithNftCall__Outputs {
+    return new PurchasePoolTokensWithNftCall__Outputs(this)
+  }
+}
+
+export class PurchasePoolTokensWithNftCall__Inputs {
+  _call: PurchasePoolTokensWithNftCall
+
+  constructor(call: PurchasePoolTokensWithNftCall) {
+    this._call = call
+  }
+
+  get _nftPurchaseList(): Array<PurchasePoolTokensWithNftCall_nftPurchaseListStruct> {
+    return this._call.inputValues[0].value.toTupleArray<PurchasePoolTokensWithNftCall_nftPurchaseListStruct>()
+  }
+
+  get _purchaseTokenAmount(): BigInt {
+    return this._call.inputValues[1].value.toBigInt()
+  }
+}
+
+export class PurchasePoolTokensWithNftCall__Outputs {
+  _call: PurchasePoolTokensWithNftCall
+
+  constructor(call: PurchasePoolTokensWithNftCall) {
+    this._call = call
+  }
+}
+
+export class PurchasePoolTokensWithNftCall_nftPurchaseListStruct extends ethereum.Tuple {
+  get collectionAddress(): Address {
+    return this[0].toAddress()
+  }
+
+  get tokenIds(): Array<BigInt> {
+    return this[1].toBigIntArray()
   }
 }
 
@@ -1464,11 +1780,11 @@ export class TransferCall__Inputs {
     this._call = call
   }
 
-  get dst(): Address {
+  get _dst(): Address {
     return this._call.inputValues[0].value.toAddress()
   }
 
-  get amount(): BigInt {
+  get _amount(): BigInt {
     return this._call.inputValues[1].value.toBigInt()
   }
 }
@@ -1502,15 +1818,15 @@ export class TransferFromCall__Inputs {
     this._call = call
   }
 
-  get src(): Address {
+  get _src(): Address {
     return this._call.inputValues[0].value.toAddress()
   }
 
-  get dst(): Address {
+  get _dst(): Address {
     return this._call.inputValues[1].value.toAddress()
   }
 
-  get amount(): BigInt {
+  get _amount(): BigInt {
     return this._call.inputValues[2].value.toBigInt()
   }
 }
@@ -1527,36 +1843,28 @@ export class TransferFromCall__Outputs {
   }
 }
 
-export class UpdateAllowListCall extends ethereum.Call {
-  get inputs(): UpdateAllowListCall__Inputs {
-    return new UpdateAllowListCall__Inputs(this)
+export class VouchCall extends ethereum.Call {
+  get inputs(): VouchCall__Inputs {
+    return new VouchCall__Inputs(this)
   }
 
-  get outputs(): UpdateAllowListCall__Outputs {
-    return new UpdateAllowListCall__Outputs(this)
+  get outputs(): VouchCall__Outputs {
+    return new VouchCall__Outputs(this)
   }
 }
 
-export class UpdateAllowListCall__Inputs {
-  _call: UpdateAllowListCall
+export class VouchCall__Inputs {
+  _call: VouchCall
 
-  constructor(call: UpdateAllowListCall) {
+  constructor(call: VouchCall) {
     this._call = call
   }
-
-  get _allowList(): Array<Address> {
-    return this._call.inputValues[0].value.toAddressArray()
-  }
-
-  get _allowListAmounts(): Array<BigInt> {
-    return this._call.inputValues[1].value.toBigIntArray()
-  }
 }
 
-export class UpdateAllowListCall__Outputs {
-  _call: UpdateAllowListCall
+export class VouchCall__Outputs {
+  _call: VouchCall
 
-  constructor(call: UpdateAllowListCall) {
+  constructor(call: VouchCall) {
     this._call = call
   }
 }
@@ -1578,7 +1886,7 @@ export class WithdrawFromPoolCall__Inputs {
     this._call = call
   }
 
-  get purchaseTokenAmount(): BigInt {
+  get _purchaseTokenAmount(): BigInt {
     return this._call.inputValues[0].value.toBigInt()
   }
 }
