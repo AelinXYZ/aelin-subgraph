@@ -131,6 +131,8 @@ type PoolCreated @entity {
   upfrontDeal: UpfrontDeal
 
   totalVouchers: Int!
+
+  vouchers: [String!]!
 }
 
 type TotalPoolsCreated @entity {
