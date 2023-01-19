@@ -1,0 +1,20 @@
+{
+  "name": "aelin",
+  "version": "1.0.0",
+  "scripts": {
+    "create-local": "graph create  0xlinus/boot-node-goerli --node http://graph-node:8020",
+    "deploy-local": "echo | graph deploy 0xlinus/boot-node-goerli --debug --ipfs http://ipfs:5001 --node http://graph-node:8020"
+
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.30.2",
+    "@graphprotocol/graph-ts": "^0.27.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "truffle": "^5.0.4",
+    "truffle-contract": "^4.0.5",
+    "truffle-hdwallet-provider": "^1.0.4"
+  }
+}
