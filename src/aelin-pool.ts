@@ -369,11 +369,17 @@ export function handleVouch(event: VouchEvent): void {
     return
   }
 
+  const vouchers = poolCreatedEntity.vouchers
   const poolsVouched = userEntity.poolsVouched
+
   poolsVouched.push(event.address.toHex())
+  vouchers.push(event.params.voucher.toHex())
+
   userEntity.poolsVouched = poolsVouched
+  poolCreatedEntity.vouchers = vouchers
+
   userEntity.poolsVouchedAmt = poolsVouched.length
-  poolCreatedEntity.totalVouchers++
+  poolCreatedEntity.totalVouchers = vouchers.length
 
   poolCreatedEntity.save()
   userEntity.save()
@@ -387,16 +393,22 @@ export function handleDisavow(event: DisavowEvent): void {
   }
 
   const poolsVouched = userEntity.poolsVouched
+  const vouchers = poolCreatedEntity.vouchers
+
   let poolVouchedIndex = poolsVouched.indexOf(event.address.toHex())
-  if (poolVouchedIndex >= 0) {
+  let vouchersIndex = vouchers.indexOf(event.params.voucher.toHex())
+
+  if (poolVouchedIndex >= 0 && vouchersIndex >= 0) {
     poolsVouched.splice(poolVouchedIndex, 1)
     userEntity.poolsVouched = poolsVouched
-    userEntity.poolsVouchedAmt = poolsVouched.length
-    if (poolCreatedEntity.totalVouchers > 0) {
-      poolCreatedEntity.totalVouchers--
-      poolCreatedEntity.save()
-    }
 
+    vouchers.splice(vouchersIndex, 1)
+    poolCreatedEntity.vouchers = vouchers
+
+    userEntity.poolsVouchedAmt = poolsVouched.length
+    poolCreatedEntity.totalVouchers = vouchers.length
+
+    poolCreatedEntity.save()
     userEntity.save()
   }
 }

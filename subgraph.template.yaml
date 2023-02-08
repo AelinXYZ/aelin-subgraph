@@ -182,8 +182,4 @@ templates:
           handler: handleVouch
         - event: Disavow(indexed address)
           handler: handleDisavow
-        - event: Vouch(indexed address)
-          handler: handleVouch
-        - event: Disavow(indexed address)
-          handler: handleDisavow
             

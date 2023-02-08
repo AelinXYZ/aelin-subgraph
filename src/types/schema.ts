@@ -42,6 +42,7 @@ export class PoolCreated extends Entity {
     this.set('totalAddressesInvested', Value.fromStringArray(new Array(0)))
     this.set('hasNftList', Value.fromBoolean(false))
     this.set('nftCollectionRules', Value.fromStringArray(new Array(0)))
+    this.set('totalVouchers', Value.fromI32(0))
   }
 
   save(): void {
@@ -421,6 +422,15 @@ export class PoolCreated extends Entity {
     } else {
       this.set('upfrontDeal', Value.fromString(<string>value))
     }
+  }
+
+  get totalVouchers(): i32 {
+    let value = this.get('totalVouchers')
+    return value!.toI32()
+  }
+
+  set totalVouchers(value: i32) {
+    this.set('totalVouchers', Value.fromI32(value))
   }
 }
 
@@ -3152,6 +3162,8 @@ export class User extends Entity {
     super()
     this.set('id', Value.fromString(id))
 
+    this.set('poolsVouched', Value.fromStringArray(new Array(0)))
+    this.set('poolsVouchedAmt', Value.fromI32(0))
     this.set('poolsInvested', Value.fromStringArray(new Array(0)))
     this.set('poolsInvestedAmt', Value.fromI32(0))
     this.set('poolsSponsored', Value.fromStringArray(new Array(0)))
@@ -3198,6 +3210,24 @@ export class User extends Entity {
 
   set history(value: string) {
     this.set('history', Value.fromString(value))
+  }
+
+  get poolsVouched(): Array<string> {
+    let value = this.get('poolsVouched')
+    return value!.toStringArray()
+  }
+
+  set poolsVouched(value: Array<string>) {
+    this.set('poolsVouched', Value.fromStringArray(value))
+  }
+
+  get poolsVouchedAmt(): i32 {
+    let value = this.get('poolsVouchedAmt')
+    return value!.toI32()
+  }
+
+  set poolsVouchedAmt(value: i32) {
+    this.set('poolsVouchedAmt', Value.fromI32(value))
   }
 
   get poolsInvested(): Array<string> {
