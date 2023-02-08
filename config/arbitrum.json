@@ -1,0 +1,19 @@
+{
+  "network": "arbitrum-one",
+  "dataSources": {
+    "sponsorPools": [
+      {
+        "name": "AelinPoolFactory_v4",
+        "address": "0xbf7c0Fd0D31bC377f861d11d4aAc15296c0405b6",
+        "startBlock": 33128114
+      }
+    ],
+    "upfrontDeals": [
+      {
+        "name": "AelinUpfrontDealFactory_v1",
+        "address": "0x91fCeA33D02d11621b7f90ebd5E44eD393eD7b5e",
+        "startBlock": 33128169
+      }
+    ]
+  }
+}
