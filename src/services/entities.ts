@@ -64,9 +64,10 @@ import {
   User,
   NftCollectionRule,
   UpfrontDeal,
+  Investor,
 } from '../types/schema'
 
-import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED } from '../helpers'
+import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, ZERO } from '../helpers'
 import { getTokenDecimals, getTokenTotalSupply, getTokenSymbol } from './token'
 import { NFTType } from '../enum'
 
@@ -96,6 +97,7 @@ export enum Entity {
   Vest,
   Deal,
   NftCollectionRule,
+  Investor,
 }
 
 export function createEntity<E>(entityType: Entity, event: E): void {
@@ -135,9 +137,11 @@ export function createEntity<E>(entityType: Entity, event: E): void {
         createPurchasePoolTokenEntity(event)
       }
       break
+    case Entity.Investor:
     case Entity.Deposit:
       if (event instanceof PurchasePoolTokenEvent || event instanceof AcceptUpfrontDealEvent) {
         createDepositEntity(event)
+        createInvestorEntity(event)
       }
       break
     case Entity.UserAllocationStat:
@@ -237,6 +241,32 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       }
     default:
       log.error('Error in entities service. Trying to create a undefined EntityType??', [])
+  }
+}
+
+function createInvestorEntity<T>(event: T): void {
+  if (event instanceof AcceptUpfrontDealEvent) {
+    const investorEntity = getOrCreateInvestor(
+      event.params.user.toHex() + '-' + event.address.toHex(),
+    )
+    investorEntity.poolAddress = event.address
+    investorEntity.userAddress = event.params.user
+    investorEntity.amountInvested = (
+      investorEntity.amountInvested ? (investorEntity.amountInvested as BigInt) : ZERO
+    ).plus(event.params.amountPurchased)
+
+    investorEntity.save()
+  } else if (event instanceof PurchasePoolTokenEvent) {
+    const investorEntity = getOrCreateInvestor(
+      event.params.purchaser.toHex() + '-' + event.address.toHex(),
+    )
+    investorEntity.poolAddress = event.address
+    investorEntity.userAddress = event.params.purchaser
+    investorEntity.amountInvested = (
+      investorEntity.amountInvested ? (investorEntity.amountInvested as BigInt) : ZERO
+    ).plus(event.params.purchaseTokenAmount)
+
+    investorEntity.save()
   }
 }
 
@@ -1253,4 +1283,14 @@ export function getUpfrontDeal(address: string): UpfrontDeal | null {
   }
 
   return upfrontDealEntity
+}
+
+export function getOrCreateInvestor(id: string): Investor {
+  let investorEntity = Investor.load(id)
+  if (investorEntity == null) {
+    investorEntity = new Investor(id)
+    investorEntity.save()
+  }
+
+  return investorEntity
 }
