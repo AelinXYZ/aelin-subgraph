@@ -733,7 +733,7 @@ type History @entity {
 type User @entity {
   "userAddress"
   id: ID!
-  history: History! @derivedFrom(field: "user")
+  history: History @derivedFrom(field: "user")
   poolsVouched: [PoolCreated!]!
   poolsVouchedAmt: Int!
   poolsInvested: [PoolCreated!]!
@@ -772,4 +772,12 @@ type NftCollectionRule @entity {
   erc1155TokenIds: [BigInt!]!
   erc721Blacklisted: [BigInt!]!
   erc1155TokensAmtEligible: [BigInt!]!
+}
+
+type Investor @entity {
+  "userAddress - poolAddress"
+  id: ID!
+  poolAddress: Bytes
+  userAddress: Bytes
+  amountInvested: BigInt
 }
