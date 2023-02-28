@@ -12,7 +12,11 @@
     "verify-abis": "node config/verify-abis.js",
     "lint:fix": "eslint --fix \"./**/*.{js,jsx,ts,tsx}\"",
     "prepare": "husky install",
-    "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx}\""
+    "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx}\"",
+    "prepare:goerli-ci": "mustache config/goerli-ci.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
+    "create-local-ci": "graph create  aelinprotocol/e2e-subgraph --node http://graph-node:8020",
+    "deploy-local-ci": "echo | graph deploy aelinprotocol/e2e-subgraph --debug --ipfs http://ipfs:5001 --node http://graph-node:8020",
+    "deploy-ci": "npm run prepare:goerli-ci && npm run create-local-ci && npm run deploy-local-ci"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.46.1",
