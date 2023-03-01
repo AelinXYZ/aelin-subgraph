@@ -655,14 +655,16 @@ function createDealAcceptedEntity<T>(event: T): void {
     dealAcceptedEntity.timestamp = event.block.timestamp
     dealAcceptedEntity.poolName = poolCreatedEntity.name
 
-    const amountMintedInInvestedToken = event.params.amountMinted
+    dealAcceptedEntity.investmentAmount = event.params.amountMinted
       .times(upfrontDealEntity.purchaseTokenPerDealToken)
-      .div(BigInt.fromI32(10).pow(18))
-
-    dealAcceptedEntity.investmentAmount = amountMintedInInvestedToken
-      .div(ONE_HUNDRED.minus(poolCreatedEntity.sponsorFee.plus(AELIN_FEE))) // <=== Should div the sponsorFee by 10e(BASE)
       .times(ONE_HUNDRED)
-    // .plus(event.params.amountPurchasingReturned)
+      .div(
+        ONE_HUNDRED.minus(
+          AELIN_FEE.plus(poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))),
+        ),
+      )
+      // @ts-ignore
+      .div(BigInt.fromI32(10).pow(<u8>upfrontDealEntity.underlyingDealTokenDecimals))
 
     dealAcceptedEntity.dealTokenAmount = event.params.amountMinted
     dealAcceptedEntity.pool = event.address.toHex()

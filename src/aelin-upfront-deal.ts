@@ -173,6 +173,8 @@ export function handleSponsorClaim(event: SponsorClaimEvent): void {
   dealSponsoredEntity.amountEarned = dealSponsoredEntity.amountEarned.plus(
     event.params.amountMinted,
   )
+
+  dealSponsoredEntity.save()
 }
 
 export function handleClaimDealTokens(event: ClaimDealTokensEvent): void {
