@@ -110,12 +110,13 @@ export function handleCreateUpfrontDealConfig(event: CreateUpFrontDealConfigEven
     upFrontDealEntity.save()
   }
 
-  if (poolCreatedEntity) {
+  if (poolCreatedEntity && upFrontDealEntity) {
     poolCreatedEntity.purchaseDuration = event.params.purchaseDuration
     if (event.params.allowDeallocation === false) {
       poolCreatedEntity.purchaseTokenCap = event.params.underlyingDealTokenTotal
         .times(event.params.purchaseTokenPerDealToken)
-        .div(BigInt.fromI32(10).pow(18))
+        // @ts-ignore
+        .div(BigInt.fromI32(10).pow(<u8>upFrontDealEntity.underlyingDealTokenDecimals))
     } else {
       poolCreatedEntity.purchaseTokenCap = ZERO
     }
