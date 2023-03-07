@@ -42,6 +42,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   poolCreatedEntity.totalAmountWithdrawn = BigInt.fromI32(0)
   poolCreatedEntity.totalAmountFunded = BigInt.fromI32(0)
   poolCreatedEntity.totalAmountEarnedBySponsor = BigInt.fromI32(0)
+  poolCreatedEntity.totalAmountEarnedByProtocol = BigInt.fromI32(0)
   poolCreatedEntity.dealsCreated = 0
   poolCreatedEntity.filter = `${event.params.name.toLowerCase()}-${event.params.sponsor.toHex()}-${getTokenSymbol(
     event.params.purchaseToken,

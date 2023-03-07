@@ -49,6 +49,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.totalAmountWithdrawn = ZERO
   poolCreatedEntity.totalAmountFunded = ZERO
   poolCreatedEntity.totalAmountEarnedBySponsor = ZERO
+  poolCreatedEntity.totalAmountEarnedByProtocol = ZERO
   poolCreatedEntity.hasNftList = false
   poolCreatedEntity.totalVouchers = 0
 
