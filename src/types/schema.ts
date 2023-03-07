@@ -35,7 +35,6 @@ export class PoolCreated extends Entity {
     this.set('totalAmountFunded', Value.fromBigInt(BigInt.zero()))
     this.set('totalAmountWithdrawn', Value.fromBigInt(BigInt.zero()))
     this.set('totalAmountEarnedBySponsor', Value.fromBigInt(BigInt.zero()))
-    this.set('totalAmountEarnedByProtocol', Value.fromBigInt(BigInt.zero()))
     this.set('dealsCreated', Value.fromI32(0))
     this.set('holder', Value.fromBytes(Bytes.empty()))
     this.set('filter', Value.fromString(''))
@@ -44,7 +43,6 @@ export class PoolCreated extends Entity {
     this.set('hasNftList', Value.fromBoolean(false))
     this.set('nftCollectionRules', Value.fromStringArray(new Array(0)))
     this.set('totalVouchers', Value.fromI32(0))
-    this.set('vouchers', Value.fromStringArray(new Array(0)))
   }
 
   save(): void {
@@ -312,15 +310,6 @@ export class PoolCreated extends Entity {
     this.set('totalAmountEarnedBySponsor', Value.fromBigInt(value))
   }
 
-  get totalAmountEarnedByProtocol(): BigInt {
-    let value = this.get('totalAmountEarnedByProtocol')
-    return value!.toBigInt()
-  }
-
-  set totalAmountEarnedByProtocol(value: BigInt) {
-    this.set('totalAmountEarnedByProtocol', Value.fromBigInt(value))
-  }
-
   get dealsCreated(): i32 {
     let value = this.get('dealsCreated')
     return value!.toI32()
@@ -442,15 +431,6 @@ export class PoolCreated extends Entity {
 
   set totalVouchers(value: i32) {
     this.set('totalVouchers', Value.fromI32(value))
-  }
-
-  get vouchers(): Array<string> {
-    let value = this.get('vouchers')
-    return value!.toStringArray()
-  }
-
-  set vouchers(value: Array<string>) {
-    this.set('vouchers', Value.fromStringArray(value))
   }
 }
 
@@ -3223,21 +3203,13 @@ export class User extends Entity {
     this.set('id', Value.fromString(value))
   }
 
-  get history(): string | null {
+  get history(): string {
     let value = this.get('history')
-    if (!value || value.kind == ValueKind.NULL) {
-      return null
-    } else {
-      return value.toString()
-    }
+    return value!.toString()
   }
 
-  set history(value: string | null) {
-    if (!value) {
-      this.unset('history')
-    } else {
-      this.set('history', Value.fromString(<string>value))
-    }
+  set history(value: string) {
+    this.set('history', Value.fromString(value))
   }
 
   get poolsVouched(): Array<string> {
@@ -3572,89 +3544,5 @@ export class NftCollectionRule extends Entity {
 
   set erc1155TokensAmtEligible(value: Array<BigInt>) {
     this.set('erc1155TokensAmtEligible', Value.fromBigIntArray(value))
-  }
-}
-
-export class Investor extends Entity {
-  constructor(id: string) {
-    super()
-    this.set('id', Value.fromString(id))
-  }
-
-  save(): void {
-    let id = this.get('id')
-    assert(id != null, 'Cannot save Investor entity without an ID')
-    if (id) {
-      assert(
-        id.kind == ValueKind.STRING,
-        'Cannot save Investor entity with non-string ID. ' +
-          'Considering using .toHex() to convert the "id" to a string.',
-      )
-      store.set('Investor', id.toString(), this)
-    }
-  }
-
-  static load(id: string): Investor | null {
-    return changetype<Investor | null>(store.get('Investor', id))
-  }
-
-  get id(): string {
-    let value = this.get('id')
-    return value!.toString()
-  }
-
-  set id(value: string) {
-    this.set('id', Value.fromString(value))
-  }
-
-  get poolAddress(): Bytes | null {
-    let value = this.get('poolAddress')
-    if (!value || value.kind == ValueKind.NULL) {
-      return null
-    } else {
-      return value.toBytes()
-    }
-  }
-
-  set poolAddress(value: Bytes | null) {
-    if (!value) {
-      this.unset('poolAddress')
-    } else {
-      this.set('poolAddress', Value.fromBytes(<Bytes>value))
-    }
-  }
-
-  get userAddress(): Bytes | null {
-    let value = this.get('userAddress')
-    if (!value || value.kind == ValueKind.NULL) {
-      return null
-    } else {
-      return value.toBytes()
-    }
-  }
-
-  set userAddress(value: Bytes | null) {
-    if (!value) {
-      this.unset('userAddress')
-    } else {
-      this.set('userAddress', Value.fromBytes(<Bytes>value))
-    }
-  }
-
-  get amountInvested(): BigInt | null {
-    let value = this.get('amountInvested')
-    if (!value || value.kind == ValueKind.NULL) {
-      return null
-    } else {
-      return value.toBigInt()
-    }
-  }
-
-  set amountInvested(value: BigInt | null) {
-    if (!value) {
-      this.unset('amountInvested')
-    } else {
-      this.set('amountInvested', Value.fromBigInt(<BigInt>value))
-    }
   }
 }

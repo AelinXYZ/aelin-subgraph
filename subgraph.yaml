@@ -160,8 +160,8 @@ templates:
           handler: handleSponsorClaim
         - event: HolderClaim(indexed address,address,uint256,address,uint256,uint256)
           handler: handleHolderClaim
-        - event: FeeEscrowClaim(indexed address,indexed address,uint256)
-          handler: handleFeeEscrowClaim
+        # - event: FeeEscrowClaim(indexed address,indexed address,uint256)
+        #   handler: handleFeeEscrowClaim
         - event: ClaimedUnderlyingDealToken(indexed address,address,uint256)
           handler: handleClaimedUnderlyingDealToken
         - event: PoolWith721(indexed address,uint256,bool)
@@ -172,6 +172,10 @@ templates:
           handler: handleBlacklistNFT
         - event: SetHolder(indexed address)
           handler: handleSetHolder
+        - event: Vouch(indexed address)
+          handler: handleVouch
+        - event: Disavow(indexed address)
+          handler: handleDisavow
         - event: Vouch(indexed address)
           handler: handleVouch
         - event: Disavow(indexed address)
