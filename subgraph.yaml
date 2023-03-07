@@ -180,4 +180,4 @@ templates:
           handler: handleVouch
         - event: Disavow(indexed address)
           handler: handleDisavow
-
+            
