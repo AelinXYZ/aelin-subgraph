@@ -25,6 +25,7 @@ import {
   BlacklistNFT as BlacklistNFTEvent,
   Vouch as VouchEvent,
   Disavow as DisavowEvent,
+  FeeEscrowClaim as FeeEscrowClaimEvent,
 } from './types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
 
 export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
@@ -311,4 +312,15 @@ export function handleDisavow(event: DisavowEvent): void {
     poolCreatedEntity.save()
     userEntity.save()
   }
+}
+
+export function handleFeeEscrowClaim(event: FeeEscrowClaimEvent): void {
+  const poolCreatedEntity = getPoolCreated(event.address.toHex())
+
+  if (!poolCreatedEntity) {
+    return
+  }
+
+  poolCreatedEntity.totalAmountEarnedByProtocol = event.params.amount
+  poolCreatedEntity.save()
 }
