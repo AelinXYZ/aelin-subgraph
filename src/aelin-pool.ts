@@ -321,7 +321,9 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     event.params.sponsorFee,
   )
   poolCreatedEntity.totalAmountEarnedByProtocol =
-    poolCreatedEntity.totalAmountEarnedByProtocol.plus(event.params.aelinFee)
+    poolCreatedEntity.totalAmountEarnedByProtocol.plus(
+      event.params.aelinFee.times(underlyingPerDealExchangeRate).div(BigInt.fromI32(10).pow(18)),
+    )
   poolCreatedEntity.save()
 
   /**
