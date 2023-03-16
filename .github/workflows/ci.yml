@@ -26,10 +26,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-        - name: Install dependencies
-          run: yarn --frozen-lockfile
-        - name: Generate auto-generated files
-          run: yarn codegen
-        - name: Run tests
-          run: npm test
+          cache: 'npm'
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Generate auto-generated files
+        run: yarn codegen
+      - name: Run tests
+        run: npm test
