@@ -616,6 +616,34 @@ export class AelinUpfrontDeal__dealConfigResult {
     map.set('value6', ethereum.Value.fromBoolean(this.value6))
     return map
   }
+
+  getUnderlyingDealTokenTotal(): BigInt {
+    return this.value0
+  }
+
+  getPurchaseTokenPerDealToken(): BigInt {
+    return this.value1
+  }
+
+  getPurchaseRaiseMinimum(): BigInt {
+    return this.value2
+  }
+
+  getPurchaseDuration(): BigInt {
+    return this.value3
+  }
+
+  getVestingPeriod(): BigInt {
+    return this.value4
+  }
+
+  getVestingCliffPeriod(): BigInt {
+    return this.value5
+  }
+
+  getAllowDeallocation(): boolean {
+    return this.value6
+  }
 }
 
 export class AelinUpfrontDeal__dealDataResult {
@@ -664,6 +692,42 @@ export class AelinUpfrontDeal__dealDataResult {
     map.set('value8', ethereum.Value.fromString(this.value8))
     return map
   }
+
+  getName(): string {
+    return this.value0
+  }
+
+  getSymbol(): string {
+    return this.value1
+  }
+
+  getPurchaseToken(): Address {
+    return this.value2
+  }
+
+  getUnderlyingDealToken(): Address {
+    return this.value3
+  }
+
+  getHolder(): Address {
+    return this.value4
+  }
+
+  getSponsor(): Address {
+    return this.value5
+  }
+
+  getSponsorFee(): BigInt {
+    return this.value6
+  }
+
+  getMerkleRoot(): Bytes {
+    return this.value7
+  }
+
+  getIpfsHash(): string {
+    return this.value8
+  }
 }
 
 export class AelinUpfrontDeal__getAllowListResult {
@@ -686,6 +750,22 @@ export class AelinUpfrontDeal__getAllowListResult {
     map.set('value2', ethereum.Value.fromUnsignedBigInt(this.value2))
     map.set('value3', ethereum.Value.fromBoolean(this.value3))
     return map
+  }
+
+  getValue0(): Array<Address> {
+    return this.value0
+  }
+
+  getValue1(): Array<BigInt> {
+    return this.value1
+  }
+
+  getValue2(): BigInt {
+    return this.value2
+  }
+
+  getValue3(): boolean {
+    return this.value3
   }
 }
 
@@ -719,6 +799,26 @@ export class AelinUpfrontDeal__getNftCollectionDetailsResult {
     map.set('value4', ethereum.Value.fromUnsignedBigIntArray(this.value4))
     return map
   }
+
+  getValue0(): BigInt {
+    return this.value0
+  }
+
+  getValue1(): Address {
+    return this.value1
+  }
+
+  getValue2(): boolean {
+    return this.value2
+  }
+
+  getValue3(): Array<BigInt> {
+    return this.value3
+  }
+
+  getValue4(): Array<BigInt> {
+    return this.value4
+  }
 }
 
 export class AelinUpfrontDeal__getNftGatingDetailsResult {
@@ -738,6 +838,18 @@ export class AelinUpfrontDeal__getNftGatingDetailsResult {
     map.set('value1', ethereum.Value.fromBoolean(this.value1))
     map.set('value2', ethereum.Value.fromBoolean(this.value2))
     return map
+  }
+
+  getValue0(): boolean {
+    return this.value0
+  }
+
+  getValue1(): boolean {
+    return this.value1
+  }
+
+  getValue2(): boolean {
+    return this.value2
   }
 }
 

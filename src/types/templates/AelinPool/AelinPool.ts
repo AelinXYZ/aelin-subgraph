@@ -426,6 +426,18 @@ export class AelinPool__nftCollectionDetailsResult {
     map.set('value2', ethereum.Value.fromBoolean(this.value2))
     return map
   }
+
+  getPurchaseAmount(): BigInt {
+    return this.value0
+  }
+
+  getCollectionAddress(): Address {
+    return this.value1
+  }
+
+  getPurchaseAmountPerToken(): boolean {
+    return this.value2
+  }
 }
 
 export class AelinPool extends ethereum.SmartContract {

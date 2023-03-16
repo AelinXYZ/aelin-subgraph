@@ -233,6 +233,14 @@ export class AelinDeal__claimableTokensResult {
     map.set('value1', ethereum.Value.fromUnsignedBigInt(this.value1))
     return map
   }
+
+  getUnderlyingClaimable(): BigInt {
+    return this.value0
+  }
+
+  getDealTokensClaimable(): BigInt {
+    return this.value1
+  }
 }
 
 export class AelinDeal extends ethereum.SmartContract {
