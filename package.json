@@ -1,5 +1,5 @@
 {
-  "name": "aelin",
+  "name": "aelin-subgraph",
   "version": "1.0.0",
   "scripts": {
     "create": "graph create aelin/aelin-mega --node https://api.thegraph.com/deploy/",
@@ -45,26 +45,25 @@
     "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx}\""
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "0.25.0",
-    "@graphprotocol/graph-ts": "0.25.0",
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
-    "@typescript-eslint/parser": "^5.35.1",
-    "eslint": "^8.10.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-prettier": "^4.0.0",
+    "@graphprotocol/graph-cli": "^0.40.0",
+    "@graphprotocol/graph-ts": "^0.25.0",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "husky": "^7.0.4",
-    "lint-staged": "^12.3.5",
-    "prettier": "^2.5.1",
-    "typescript": "^4.7.4"
+    "lint-staged": "^12.5.0",
+    "prettier": "^2.8.4",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
-    "babel-polyfill": "6.26.0",
-    "babel-register": "6.26.0",
-    "mustache": "4.2.0",
-    "truffle": "5.4.22",
-    "truffle-contract": "4.0.31",
-    "truffle-hdwallet-provider": "1.0.17"
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "mustache": "^4.2.0",
+    "truffle": "^5.4.22",
+    "truffle-contract": "^4.0.31",
+    "truffle-hdwallet-provider": "^1.0.17"
   },
   "lint-staged": {
     "*.{js,ts}": [
