@@ -23,14 +23,13 @@ jobs:
         with:
           persist-credentials: false
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Reconfigure git to use HTTP authentication
-        run: >
-          git config --global url."https://github.com/".insteadOf
-          ssh://git@github.com/
-      - run: npm ci
-      - run: npm run codegen
-      - run: npm run test
+          cache: 'yarn'
+        - name: Install dependencies
+          run: yarn --frozen-lockfile
+        - name: Generate auto-generated files
+          run: yarn codegen
+        - name: Run tests
+          run: npm test
