@@ -58,12 +58,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "babel-register": "^6.26.0",
-    "mustache": "^4.2.0",
-    "truffle": "^5.4.22",
-    "truffle-contract": "^4.0.31",
-    "truffle-hdwallet-provider": "^1.0.17"
+    "mustache": "^4.2.0"
   },
   "lint-staged": {
     "*.{js,ts}": [
