@@ -1,5 +1,5 @@
 {
-  "name": "aelin",
+  "name": "aelin-subgraph",
   "version": "1.0.0",
   "scripts": {
     "create": "graph create aelin/aelin-mega --node https://api.thegraph.com/deploy/",
@@ -14,18 +14,24 @@
     "deploy-hosted:mainnet": "graph deploy --product hosted-service aelin-xyz/aelin-mainnet",
     "deploy-hosted:optimism": "graph deploy --product hosted-service aelin-xyz/aelin-optimism",
     "deploy-hosted:kovan:linus": "npm run prepare:kovan && graph deploy --product hosted-service 0xlinus/boot-node",
+    "deploy-hosted:mainnet:dmitry": "npm run prepare:mainnet && graph deploy --product hosted-service 0xdmitry/aelin-mainnet",
     "deploy-hosted:mainnet:linus": "npm run prepare:mainnet && graph deploy --product hosted-service 0xlinus/boot-node-mainnet",
     "deploy-hosted:mainnet:alex": "npm run prepare:mainnet && graph deploy --product hosted-service alextheboredape/aelin-mainnet",
+    "deploy-hosted:optimism:dmitry": "npm run prepare:optimism && graph deploy --product hosted-service 0xdmitry/aelin-optimism",
     "deploy-hosted:optimism:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/boot-node-optimism",
     "deploy-hosted:optimism:alex": "npm run prepare:optimism && graph deploy --product hosted-service alextheboredape/aelin-optimism",
+    "deploy-hosted:arbitrum:dmitry": "npm run prepare:arbitrum && graph deploy --product hosted-service 0xdmitry/aelin-arbitrum",
     "deploy-hosted:arbitrum:alex": "npm run prepare:arbitrum && graph deploy --product hosted-service alextheboredape/aelin-arbitrum",
+    "deploy-hosted:polygon:dmitry": "npm run prepare:polygon && graph deploy --product hosted-service 0xdmitry/aelin-polygon",
     "deploy-hosted:polygon:linus": "npm run prepare:polygon && graph deploy --product hosted-service 0xlinus/boot-node-polygon",
     "deploy-hosted:polygon:alex": "npm run prepare:polygon && graph deploy --product hosted-service alextheboredape/aelin-polygon",
+    "deploy-hosted:goerli:dmitry": "npm run prepare:goerli && graph deploy --product hosted-service 0xdmitry/aelin-goerli",
     "deploy-hosted:goerli:linus": "npm run prepare:goerli && graph deploy --product hosted-service 0xlinus/boot-node-goerli",
     "deploy-hosted:goerli:alex": "npm run prepare:goerli && graph deploy --product hosted-service alextheboredape/aelin-goerli",
     "deploy-hosted:arbitrum-goerli:alex": "npm run prepare:arbitrum-goerli && graph deploy --product hosted-service alextheboredape/arbitrum-goerli",
     "deploy-hosted:arbitrum-one:alex": "npm run prepare:arbitrum-one && graph deploy --product hosted-service alextheboredape/aelin-arbitrum",
     "deploy-hosted:optimism:stating:linus": "npm run prepare:optimism && graph deploy --product hosted-service 0xlinus/optimism-staging",
+    "deploy-all-dmitry": "npm run deploy-hosted:mainnet:dmitry && npm run deploy-hosted:optimism:dmitry && npm run deploy-hosted:arbitrum:dmitry && npm run deploy-hosted:polygon:dmitry && npm run deploy-hosted:goerli:dmitry",
     "deploy-all-linus": "npm run deploy-hosted:kovan:linus && npm run deploy-hosted:mainnet:linus && npm run deploy-hosted:optimism:linus && npm run deploy-hosted:goerli:linus",
     "deploy": "graph deploy aelin/aelin-mega --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-local": "graph deploy aelin/aelin-mega --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
@@ -56,12 +62,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "babel-polyfill": "6.26.0",
-    "babel-register": "6.26.0",
-    "mustache": "4.2.0",
-    "truffle": "5.4.22",
-    "truffle-contract": "4.0.31",
-    "truffle-hdwallet-provider": "1.0.17"
+    "mustache": "^4.2.0"
   },
   "lint-staged": {
     "*.{js,ts}": [
