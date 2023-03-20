@@ -1,6 +1,6 @@
 import { BigInt } from '@graphprotocol/graph-ts'
 import { PoolCreated, TotalPoolsCreated } from './types/schema'
-import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory/AelinPoolFactory'
+import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory_v4/AelinPoolFactory'
 import { AelinPool } from './types/templates'
 import { ONE } from './helpers'
 import { PoolStatus, DealType } from './enum'

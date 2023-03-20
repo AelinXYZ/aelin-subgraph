@@ -10,7 +10,7 @@ import {
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
   WithdrawUnderlyingDealToken as WithdrawUnderlyingDealTokenEvent,
 } from '../types/templates/AelinDeal/AelinDeal'
-import { CreatePool as CreatePoolEvent } from '../types/AelinPoolFactory/AelinPoolFactory'
+import { CreatePool as CreatePoolEvent } from '../types/AelinPoolFactory_v4/AelinPoolFactory'
 import { CreateUpFrontDeal as CreateUpFrontDealEvent } from '../types/AelinUpfrontDealFactory_v1/AelinUpfrontDealFactory'
 import {
   AcceptDeal as AcceptUpfrontDealEvent,
