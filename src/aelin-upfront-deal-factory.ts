@@ -19,7 +19,7 @@ import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
-  if (totalPoolsCreatedEntity == null) {
+  if (totalPoolsCreatedEntity === null) {
     totalPoolsCreatedEntity = new TotalPoolsCreated('1')
     totalPoolsCreatedEntity.count = ONE
   } else {
@@ -50,11 +50,16 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.totalAmountFunded = ZERO
   poolCreatedEntity.totalAmountEarnedBySponsor = ZERO
   poolCreatedEntity.totalAmountEarnedByProtocol = ZERO
+  poolCreatedEntity.totalSupply = ZERO
+  poolCreatedEntity.totalUsersInvested = 0
+  poolCreatedEntity.totalAddressesInvested = []
+  poolCreatedEntity.dealsCreated = 0
   poolCreatedEntity.hasNftList = false
   poolCreatedEntity.totalVouchers = 0
+  poolCreatedEntity.vouchers = []
 
   let userEntity = getOrCreateUser(event.params.sponsor.toHex())
-  if (userEntity != null) {
+  if (userEntity !== null) {
     let poolsSponsored = userEntity.poolsSponsored
     poolsSponsored.push(poolCreatedEntity.id)
     userEntity.poolsSponsored = poolsSponsored
@@ -64,7 +69,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   }
 
   userEntity = getOrCreateUser(event.params.holder.toHex())
-  if (userEntity != null) {
+  if (userEntity !== null) {
     let poolsAsHolder = userEntity.poolsAsHolder
     poolsAsHolder.push(poolCreatedEntity.id)
     userEntity.poolsAsHolder = poolsAsHolder
@@ -80,6 +85,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   upFrontDealEntity.underlyingDealTokenSymbol = getTokenSymbol(event.params.underlyingDealToken)
   upFrontDealEntity.underlyingDealTokenDecimals = getTokenDecimals(event.params.underlyingDealToken)
   upFrontDealEntity.holder = event.params.holder
+  upFrontDealEntity.totalUsersAccepted = 0
   upFrontDealEntity.merkleRoot = event.params.merkleRoot
   upFrontDealEntity.ipfsHash = event.params.ipfsHash
 

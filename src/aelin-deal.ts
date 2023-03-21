@@ -17,6 +17,7 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleSetHolder(event: SetHolderEvent): void {
   createEntity(Entity.SetHolder, event)
@@ -37,7 +38,7 @@ export function handleClaimedUnderlyingDealToken(event: ClaimedUnderlyingDealTok
   let vestingDealEntity = getVestingDeal(
     event.params.recipient.toHex() + '-' + event.address.toHex(),
   )
-  if (vestingDealEntity != null) {
+  if (vestingDealEntity !== null) {
     vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(
       event.params.underlyingDealTokensClaimed,
     )
@@ -68,13 +69,14 @@ export function handleWithdrawUnderlyingDealToken(event: WithdrawUnderlyingDealT
    * Update Deal entity
    */
   const dealEntity = getDeal(event.address.toHex())
-  if (dealEntity == null) {
+  if (dealEntity === null) {
     return
   }
 
-  dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed.minus(
+  dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed!.minus(
     event.params.underlyingDealTokenAmount,
   )
+
   dealEntity.save()
 
   removeNotificationsForEvent(event)
@@ -88,7 +90,7 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
   let dealDetailEntity = getDealDetails(event.address.toHex())
   let dealEntity = getDeal(event.address.toHex())
 
-  if (dealDetailEntity == null || poolCreatedEntity == null || dealEntity == null) {
+  if (dealDetailEntity === null || poolCreatedEntity === null || dealEntity === null) {
     return
   }
 
@@ -97,14 +99,14 @@ export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
    */
 
   const vestingStarts = event.block.timestamp
-    .plus(dealEntity.proRataRedemptionPeriod)
-    .plus(dealEntity.openRedemptionPeriod)
+    .plus(dealEntity.proRataRedemptionPeriod!)
+    .plus(dealEntity.openRedemptionPeriod!)
 
   poolCreatedEntity.poolStatus = PoolStatus.DealOpen
   poolCreatedEntity.vestingStarts = vestingStarts
   poolCreatedEntity.vestingEnds = vestingStarts
-    .plus(dealEntity.vestingCliff)
-    .plus(dealEntity.vestingPeriod)
+    .plus(dealEntity.vestingCliff!)
+    .plus(dealEntity.vestingPeriod!)
 
   dealDetailEntity.proRataRedemptionPeriodStart = event.block.timestamp
   dealDetailEntity.isDealFunded = true
@@ -131,9 +133,9 @@ export function handleDepositDealToken(event: DepositDealTokenEvent): void {
    * Update PoolCreated entity
    */
   let dealEntity = getDeal(event.address.toHex())
-  if (dealEntity != null) {
+  if (dealEntity !== null) {
     let poolCreatedEntity = getPoolCreated(dealEntity.poolAddress.toHex())
-    if (poolCreatedEntity != null) {
+    if (poolCreatedEntity !== null) {
       poolCreatedEntity.totalAmountFunded = poolCreatedEntity.totalAmountFunded.plus(
         event.params.underlyingDealTokenAmount,
       )

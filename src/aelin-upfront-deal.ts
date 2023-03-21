@@ -1,3 +1,4 @@
+import { BigInt } from '@graphprotocol/graph-ts'
 import { AELIN_FEE, ONE_HUNDRED, ZERO } from './helpers'
 import {
   createEntity,
@@ -53,12 +54,12 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   const poolCreatedEntity = getPoolCreated(event.address.toHex())
   const upFrontDealEntity = getUpfrontDeal(event.address.toHex())
 
-  if (poolCreatedEntity == null || upFrontDealEntity == null) {
+  if (poolCreatedEntity === null || upFrontDealEntity === null) {
     return
   }
 
   let userEntity = getOrCreateUser(event.params.user.toHex())
-  if (userEntity != null) {
+  if (userEntity !== null) {
     let upfrontDealsAccepted = userEntity.upfrontDealsAccepted
     upfrontDealsAccepted.push(poolCreatedEntity.id)
     userEntity.upfrontDealsAccepted = upfrontDealsAccepted
@@ -73,7 +74,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     userEntity.save()
   }
 
-  let remainingDealTokens = upFrontDealEntity.remainingDealTokens.minus(
+  let remainingDealTokens = upFrontDealEntity.remainingDealTokens!.minus(
     event.params.amountDealTokens,
   )
 
@@ -103,7 +104,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   let dealSponsoredEntity = getDealSponsored(
     event.address.toHex() + '-' + poolCreatedEntity.sponsor.toHex(),
   )
-  if (dealSponsoredEntity == null) {
+  if (dealSponsoredEntity === null) {
     return
   }
 
@@ -128,7 +129,7 @@ export function handleHolderClaim(event: HolderClaimEvent): void {
   }
 
   const poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
+  if (poolCreatedEntity === null) {
     return
   }
 
@@ -138,7 +139,7 @@ export function handleHolderClaim(event: HolderClaimEvent): void {
   let dealFundedEntity = getDealFunded(
     event.address.toHex() + '-' + poolCreatedEntity.sponsor.toHex(),
   )
-  if (dealFundedEntity != null) {
+  if (dealFundedEntity !== null) {
     dealFundedEntity.amountRaised = dealFundedEntity.amountRaised.plus(event.params.amountClaimed)
     dealFundedEntity.save()
   }
@@ -146,16 +147,17 @@ export function handleHolderClaim(event: HolderClaimEvent): void {
 
 export function handleSponsorClaim(event: SponsorClaimEvent): void {
   const poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
+  if (poolCreatedEntity === null) {
     return
   }
 
   const upFrontDealEntity = getUpfrontDeal(event.address.toHex())
-  if (upFrontDealEntity) {
+  if (upFrontDealEntity !== null) {
     upFrontDealEntity.sponsorClaim = true
-    upFrontDealEntity.totalRedeemed = upFrontDealEntity.totalRedeemed.plus(
+    upFrontDealEntity.totalRedeemed = upFrontDealEntity.totalRedeemed!.plus(
       event.params.amountMinted.div(ONE_HUNDRED.minus(AELIN_FEE)),
     )
+
     upFrontDealEntity.save()
   }
 
@@ -167,7 +169,7 @@ export function handleSponsorClaim(event: SponsorClaimEvent): void {
   let dealSponsoredEntity = getDealSponsored(
     event.address.toHex() + '-' + event.params.sponsor.toHex(),
   )
-  if (dealSponsoredEntity == null) {
+  if (dealSponsoredEntity === null) {
     return
   }
 
@@ -182,17 +184,17 @@ export function handleClaimDealTokens(event: ClaimDealTokensEvent): void {
   createEntity(Entity.DealAccepted, event)
   const poolCreatedEntity = getPoolCreated(event.address.toHex())
 
-  if (poolCreatedEntity == null) {
+  if (poolCreatedEntity === null) {
     return
   }
 
   const upFrontDealEntity = getUpfrontDeal(event.address.toHex())
 
   if (upFrontDealEntity) {
-    upFrontDealEntity.totalAmountUnredeemed = upFrontDealEntity.totalAmountUnredeemed.minus(
+    upFrontDealEntity.totalAmountUnredeemed = upFrontDealEntity.totalAmountUnredeemed!.minus(
       event.params.amountMinted,
     )
-    upFrontDealEntity.totalRedeemed = upFrontDealEntity.totalRedeemed.plus(
+    upFrontDealEntity.totalRedeemed = upFrontDealEntity.totalRedeemed!.plus(
       event.params.amountMinted.div(ONE_HUNDRED.minus(AELIN_FEE)),
     )
 
@@ -207,10 +209,11 @@ export function handleClaimDealTokens(event: ClaimDealTokensEvent): void {
   if (vestingDealEntity === null) {
     createEntity(Entity.VestingDeal, event)
   } else {
-    vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(
+    vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal!.plus(
       event.params.amountMinted,
     )
-    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal!
+
     vestingDealEntity.save()
   }
   createNotificationsForEvent(event)
@@ -223,7 +226,7 @@ export function handleClaimedUnderlyingDealToken(event: ClaimedUnderlyingDealTok
    * Update VestingDeal entity
    */
   let vestingDealEntity = getVestingDeal(event.params.user.toHex() + '-' + event.address.toHex())
-  if (vestingDealEntity != null) {
+  if (vestingDealEntity !== null) {
     vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(event.params.amountClaimed)
     vestingDealEntity.remainingAmountToVest = vestingDealEntity.remainingAmountToVest.minus(
       event.params.amountClaimed,
