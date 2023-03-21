@@ -4,6 +4,24 @@ A Aelin subgraph for [The Graph](https://thegraph.com). Aelin is a fundraising p
 <br>
 <br>
 
+## Getting Started
+
+Install the project dependencies by running `npm install`
+
+Prerequisites: `Node.js` and `npm` installed, preferably LTS versions
+
+### Deployment
+
+The deploy script simplifies the deployment process, allowing you to deploy to any network and repo.
+
+- Create a `.env` file in the root directory and set the `GRAPH_ACCESS_TOKEN` environment variable
+
+- Run `npm run deploy:hosted:init` with the --network and --repo arguments:
+
+  eg: `npm run deploy:hosted:init -- --network <network> --repo <repo>`
+
+Replace <network> with the desired network (e.g., goerli, mainnet, optimism, arbitrum, polygon) and <repo> with the desired repository name (e.g., user/repo).
+
 ## Notifications
 
 Notifications are a powerful feature that will allow Aelin to create a communication chanel with users in a reliable way. All notifications are design with a goal in mind: little-to-none work should be done on the client-side to transform chain data.
