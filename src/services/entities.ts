@@ -1252,6 +1252,12 @@ export function getOrCreateHistory(address: string): History | null {
   if (historyEntity == null) {
     historyEntity = new History(address)
     historyEntity.user = address
+    historyEntity.vests = []
+    historyEntity.deposits = []
+    historyEntity.withdraws = []
+    historyEntity.dealsAccepted = []
+    historyEntity.dealsSponsored = []
+    historyEntity.dealsFunded = []
     historyEntity.save()
   }
 
@@ -1262,6 +1268,18 @@ export function getOrCreateUser(address: string): User | null {
   let userEntity = User.load(address)
   if (userEntity == null) {
     userEntity = new User(address)
+    userEntity.poolsSponsored = []
+    userEntity.poolsVouched = []
+    userEntity.poolsVouchedAmt = 0
+    userEntity.poolsInvested = []
+    userEntity.poolsInvestedAmt = 0
+    userEntity.poolsAsHolder = []
+    userEntity.poolsAsHolderAmt = 0
+    userEntity.dealsAccepted = []
+    userEntity.dealsAcceptedAmt = 0
+    userEntity.upfrontDealsAccepted = []
+    userEntity.upfrontDealsAcceptedAmt = 0
+    userEntity.allocationsStat = []
   }
 
   return userEntity

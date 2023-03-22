@@ -52,6 +52,8 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.totalAmountEarnedByProtocol = ZERO
   poolCreatedEntity.hasNftList = false
   poolCreatedEntity.totalVouchers = 0
+  poolCreatedEntity.dealsCreated = 0
+  poolCreatedEntity.totalUsersInvested = 0
 
   let userEntity = getOrCreateUser(event.params.sponsor.toHex())
   if (userEntity != null) {
@@ -93,6 +95,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   // use templates to create a new pool to track events
   AelinUpfrontDeal.create(event.params.dealAddress)
 }
+
 export function handleCreateUpfrontDealConfig(event: CreateUpFrontDealConfigEvent): void {
   const upFrontDealEntity = getUpfrontDeal(event.params.dealAddress.toHex())
   const poolCreatedEntity = getPoolCreated(event.params.dealAddress.toHex())
