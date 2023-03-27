@@ -18,21 +18,21 @@ The deploy script simplifies the deployment process, allowing you to deploy to a
 
 - Run `npm run deploy:hosted:init` with the --network and --repo arguments:
 
-  eg: `npm run deploy:hosted:init -- --network <network> --repo <repo>`
+  e.g.: `npm run deploy:hosted:init -- --network <network> --repo <repo>`
 
-Replace <network> with the desired network (e.g., goerli, mainnet, optimism, arbitrum, polygon) and <repo> with the desired repository name (e.g., user/repo).
+Replace `<network>` with the desired network (e.g., goerli, mainnet, optimism, arbitrum, polygon) and `<repo>` with the desired repository name (e.g., user/repo).
 
 ### Studio Deployment
 
-The deploy script simplifies the deployment process, allowing you to deploy to any network and repo.
+The deploy script simplifies the deployment process, allowing you to deploy to any network and slug.
 
 - Create a `.env` file in the root directory and set the `GRAPH_DEPLOY_KEY` environment variable
 
-- Run `npm run deploy:studio:init` with the --network and --repo arguments:
+- Run `npm run deploy:studio:init` with the --network and --slug arguments:
 
-  eg: `npm run deploy:studio:init -- --network <network> --repo <repo>`
+  e.g.: `npm run deploy:studio:init -- --network <network> --slug <slug>`
 
-Replace <network> with the desired network (e.g., mainnet, arbitrum) and <repo> with the desired repository name (e.g., your-subgraph-slug).
+Replace `<network>` with the desired network (e.g., mainnet, arbitrum) and `<slug>` with the desired subgraph slug (e.g., your-subgraph-slug).
 
 ## Notifications
 
