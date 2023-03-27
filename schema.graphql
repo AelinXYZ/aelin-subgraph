@@ -77,7 +77,7 @@ type PoolCreated @entity {
   purchaseExpiry: BigInt
 
   " the number of decimals on the purchase token "
-  purchaseTokenDecimals: Int
+  purchaseTokenDecimals: Int!
 
   " the block timestamp when the pool was created"
   timestamp: BigInt!
@@ -648,8 +648,6 @@ type Deal @entity {
   totalUsersAccepted: Int!
 
   totalUsersRejected: Int!
-
-  maxDealTotalSupply: BigInt
 }
 
 type UpfrontDeal @entity {
@@ -674,9 +672,6 @@ type UpfrontDeal @entity {
   " the underlying deal token totalSupply "
   underlyingDealTokenTotalSupply: BigInt
 
-  " the total amount of purchse tokens for the deal "
-  purchaseTokenTotalForDeal: BigInt
-
   " the total amount of underlying deal tokens available for the deal "
   underlyingDealTokenTotal: BigInt
 
@@ -685,8 +680,6 @@ type UpfrontDeal @entity {
 
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
   holder: Bytes!
-
-  maxDealTotalSupply: BigInt
 
   purchaseTokenPerDealToken: BigInt
 

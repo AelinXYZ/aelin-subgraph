@@ -1134,8 +1134,6 @@ function createOrUpdateDealEntity<E>(event: E): void {
       )
 
       let aelinDealContract = AelinDealContract.bind(event.params.dealContract)
-      dealEntity.maxDealTotalSupply = aelinDealContract.maxTotalSupply()
-
       let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
       dealEntity.underlyingPerDealExchangeRate = underlyingPerDealExchangeRate
 
