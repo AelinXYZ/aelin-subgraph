@@ -10,7 +10,7 @@ Install the project dependencies by running `npm install`
 
 Prerequisites: `Node.js` and `npm` installed, preferably LTS versions
 
-### Deployment
+### Hosted Deployment
 
 The deploy script simplifies the deployment process, allowing you to deploy to any network and repo.
 
@@ -21,6 +21,18 @@ The deploy script simplifies the deployment process, allowing you to deploy to a
   eg: `npm run deploy:hosted:init -- --network <network> --repo <repo>`
 
 Replace <network> with the desired network (e.g., goerli, mainnet, optimism, arbitrum, polygon) and <repo> with the desired repository name (e.g., user/repo).
+
+### Studio Deployment
+
+The deploy script simplifies the deployment process, allowing you to deploy to any network and repo.
+
+- Create a `.env` file in the root directory and set the `GRAPH_DEPLOY_KEY` environment variable
+
+- Run `npm run deploy:studio:init` with the --network and --repo arguments:
+
+  eg: `npm run deploy:studio:init -- --network <network> --repo <repo>`
+
+Replace <network> with the desired network (e.g., mainnet, arbitrum) and <repo> with the desired repository name (e.g., your-subgraph-slug).
 
 ## Notifications
 
