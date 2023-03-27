@@ -4,8 +4,10 @@
   "scripts": {
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
-    "deploy:hosted": "npm run prepare:network && graph auth --product hosted-service $GRAPH_ACCESS_TOKEN && graph deploy --product hosted-service $REPO",
+    "deploy:studio:init": "node scripts/deploy-studio.js",
     "deploy:hosted:init": "node scripts/deploy-hosted.js",
+    "deploy:studio": "npm run prepare:network && graph auth --studio $GRAPH_DEPLOY_KEY && graph deploy --studio $REPO",
+    "deploy:hosted": "npm run prepare:network && graph auth --product hosted-service $GRAPH_ACCESS_TOKEN && graph deploy --product hosted-service $REPO",
     "prepare:network": "mustache config/$NETWORK.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
     "verify-abis": "node config/verify-abis.js",
     "lint:fix": "eslint --fix \"./**/*.{js,jsx,ts,tsx}\"",
