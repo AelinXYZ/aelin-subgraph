@@ -325,5 +325,23 @@ export function handleFeeEscrowClaim(event: FeeEscrowClaimEvent): void {
   }
 
   poolCreatedEntity.totalAmountEarnedByProtocol = event.params.amount
+
+  const upfrontDealAddress = poolCreatedEntity.upfrontDeal
+  if (!upfrontDealAddress) {
+    poolCreatedEntity.save()
+    return
+  }
+
+  const upFrontDealEntity = getUpfrontDeal(upfrontDealAddress ? upfrontDealAddress : '')
+  if (!upFrontDealEntity) {
+    poolCreatedEntity.save()
+    return
+  }
+
+  poolCreatedEntity.totalAmountEarnedByProtocolDecimal = event.params.amount.toBigDecimal().div(
+    BigInt.fromI32(10)
+      .pow(upFrontDealEntity.underlyingDealTokenDecimals as u8)
+      .toBigDecimal(),
+  )
   poolCreatedEntity.save()
 }
