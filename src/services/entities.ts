@@ -1,4 +1,4 @@
-import { BigInt, Bytes, log } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 import {
   Transfer as TransferEvent,
   SetSponsor as SetSponsorEvent,
@@ -13,13 +13,20 @@ import {
 } from '../types/templates/AelinPool/AelinPool'
 
 import {
-  Transfer as TransferDealEvent,
+  AelinDeal as AelinDealContract,
   SetHolder as SetHolderEvent,
+  Transfer as TransferDealEvent,
   DealFullyFunded as DealFullyFundedEvent,
   DepositDealToken as DepositDealTokenEvent,
   WithdrawUnderlyingDealToken as WithdrawUnderlyingDealTokenEvent,
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from '../types/templates/AelinDeal/AelinDeal'
+
+import {
+  Transfer as TransferDealERC721Event,
+  ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenERC721Event,
+  VestingTokenMinted as VestingTokenMintedEvent,
+} from '../types/templates/AelinDeal_v1/AelinDeal_v1'
 
 import {
   AcceptDeal as AcceptUpfrontDealEvent,
@@ -31,9 +38,7 @@ import {
   PoolWith1155 as UpfrontDealWith1155Event,
 } from '../types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
 
-import { CreateUpFrontDeal as CreateUpFrontDealEvent } from '../types/AelinUpfrontDealFactory_v1/AelinUpfrontDealFactory'
-
-import { AelinDeal as AelinDealContract } from '../types/templates/AelinDeal/AelinDeal'
+import { CreateUpFrontDeal as CreateUpFrontDealEvent } from '../types/AelinUpfrontDealFactory_v2/AelinUpfrontDealFactory'
 
 import {
   DealCreated,
@@ -65,6 +70,7 @@ import {
   NftCollectionRule,
   UpfrontDeal,
   Investor,
+  VestingToken,
 } from '../types/schema'
 
 import { AELIN_FEE, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, ZERO } from '../helpers'
@@ -78,6 +84,7 @@ export enum Entity {
   DealDetail,
   SetSponsor,
   Transfer,
+  TransferDeal,
   PurchasePoolToken,
   Deposit,
   WithdrawFromPool,
@@ -88,7 +95,6 @@ export enum Entity {
   UserAllocationStat,
   TotalDealsBySponsor,
   SetHolder,
-  TransferDeal,
   ClaimedUnderlyingDealToken,
   WithdrawUnderlyingDealToken,
   DealFullyFunded,
@@ -98,6 +104,7 @@ export enum Entity {
   Deal,
   NftCollectionRule,
   Investor,
+  VestingToken,
 }
 
 export function createEntity<E>(entityType: Entity, event: E): void {
@@ -191,6 +198,9 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       if (event instanceof TransferDealEvent) {
         createTransferDealEntity(event)
       }
+      if (event instanceof TransferDealERC721Event) {
+        createTransferDealEntity(event)
+      }
       break
     case Entity.ClaimedUnderlyingDealToken:
       if (event instanceof ClaimedUnderlyingDealTokenEvent) {
@@ -234,11 +244,15 @@ export function createEntity<E>(entityType: Entity, event: E): void {
     case Entity.NftCollectionRule:
       if (event instanceof PoolWith721Event || event instanceof UpfrontDealWith721Event) {
         createNft721CollectionRules(event)
-        break
       } else if (event instanceof PoolWith1155Event || event instanceof UpfrontDealWith1155Event) {
         createNft1155CollectionRules(event)
-        break
       }
+      break
+    case Entity.VestingToken:
+      if (event instanceof VestingTokenMintedEvent) {
+        createVestingTokenEntity(event)
+      }
+      break
     default:
       log.error('Error in entities service. Trying to create a undefined EntityType??', [])
   }
@@ -334,7 +348,10 @@ function createNft1155CollectionRules<T>(event: T): void {
 }
 
 function createVestEntity<T>(event: T): void {
-  if (event instanceof ClaimedUnderlyingDealTokenEvent) {
+  if (
+    event instanceof ClaimedUnderlyingDealTokenEvent ||
+    event instanceof ClaimedUnderlyingDealTokenERC721Event
+  ) {
     let dealCreatedEntity = getDealCreated(event.address.toHex())
     if (dealCreatedEntity === null) {
       return
@@ -352,6 +369,11 @@ function createVestEntity<T>(event: T): void {
     vestEntity.userAddress = event.params.recipient
     vestEntity.timestamp = event.block.timestamp
     vestEntity.poolName = poolCreatedEntity.name
+
+    if (event instanceof ClaimedUnderlyingDealTokenERC721Event) {
+      // TODO: Raname to tokenId instead of _tokenId
+      vestEntity.tokenId = event.params._tokenId
+    }
 
     let historyEntity = getOrCreateHistory(event.params.recipient.toHex())
     if (historyEntity !== null) {
@@ -523,14 +545,24 @@ function createClaimedUnderlyingDealTokenEntity<T>(event: T): void {
   }
 }
 
-function createTransferDealEntity(event: TransferDealEvent): void {
-  let transferEntity = new Transfer(
-    event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
-  )
-  transferEntity.from = event.params.from
-  transferEntity.to = event.params.to
-  transferEntity.value = event.params.value
-  transferEntity.save()
+function createTransferDealEntity<T>(event: T): void {
+  if (event instanceof TransferEvent) {
+    let transferEntity = new Transfer(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+    transferEntity.from = event.params.from
+    transferEntity.to = event.params.to
+    transferEntity.value = event.params.value
+    transferEntity.save()
+  } else if (event instanceof TransferDealERC721Event) {
+    let transferEntity = new Transfer(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+    transferEntity.from = event.params.from
+    transferEntity.to = event.params.to
+    transferEntity.tokenId = event.params.tokenId
+    transferEntity.save()
+  }
 }
 
 function createSetHolderEntity(event: SetHolderEvent): void {
@@ -1037,6 +1069,17 @@ function createDealCreatedEntity(event: CreateDealEvent): void {
   dealCreatedEntity.poolAddress = event.address
 
   dealCreatedEntity.save()
+}
+
+function createVestingTokenEntity(event: VestingTokenMintedEvent): void {
+  let vestingTokenEntity = new VestingToken(
+    event.address.toHex() + '-' + event.params.tokenId.toHex(),
+  )
+  vestingTokenEntity.owner = event.params.user
+  vestingTokenEntity.tokenId = event.params.tokenId
+  vestingTokenEntity.amount = event.params.amount
+  vestingTokenEntity.timestamp = event.block.timestamp
+  vestingTokenEntity.save()
 }
 
 function createDealSponsoredEntity<T>(event: T): void {
