@@ -136,6 +136,39 @@ templates:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleDealTransfer
 
+  - name: AelinDeal_v1
+    kind: ethereum/contract
+    network: {{network}}
+    source:
+      abi: AelinDeal_v1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/aelin-deal.ts
+      entities:
+        - AelinDeal
+      abis:
+        - name: AelinDeal_v1
+          file: ./abis/AelinDeal_v1.json
+      eventHandlers:
+        - event: SetHolder(indexed address)
+          handler: handleSetHolder
+        - event: DealFullyFunded(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleDealFullyFunded
+        - event: DepositDealToken(indexed address,indexed address,uint256)
+          handler: handleDepositDealToken
+        - event: WithdrawUnderlyingDealToken(indexed address,indexed address,uint256)
+          handler: handleWithdrawUnderlyingDealToken
+        - event: ClaimedUnderlyingDealToken(indexed address,indexed address,uint256,indexed uint256)
+          handler: handleClaimedUnderlyingDealToken
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleDealERC721Transfer
+        - event: VestingTokenMinted(indexed address,indexed uint256,uint256,uint256)
+          handler: handleVestingTokenMinted
+        - event: VestingShareTransferred(indexed address,indexed address,uint256,uint256,indexed uint256)
+          handler: handleVestingShareTransferred
+
   - name: AelinUpfrontDeal
     kind: ethereum/contract
     network: {{network}}

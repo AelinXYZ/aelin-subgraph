@@ -4,12 +4,12 @@ schema:
   file: ./schema.graphql
 dataSources:
     - kind: ethereum/contract
-      name: AelinPoolFactory_v4
-      network: matic
+      name: AelinPoolFactory_v5
+      network: goerli
       source:
-        address: "0xbf7c0Fd0D31bC377f861d11d4aAc15296c0405b6"
+        address: "0xB016E83E0A45Ef33Bf6FB706A203798f24F87aF4"
         abi: AelinPoolFactory
-        startBlock: 36833961
+        startBlock: 8767310
       mapping:
         kind: ethereum/events
         apiVersion: 0.0.6
@@ -18,7 +18,7 @@ dataSources:
           - PoolCreated
         abis:
           - name: AelinPoolFactory
-            file: ./abis/AelinPoolFactory_v4.json
+            file: ./abis/AelinPoolFactory_v5.json
           - name: ERC20
             file: ./abis/ERC20.json
         eventHandlers:
@@ -26,12 +26,12 @@ dataSources:
             handler: handleCreatePool
         file: ./src/aelin-pool-factory.ts
     - kind: ethereum/contract
-      name: AelinUpfrontDealFactory_v1
-      network: matic
+      name: AelinUpfrontDealFactory_v2
+      network: goerli
       source:
-        address: "0x82EAA001029D4686b343B53Ce6E7f1823725e736"
+        address: "0x92Ac9B2c2b394E5f90105769CA7228E41D7e70fD"
         abi: AelinUpfrontDealFactory
-        startBlock: 36833483
+        startBlock: 8752084
       mapping:
         kind: ethereum/events
         apiVersion: 0.0.6
@@ -40,7 +40,7 @@ dataSources:
           - PoolCreated
         abis:
           - name: AelinUpfrontDealFactory
-            file: ./abis/AelinUpfrontDealFactory_v1.json
+            file: ./abis/AelinUpfrontDealFactory_v2.json
           - name: ERC20
             file: ./abis/ERC20.json
         eventHandlers:
@@ -53,7 +53,7 @@ dataSources:
 templates:
   - name: AelinPool
     kind: ethereum/contract
-    network: matic
+    network: goerli
     source:
       abi: AelinPool
     mapping:
@@ -103,7 +103,7 @@ templates:
 
   - name: AelinDeal
     kind: ethereum/contract
-    network: matic
+    network: goerli
     source:
       abi: AelinDeal
     mapping:
@@ -130,9 +130,42 @@ templates:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleDealTransfer
 
+  - name: AelinDeal_v1
+    kind: ethereum/contract
+    network: goerli
+    source:
+      abi: AelinDeal_v1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/aelin-deal.ts
+      entities:
+        - AelinDeal
+      abis:
+        - name: AelinDeal_v1
+          file: ./abis/AelinDeal_v1.json
+      eventHandlers:
+        - event: SetHolder(indexed address)
+          handler: handleSetHolder
+        - event: DealFullyFunded(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleDealFullyFunded
+        - event: DepositDealToken(indexed address,indexed address,uint256)
+          handler: handleDepositDealToken
+        - event: WithdrawUnderlyingDealToken(indexed address,indexed address,uint256)
+          handler: handleWithdrawUnderlyingDealToken
+        - event: ClaimedUnderlyingDealToken(indexed address,indexed address,uint256,indexed uint256)
+          handler: handleClaimedUnderlyingDealToken
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleDealERC721Transfer
+        - event: VestingTokenMinted(indexed address,indexed uint256,uint256,uint256)
+          handler: handleVestingTokenMinted
+        - event: VestingShareTransferred(indexed address,indexed address,uint256,uint256,indexed uint256)
+          handler: handleVestingShareTransferred
+
   - name: AelinUpfrontDeal
     kind: ethereum/contract
-    network: matic
+    network: goerli
     source:
       abi: AelinUpfrontDeal
     mapping:
