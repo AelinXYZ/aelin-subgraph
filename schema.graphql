@@ -361,7 +361,10 @@ type Transfer @entity {
   to: Bytes!
 
   " the amount sent "
-  value: BigInt!
+  value: BigInt
+
+  " deal token id"
+  tokenId: BigInt
 }
 
 type ClaimedUnderlyingDealToken @entity {
@@ -519,6 +522,8 @@ type Vest @entity {
   amountVested: BigInt!
 
   pool: PoolCreated!
+
+  tokenId: BigInt
 }
 
 type DealFunded @entity {
@@ -770,4 +775,13 @@ type Investor @entity {
   poolAddress: Bytes
   userAddress: Bytes
   amountInvested: BigInt!
+}
+
+type VestingToken @entity {
+  "token Id"
+  id: ID!
+  owner: Bytes!
+  tokenId: BigInt!
+  amount: BigInt!
+  timestamp: BigInt!
 }
