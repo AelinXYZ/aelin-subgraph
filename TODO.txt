@@ -1,0 +1,10 @@
+Deal Transfer Integration
+
+- Update the ABIs (contracts have some slight changes after i started this)
+- Handle new/renamed events from the contracts - Check out this PR: https://github.com/AelinXYZ/aelin/pull/135
+- Figure out how to handle different networks - aelin-pool line 124
+- UpfrontDeals
+
+Once contracts are deployed
+  - Remove the config/gcomplete.json and update config/goerli.json
+  - Add block number for all network
