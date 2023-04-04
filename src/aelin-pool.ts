@@ -16,7 +16,7 @@ import {
 } from './types/templates/AelinPool/AelinPool'
 import { Address, BigInt } from '@graphprotocol/graph-ts'
 import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
-import { AelinDeal } from './types/templates'
+import { AelinDeal, AelinDeal_v1 } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
 import {
   createEntity,
@@ -63,12 +63,13 @@ export function handlePoolTransfer(event: TransferEvent): void {
     return
   }
 
-  if (event.params.from.toHex() === ZERO_ADDRESS.toHex()) {
+  if (event.params.from.toHex() == ZERO_ADDRESS.toHex()) {
     poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.plus(event.params.value)
   }
-  if (event.params.to.toHex() === ZERO_ADDRESS.toHex()) {
+  if (event.params.to.toHex() == ZERO_ADDRESS.toHex()) {
     poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.minus(event.params.value)
   }
+
   poolCreatedEntity.save()
 }
 
@@ -121,7 +122,14 @@ export function handleDealDetail(event: DealDetailEvent): void {
   }
 
   // use templates to create a new deal to track events
-  AelinDeal.create(event.params.dealContract)
+
+  // TODO: How to handle different networks? A dictionary maybe?
+  if (event.block.number < BigInt.fromI32(8751845)) {
+    AelinDeal.create(event.params.dealContract)
+  } else {
+    AelinDeal_v1.create(event.params.dealContract)
+  }
+
   createNotificationsForEvent(event)
 }
 

@@ -1,12 +1,19 @@
 import { PoolStatus } from './enum'
 import {
-  Transfer as TransferEvent,
+  Transfer as TransferDealEvent,
   SetHolder as SetHolderEvent,
   DealFullyFunded as DealFullyFundedEvent,
   DepositDealToken as DepositDealTokenEvent,
   WithdrawUnderlyingDealToken as WithdrawUnderlyingDealTokenEvent,
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenEvent,
 } from './types/templates/AelinDeal/AelinDeal'
+
+import {
+  Transfer as TransferDealERC721Event,
+  VestingShareTransferred as VestingShareTransferredEvent,
+  VestingTokenMinted as VestingTokenMintedEvent,
+} from './types/templates/AelinDeal_v1/AelinDeal_v1'
+
 import {
   createEntity,
   Entity,
@@ -17,15 +24,30 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
-import { BigInt } from '@graphprotocol/graph-ts'
+import { VestingToken } from './types/schema'
 
 export function handleSetHolder(event: SetHolderEvent): void {
   createEntity(Entity.SetHolder, event)
   createNotificationsForEvent(event)
 }
 
-export function handleDealTransfer(event: TransferEvent): void {
+export function handleDealTransfer(event: TransferDealEvent): void {
   createEntity(Entity.TransferDeal, event)
+}
+
+export function handleDealERC721Transfer(event: TransferDealERC721Event): void {
+  createEntity(Entity.TransferDeal, event)
+
+  if (event instanceof TransferDealERC721Event) {
+    let existingVestingTokenEntity = VestingToken.load(
+      event.address.toHex() + '-' + event.params.tokenId.toHex(),
+    )
+
+    if (existingVestingTokenEntity !== null) {
+      existingVestingTokenEntity.owner = event.params.to
+      existingVestingTokenEntity.save()
+    }
+  }
 }
 
 export function handleClaimedUnderlyingDealToken(event: ClaimedUnderlyingDealTokenEvent): void {
@@ -140,6 +162,31 @@ export function handleDepositDealToken(event: DepositDealTokenEvent): void {
         event.params.underlyingDealTokenAmount,
       )
       poolCreatedEntity.save()
+    }
+  }
+}
+
+export function handleVestingTokenMinted(event: VestingTokenMintedEvent): void {
+  let dealEntity = getDeal(event.address.toHex())
+
+  if (dealEntity !== null) {
+    createEntity(Entity.VestingToken, event)
+  }
+}
+
+export function handleVestingShareTransferred(event: VestingShareTransferredEvent): void {
+  let dealEntity = getDeal(event.address.toHex())
+
+  if (dealEntity !== null) {
+    let existingVestingTokenEntity = VestingToken.load(
+      event.address.toHex() + '-' + event.params.tokenId.toHex(),
+    )
+
+    if (existingVestingTokenEntity !== null) {
+      existingVestingTokenEntity.amount = existingVestingTokenEntity.amount.minus(
+        event.params.amount,
+      )
+      existingVestingTokenEntity.save()
     }
   }
 }
