@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Fundraising on Ethereum.
 schema:
   file: ./schema.graphql
@@ -12,7 +12,7 @@ dataSources:
         startBlock: 36833961
       mapping:
         kind: ethereum/events
-        apiVersion: 0.0.5
+        apiVersion: 0.0.6
         language: wasm/assemblyscript
         entities:
           - PoolCreated
@@ -34,7 +34,7 @@ dataSources:
         startBlock: 36833483
       mapping:
         kind: ethereum/events
-        apiVersion: 0.0.5
+        apiVersion: 0.0.6
         language: wasm/assemblyscript
         entities:
           - PoolCreated
@@ -58,7 +58,7 @@ templates:
       abi: AelinPool
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/aelin-pool.ts
       entities:
@@ -108,7 +108,7 @@ templates:
       abi: AelinDeal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/aelin-deal.ts
       entities:
@@ -137,7 +137,7 @@ templates:
       abi: AelinUpfrontDeal
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/aelin-upfront-deal.ts
       entities:
@@ -160,8 +160,8 @@ templates:
           handler: handleSponsorClaim
         - event: HolderClaim(indexed address,address,uint256,address,uint256,uint256)
           handler: handleHolderClaim
-        # - event: FeeEscrowClaim(indexed address,indexed address,uint256)
-        #   handler: handleFeeEscrowClaim
+        - event: FeeEscrowClaim(indexed address,indexed address,uint256)
+          handler: handleFeeEscrowClaim
         - event: ClaimedUnderlyingDealToken(indexed address,address,uint256)
           handler: handleClaimedUnderlyingDealToken
         - event: PoolWith721(indexed address,uint256,bool)
@@ -175,9 +175,4 @@ templates:
         - event: Vouch(indexed address)
           handler: handleVouch
         - event: Disavow(indexed address)
-          handler: handleDisavow
-        - event: Vouch(indexed address)
-          handler: handleVouch
-        - event: Disavow(indexed address)
-          handler: handleDisavow
-            
+          handler: handleDisavow            

@@ -53,7 +53,7 @@ type PoolCreated @entity {
   symbol: String!
 
   " the cap on the amount of purchase tokens in the pool. If 0 - that means uncapped "
-  purchaseTokenCap: BigInt!
+  purchaseTokenCap: BigInt
 
   " the address of the purchase token "
   purchaseToken: Bytes!
@@ -62,7 +62,7 @@ type PoolCreated @entity {
   purchaseTokenSymbol: String!
 
   " the duration of the pool assuming no deal is presented when purchasers can withdraw all of their locked funds "
-  duration: BigInt!
+  duration: BigInt
 
   " the fee paid to the sponsor when a purchaser accepts a deal "
   sponsorFee: BigInt!
@@ -77,13 +77,13 @@ type PoolCreated @entity {
   purchaseExpiry: BigInt
 
   " the number of decimals on the purchase token "
-  purchaseTokenDecimals: Int
+  purchaseTokenDecimals: Int!
 
   " the block timestamp when the pool was created"
   timestamp: BigInt!
 
   " if there is an allow list on the pool "
-  hasAllowList: Boolean!
+  hasAllowList: Boolean
 
   " the current status of the pool "
   poolStatus: PoolStatus!
@@ -116,7 +116,7 @@ type PoolCreated @entity {
 
   vestingEnds: BigInt
 
-  holder: Bytes!
+  holder: Bytes
 
   "poolName-sponsorAddress-purchaseTokenSymbol"
   filter: String!
@@ -127,7 +127,7 @@ type PoolCreated @entity {
 
   hasNftList: Boolean!
 
-  nftCollectionRules: [NftCollectionRule!]!
+  nftCollectionRules: [NftCollectionRule!]
 
   " details of the created upfront deal "
   upfrontDeal: UpfrontDeal
@@ -393,7 +393,7 @@ type VestingDeal @entity {
 
   tokenToVestSymbol: String!
 
-  investorDealTotal: BigInt!
+  investorDealTotal: BigInt
 
   " Should be removed since this value changes with time "
   remainingAmountToVest: BigInt!
@@ -411,7 +411,7 @@ type VestingDeal @entity {
   pool: PoolCreated!
 
   "timestamp of the last time the user claimed"
-  lastClaim: BigInt!
+  lastClaim: BigInt
 }
 
 type TotalDealsBySponsor @entity {
@@ -454,8 +454,6 @@ type UserAllocationStat @entity {
   totalAccepted: BigInt!
 
   poolTokenBalance: BigInt!
-
-  remainingProRataAllocation: BigInt!
 
   pool: PoolCreated!
 }
@@ -563,9 +561,6 @@ type Withdraw @entity {
   " withdrawn amount of purchase tokens "
   amountWithdrawn: BigInt!
 
-  " pool where the funds are withdrawn "
-  sponsorFee: BigInt!
-
   pool: PoolCreated!
 }
 
@@ -583,78 +578,76 @@ type Deal @entity {
   poolAddress: Bytes!
 
   " the underlying deal token address "
-  underlyingDealToken: Bytes!
+  underlyingDealToken: Bytes
 
   " the underlying deal token symbol "
-  underlyingDealTokenSymbol: String!
+  underlyingDealTokenSymbol: String
 
   " the underlying deal token decimals "
-  underlyingDealTokenDecimals: Int!
+  underlyingDealTokenDecimals: Int
 
   " the underlying deal token totalSupply "
-  underlyingDealTokenTotalSupply: BigInt!
+  underlyingDealTokenTotalSupply: BigInt
 
   " the total amount of purchse tokens for the deal "
-  purchaseTokenTotalForDeal: BigInt!
+  purchaseTokenTotalForDeal: BigInt
 
   " the total amount of underlying deal tokens available for the deal "
-  underlyingDealTokenTotal: BigInt!
+  underlyingDealTokenTotal: BigInt
 
   " the vesting period which is linear for all deals in v1 "
-  vestingPeriod: BigInt!
+  vestingPeriod: BigInt
 
   " the vesting cliff after which linear vesting starts "
-  vestingCliff: BigInt!
+  vestingCliff: BigInt
 
-  vestingPeriodStarts: BigInt!
+  vestingPeriodStarts: BigInt
 
   " the initial period in which a deal can be accepted by the purchaser according to their pro rata ownership of the deal "
-  proRataRedemptionPeriod: BigInt!
+  proRataRedemptionPeriod: BigInt
 
   " the timestamp when the pro rata redemption period starts "
   proRataRedemptionPeriodStart: BigInt
 
   " after the pro rata period, anyone who maxxed out their contribution during the pro rata period can now use their remaining pool shares to buy deal tokens until the deal is full "
-  openRedemptionPeriod: BigInt!
+  openRedemptionPeriod: BigInt
 
   " the start of the pro rata redemption period "
-  proRataRedemptionStart: BigInt!
+  proRataRedemptionStart: BigInt
 
   " the start of the open redemption period "
-  openRedemptionStart: BigInt!
+  openRedemptionStart: BigInt
 
   " the end of the pro rata redemption period "
-  proRataRedemptionExpiry: BigInt!
+  proRataRedemptionExpiry: BigInt
 
   " the end of the open redemption period "
-  openRedemptionExpiry: BigInt!
+  openRedemptionExpiry: BigInt
 
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
-  holder: Bytes!
+  holder: Bytes
 
   " is the deal fully funded "
   isDealFunded: Boolean!
 
   " the exipration of the holder funding period "
-  holderFundingExpiration: BigInt!
+  holderFundingExpiration: BigInt
 
   " the duration of the holder funding period "
-  holderFundingDuration: BigInt!
+  holderFundingDuration: BigInt
 
-  underlyingPerDealExchangeRate: BigInt!
+  underlyingPerDealExchangeRate: BigInt
 
-  totalAmountUnredeemed: BigInt!
+  totalAmountUnredeemed: BigInt
 
   " the block timestamp when the deal was created"
   timestamp: BigInt!
 
-  dealFundedAt: BigInt!
+  dealFundedAt: BigInt
 
   totalUsersAccepted: Int!
 
   totalUsersRejected: Int!
-
-  maxDealTotalSupply: BigInt!
 }
 
 type UpfrontDeal @entity {
@@ -677,43 +670,38 @@ type UpfrontDeal @entity {
   underlyingDealTokenDecimals: Int!
 
   " the underlying deal token totalSupply "
-  underlyingDealTokenTotalSupply: BigInt!
-
-  " the total amount of purchse tokens for the deal "
-  purchaseTokenTotalForDeal: BigInt!
+  underlyingDealTokenTotalSupply: BigInt
 
   " the total amount of underlying deal tokens available for the deal "
-  underlyingDealTokenTotal: BigInt!
+  underlyingDealTokenTotal: BigInt
 
   " the vesting period which is linear for all deals in v1 "
-  vestingPeriod: BigInt!
+  vestingPeriod: BigInt
 
   " the address of the holder of the underlying deal tokens who is receiving the underlying purchaser tokens "
   holder: Bytes!
 
-  maxDealTotalSupply: BigInt!
+  purchaseTokenPerDealToken: BigInt
 
-  purchaseTokenPerDealToken: BigInt!
+  purchaseRaiseMinimum: BigInt
 
-  purchaseRaiseMinimum: BigInt!
+  vestingCliffPeriod: BigInt
 
-  vestingCliffPeriod: BigInt!
-
-  allowDeallocation: Boolean!
+  allowDeallocation: Boolean
 
   dealStart: BigInt
 
-  totalAmountUnredeemed: BigInt!
+  totalAmountUnredeemed: BigInt
 
   holderClaim: Boolean
 
   sponsorClaim: Boolean
 
-  totalRedeemed: BigInt!
+  totalRedeemed: BigInt
 
   totalUsersAccepted: Int!
 
-  remainingDealTokens: BigInt!
+  remainingDealTokens: BigInt
 
   merkleRoot: Bytes
 
@@ -758,8 +746,8 @@ type Notification @entity {
   type: NotificationType!
   message: String!
   pool: PoolCreated!
-  triggerStart: BigInt!
-  triggerEnd: BigInt!
+  triggerStart: BigInt
+  triggerEnd: BigInt
   target: NotificationTarget!
 }
 
@@ -781,5 +769,5 @@ type Investor @entity {
   id: ID!
   poolAddress: Bytes
   userAddress: Bytes
-  amountInvested: BigInt
+  amountInvested: BigInt!
 }

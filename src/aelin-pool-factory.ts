@@ -10,7 +10,7 @@ import { getTokenDecimals, getTokenSymbol } from './services/token'
 
 export function handleCreatePool(event: CreatePoolEvent): void {
   let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
-  if (totalPoolsCreatedEntity == null) {
+  if (totalPoolsCreatedEntity === null) {
     totalPoolsCreatedEntity = new TotalPoolsCreated('1')
     totalPoolsCreatedEntity.count = ONE
   } else {
@@ -38,6 +38,9 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   poolCreatedEntity.poolStatus = PoolStatus.PoolOpen
   poolCreatedEntity.contributions = BigInt.fromI32(0)
 
+  poolCreatedEntity.totalSupply = BigInt.fromI32(0)
+  poolCreatedEntity.totalUsersInvested = 0
+  poolCreatedEntity.totalAddressesInvested = []
   poolCreatedEntity.totalAmountAccepted = BigInt.fromI32(0)
   poolCreatedEntity.totalAmountWithdrawn = BigInt.fromI32(0)
   poolCreatedEntity.totalAmountFunded = BigInt.fromI32(0)
@@ -49,11 +52,13 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   ).toLowerCase()}`
   poolCreatedEntity.hasNftList = false
   poolCreatedEntity.totalVouchers = 0
+  poolCreatedEntity.vouchers = []
+  poolCreatedEntity.nftCollectionRules = []
 
   poolCreatedEntity.save()
 
   let userEntity = getOrCreateUser(event.params.sponsor.toHex())
-  if (userEntity != null) {
+  if (userEntity !== null) {
     let poolsSponsored = userEntity.poolsSponsored
     poolsSponsored.push(poolCreatedEntity.id)
     userEntity.poolsSponsored = poolsSponsored

@@ -42,7 +42,7 @@ export function handleAelinPoolToken(event: AelinTokenEvent): void {
    * Update PoolCreated entity
    */
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity != null) {
+  if (poolCreatedEntity !== null) {
     poolCreatedEntity.purchaseTokenDecimals = event.params.decimals
     poolCreatedEntity.save()
   }
@@ -59,7 +59,7 @@ export function handlePoolTransfer(event: TransferEvent): void {
    * Update PoolCreated entity
    */
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
+  if (poolCreatedEntity === null) {
     return
   }
 
@@ -81,7 +81,7 @@ export function handleCreateDeal(event: CreateDealEvent): void {
    * Update PoolCreated entity
    */
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity != null) {
+  if (poolCreatedEntity !== null) {
     poolCreatedEntity.poolStatus = PoolStatus.FundingDeal
     poolCreatedEntity.dealAddress = event.params.dealContract
     poolCreatedEntity.save()
@@ -91,11 +91,11 @@ export function handleCreateDeal(event: CreateDealEvent): void {
    * TotalDealsBySponsor entity
    */
   let totalDealsBySponsorEntity = getTotalDealsBySponsor(event.params.sponsor.toHexString())
-  if (totalDealsBySponsorEntity == null) {
+  if (totalDealsBySponsorEntity === null) {
     createEntity(Entity.TotalDealsBySponsor, event)
     totalDealsBySponsorEntity = getTotalDealsBySponsor(event.params.sponsor.toHexString())
   }
-  if (totalDealsBySponsorEntity != null) {
+  if (totalDealsBySponsorEntity !== null) {
     totalDealsBySponsorEntity.count++
     totalDealsBySponsorEntity.save()
   }
@@ -111,9 +111,9 @@ export function handleDealDetail(event: DealDetailEvent): void {
    * Update PoolCreated entity
    */
   let dealCreatedEntity = getDealCreated(event.params.dealContract.toHex())
-  if (dealCreatedEntity != null) {
+  if (dealCreatedEntity !== null) {
     let poolCreatedEntity = getPoolCreated(dealCreatedEntity.poolAddress.toHex())
-    if (poolCreatedEntity != null) {
+    if (poolCreatedEntity !== null) {
       poolCreatedEntity.deal = event.params.dealContract.toHex()
       poolCreatedEntity.holder = event.params.holder
       poolCreatedEntity.save()
@@ -135,7 +135,7 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
    * Update PoolCreated entity
    */
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity != null) {
+  if (poolCreatedEntity !== null) {
     poolCreatedEntity.contributions = poolCreatedEntity.contributions.plus(
       event.params.purchaseTokenAmount,
     )
@@ -156,14 +156,14 @@ export function handlePurchasePoolToken(event: PurchasePoolTokenEvent): void {
   let userAllocationStatEntity = getUserAllocationStat(
     event.params.purchaser.toHex() + '-' + event.address.toHex(),
   )
-  if (userAllocationStatEntity == null) {
+  if (userAllocationStatEntity === null) {
     createEntity(Entity.UserAllocationStat, event)
     userAllocationStatEntity = getUserAllocationStat(
       event.params.purchaser.toHex() + '-' + event.address.toHex(),
     )
   }
 
-  if (userAllocationStatEntity != null) {
+  if (userAllocationStatEntity !== null) {
     userAllocationStatEntity.totalAccepted = userAllocationStatEntity.totalAccepted.plus(
       event.params.purchaseTokenAmount,
     )
@@ -179,7 +179,7 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
   createEntity(Entity.Withdraw, event)
 
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
+  if (poolCreatedEntity === null) {
     return
   }
 
@@ -198,7 +198,7 @@ export function handleWithdrawFromPool(event: WithdrawFromPoolEvent): void {
   let userAllocationStatEntity = getUserAllocationStat(
     event.params.purchaser.toHex() + '-' + event.address.toHex(),
   )
-  if (userAllocationStatEntity != null) {
+  if (userAllocationStatEntity !== null) {
     userAllocationStatEntity.totalWithdrawn = userAllocationStatEntity.totalWithdrawn.plus(
       event.params.purchaseTokenAmount,
     )
@@ -229,7 +229,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   createEntity(Entity.AcceptDeal, event)
 
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  if (poolCreatedEntity == null) {
+  if (poolCreatedEntity === null) {
     return
   }
 
@@ -239,7 +239,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   let dealFundedEntity = getDealFunded(
     event.params.dealAddress.toHex() + '-' + poolCreatedEntity.sponsor.toHex(),
   )
-  if (dealFundedEntity != null) {
+  if (dealFundedEntity !== null) {
     dealFundedEntity.amountRaised = dealFundedEntity.amountRaised.plus(event.params.poolTokenAmount)
     dealFundedEntity.save()
   }
@@ -260,7 +260,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     event.params.purchaser.toHex() + '-' + event.address.toHex(),
   )
 
-  if (userAllocationStatEntity != null) {
+  if (userAllocationStatEntity !== null) {
     userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.minus(
       event.params.poolTokenAmount,
     )
@@ -283,8 +283,8 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
       .div(BigInt.fromI32(10).pow(18))
       .times(ONE_HUNDRED.minus(AELIN_FEE).minus(sponsorFee)) // total Fees
       .div(ONE_HUNDRED)
-    vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal.plus(dealTokens)
-    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal
+    vestingDealEntity.investorDealTotal = vestingDealEntity.investorDealTotal!.plus(dealTokens)
+    vestingDealEntity.remainingAmountToVest = vestingDealEntity.investorDealTotal!
     vestingDealEntity.save()
   }
 
@@ -296,7 +296,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   let dealSponsoredEntity = getDealSponsored(
     event.address.toHex() + '-' + poolCreatedEntity.sponsor.toHex(),
   )
-  if (dealSponsoredEntity == null) {
+  if (dealSponsoredEntity === null) {
     return
   }
 
@@ -330,10 +330,10 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
    * Update Deal entity
    */
   const dealEntity = getDeal(event.params.dealAddress.toHex())
-  if (dealEntity == null) {
+  if (dealEntity === null) {
     return
   }
-  dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed.minus(
+  dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed!.minus(
     investorDealTotal.div(BigInt.fromI32(10).pow(18)),
   )
   dealEntity.save()
