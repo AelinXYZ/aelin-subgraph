@@ -28,6 +28,11 @@
         "name": "AelinUpfrontDealFactory_v1",
         "address": "0x97EfdB29C0D6daCDc0BB334Cc227AE03A1a7c01E",
         "startBlock": 15834071
+      },
+      {
+        "name": "AelinUpfrontDealFactory_v2",
+        "address": "0x82BccFA913dB473147e5274C7821Bc13fFBaBE17",
+        "startBlock": 16993103
       }
     ]
   }
