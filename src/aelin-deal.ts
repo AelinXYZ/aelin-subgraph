@@ -17,7 +17,6 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
-import { BigInt } from '@graphprotocol/graph-ts'
 
 export function handleSetHolder(event: SetHolderEvent): void {
   createEntity(Entity.SetHolder, event)
