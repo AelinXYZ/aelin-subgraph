@@ -291,7 +291,7 @@ function createNft721CollectionRules<T>(event: T): void {
 
     let nftCollectionRules = poolCreatedEntity.nftCollectionRules
 
-    if (nftCollectionRules != null) {
+    if (nftCollectionRules !== null) {
       nftCollectionRules.push(nftCollectionRule.id)
       poolCreatedEntity.nftCollectionRules = nftCollectionRules
     }
