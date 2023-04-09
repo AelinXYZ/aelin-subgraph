@@ -57,6 +57,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.hasNftList = false
   poolCreatedEntity.totalVouchers = 0
   poolCreatedEntity.vouchers = []
+  poolCreatedEntity.nftCollectionRules = []
 
   let userEntity = getOrCreateUser(event.params.sponsor.toHex())
   if (userEntity !== null) {
