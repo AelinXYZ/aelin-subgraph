@@ -323,7 +323,7 @@ function createNft1155CollectionRules<T>(event: T): void {
     poolCreatedEntity.hasNftList = true
 
     let nftCollectionRules = poolCreatedEntity.nftCollectionRules
-    if (nftCollectionRules !== null) {
+    if (nftCollectionRules != null) {
       nftCollectionRules.push(nftCollectionRule.id)
       poolCreatedEntity.nftCollectionRules = nftCollectionRules
     }
