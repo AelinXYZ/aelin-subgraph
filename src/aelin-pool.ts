@@ -329,7 +329,6 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
    * Update Deal entity
    */
   const dealEntity = getDeal(event.params.dealAddress.toHex())
-
   if (dealEntity === null) {
     poolCreatedEntity.save()
     return
