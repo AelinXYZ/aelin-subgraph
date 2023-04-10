@@ -63,10 +63,10 @@ export function handlePoolTransfer(event: TransferEvent): void {
     return
   }
 
-  if (event.params.from.toHex() === ZERO_ADDRESS.toHex()) {
+  if (event.params.from.toHex() == ZERO_ADDRESS.toHex()) {
     poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.plus(event.params.value)
   }
-  if (event.params.to.toHex() === ZERO_ADDRESS.toHex()) {
+  if (event.params.to.toHex() == ZERO_ADDRESS.toHex()) {
     poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.minus(event.params.value)
   }
   poolCreatedEntity.save()
