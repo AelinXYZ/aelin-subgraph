@@ -330,7 +330,7 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
    */
   const dealEntity = getDeal(event.params.dealAddress.toHex())
 
-  if (dealEntity == null) {
+  if (dealEntity === null) {
     poolCreatedEntity.save()
     return
   }
