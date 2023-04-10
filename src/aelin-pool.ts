@@ -324,15 +324,29 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     poolCreatedEntity.totalAmountEarnedByProtocol.plus(
       event.params.aelinFee.times(underlyingPerDealExchangeRate).div(BigInt.fromI32(10).pow(18)),
     )
-  poolCreatedEntity.save()
 
   /**
    * Update Deal entity
    */
   const dealEntity = getDeal(event.params.dealAddress.toHex())
   if (dealEntity === null) {
+    poolCreatedEntity.save()
     return
   }
+
+  poolCreatedEntity.totalAmountEarnedByProtocolDecimal =
+    poolCreatedEntity.totalAmountEarnedByProtocolDecimal.plus(
+      event.params.aelinFee
+        .toBigDecimal()
+        .times(underlyingPerDealExchangeRate.toBigDecimal())
+        .div(
+          BigInt.fromI32(10)
+            .pow((dealEntity.underlyingDealTokenDecimals + 18) as u8)
+            .toBigDecimal(),
+        ),
+    )
+  poolCreatedEntity.save()
+
   dealEntity.totalAmountUnredeemed = dealEntity.totalAmountUnredeemed!.minus(
     investorDealTotal.div(BigInt.fromI32(10).pow(18)),
   )

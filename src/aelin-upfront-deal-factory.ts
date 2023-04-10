@@ -15,7 +15,7 @@ import {
 } from './services/entities'
 import { getTokenDecimals, getTokenSymbol } from './services/token'
 import { createNotificationsForEvent } from './services/notifications'
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 
 export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
@@ -50,6 +50,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.totalAmountFunded = ZERO
   poolCreatedEntity.totalAmountEarnedBySponsor = ZERO
   poolCreatedEntity.totalAmountEarnedByProtocol = ZERO
+  poolCreatedEntity.totalAmountEarnedByProtocolDecimal = BigDecimal.zero()
   poolCreatedEntity.totalSupply = ZERO
   poolCreatedEntity.totalUsersInvested = 0
   poolCreatedEntity.totalAddressesInvested = []
