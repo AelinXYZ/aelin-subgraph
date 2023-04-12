@@ -26,6 +26,7 @@ import {
   Transfer as TransferDealERC721Event,
   ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenERC721Event,
   VestingTokenMinted as VestingTokenMintedEvent,
+  HolderAccepted as HolderAcceptedEvent,
 } from '../types/templates/AelinDeal_v1/AelinDeal_v1'
 
 import {
@@ -190,7 +191,7 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       }
       break
     case Entity.SetHolder:
-      if (event instanceof SetHolderEvent) {
+      if (event instanceof SetHolderEvent || event instanceof HolderAcceptedEvent) {
         createSetHolderEntity(event)
       }
       break
@@ -203,10 +204,11 @@ export function createEntity<E>(entityType: Entity, event: E): void {
       }
       break
     case Entity.ClaimedUnderlyingDealToken:
-      if (event instanceof ClaimedUnderlyingDealTokenEvent) {
-        createClaimedUnderlyingDealTokenEntity(event)
-      }
-      if (event instanceof ClaimedUnderlyingDealTokenUpfrontDealEvent) {
+      if (
+        event instanceof ClaimedUnderlyingDealTokenEvent ||
+        event instanceof ClaimedUnderlyingDealTokenERC721Event ||
+        event instanceof ClaimedUnderlyingDealTokenUpfrontDealEvent
+      ) {
         createClaimedUnderlyingDealTokenEntity(event)
       }
       break
@@ -233,6 +235,7 @@ export function createEntity<E>(entityType: Entity, event: E): void {
     case Entity.Vest:
       if (
         event instanceof ClaimedUnderlyingDealTokenEvent ||
+        event instanceof ClaimedUnderlyingDealTokenERC721Event ||
         event instanceof ClaimedUnderlyingDealTokenUpfrontDealEvent
       ) {
         createVestEntity(event)
@@ -371,8 +374,7 @@ function createVestEntity<T>(event: T): void {
     vestEntity.poolName = poolCreatedEntity.name
 
     if (event instanceof ClaimedUnderlyingDealTokenERC721Event) {
-      // TODO: Raname to tokenId instead of _tokenId
-      vestEntity.tokenId = event.params._tokenId
+      vestEntity.tokenId = event.params.tokenId
     }
 
     let historyEntity = getOrCreateHistory(event.params.recipient.toHex())
@@ -508,7 +510,10 @@ function createWithdrawUnderlyingDealTokenEntity(event: WithdrawUnderlyingDealTo
 }
 
 function createClaimedUnderlyingDealTokenEntity<T>(event: T): void {
-  if (event instanceof ClaimedUnderlyingDealTokenEvent) {
+  if (
+    event instanceof ClaimedUnderlyingDealTokenEvent ||
+    event instanceof ClaimedUnderlyingDealTokenERC721Event
+  ) {
     let claimedEntity = new ClaimedUnderlyingDealToken(
       event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
     )
@@ -565,12 +570,14 @@ function createTransferDealEntity<T>(event: T): void {
   }
 }
 
-function createSetHolderEntity(event: SetHolderEvent): void {
-  let setHolderEntity = new SetHolder(
-    event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
-  )
-  setHolderEntity.holder = event.params.holder
-  setHolderEntity.save()
+function createSetHolderEntity<T>(event: T): void {
+  if (event instanceof SetHolderEvent || event instanceof HolderAcceptedEvent) {
+    let setHolderEntity = new SetHolder(
+      event.transaction.hash.toHex() + '-' + event.logIndex.toString(),
+    )
+    setHolderEntity.holder = event.params.holder
+    setHolderEntity.save()
+  }
 }
 
 function createTotalDealsBySponsorEntity(event: CreateDealEvent): void {

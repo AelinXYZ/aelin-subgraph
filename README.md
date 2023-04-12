@@ -6,9 +6,15 @@ A Aelin subgraph for [The Graph](https://thegraph.com). Aelin is a fundraising p
 
 ## Getting Started
 
-Install the project dependencies by running `npm install`
+- Install the project dependencies by running `npm install`
 
-Prerequisites: `Node.js` and `npm` installed, preferably LTS versions
+  Prerequisites: `Node.js` and `npm` installed, preferably LTS versions
+
+- Generate all necessary files using config for desired network by running `npm run prepare:network:init` with the --network argument:
+
+  e.g.: `npm run prepare:network:init -- --network <network>`
+
+- After that you can build the project with `npm run build` command
 
 ### Hosted Deployment
 

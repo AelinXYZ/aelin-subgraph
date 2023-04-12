@@ -12,6 +12,8 @@ import {
   Transfer as TransferDealERC721Event,
   VestingShareTransferred as VestingShareTransferredEvent,
   VestingTokenMinted as VestingTokenMintedEvent,
+  HolderAccepted as HolderAcceptedEvent,
+  ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenERC721Event,
 } from './types/templates/AelinDeal_v1/AelinDeal_v1'
 
 import {
@@ -26,9 +28,11 @@ import {
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
 import { VestingToken } from './types/schema'
 
-export function handleSetHolder(event: SetHolderEvent): void {
-  createEntity(Entity.SetHolder, event)
-  createNotificationsForEvent(event)
+export function handleSetHolder<T>(event: T): void {
+  if (event instanceof SetHolderEvent || event instanceof HolderAcceptedEvent) {
+    createEntity(Entity.SetHolder, event)
+    createNotificationsForEvent(event)
+  }
 }
 
 export function handleDealTransfer(event: TransferDealEvent): void {
@@ -50,25 +54,30 @@ export function handleDealERC721Transfer(event: TransferDealERC721Event): void {
   }
 }
 
-export function handleClaimedUnderlyingDealToken(event: ClaimedUnderlyingDealTokenEvent): void {
-  createEntity(Entity.ClaimedUnderlyingDealToken, event)
+export function handleClaimedUnderlyingDealToken<T>(event: T): void {
+  if (
+    event instanceof ClaimedUnderlyingDealTokenEvent ||
+    event instanceof ClaimedUnderlyingDealTokenERC721Event
+  ) {
+    createEntity(Entity.ClaimedUnderlyingDealToken, event)
 
-  /**
-   * Update VestingDeal entity
-   */
+    /**
+     * Update VestingDeal entity
+     */
 
-  let vestingDealEntity = getVestingDeal(
-    event.params.recipient.toHex() + '-' + event.address.toHex(),
-  )
-  if (vestingDealEntity !== null) {
-    vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(
-      event.params.underlyingDealTokensClaimed,
+    let vestingDealEntity = getVestingDeal(
+      event.params.recipient.toHex() + '-' + event.address.toHex(),
     )
-    vestingDealEntity.save()
-  }
+    if (vestingDealEntity !== null) {
+      vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(
+        event.params.underlyingDealTokensClaimed,
+      )
+      vestingDealEntity.save()
+    }
 
-  createEntity(Entity.Vest, event)
-  removeNotificationsForEvent(event)
+    createEntity(Entity.Vest, event)
+    removeNotificationsForEvent(event)
+  }
 }
 
 export function handleWithdrawUnderlyingDealToken(event: WithdrawUnderlyingDealTokenEvent): void {

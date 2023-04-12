@@ -34,6 +34,7 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
+import { TemplatesVersions } from '../templatesVersions'
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
   createEntity(Entity.AelinToken, event)
@@ -123,8 +124,7 @@ export function handleDealDetail(event: DealDetailEvent): void {
 
   // use templates to create a new deal to track events
 
-  // TODO: How to handle different networks? A dictionary maybe?
-  if (event.block.number < BigInt.fromI32(8751845)) {
+  if (event.block.number < BigInt.fromString(TemplatesVersions.AelinDeal_v1)) {
     AelinDeal.create(event.params.dealContract)
   } else {
     AelinDeal_v1.create(event.params.dealContract)

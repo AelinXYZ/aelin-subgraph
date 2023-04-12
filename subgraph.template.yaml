@@ -152,7 +152,7 @@ templates:
         - name: AelinDeal_v1
           file: ./abis/AelinDeal_v1.json
       eventHandlers:
-        - event: SetHolder(indexed address)
+        - event: HolderAccepted(indexed address)
           handler: handleSetHolder
         - event: DealFullyFunded(indexed address,uint256,uint256,uint256,uint256)
           handler: handleDealFullyFunded
@@ -160,13 +160,13 @@ templates:
           handler: handleDepositDealToken
         - event: WithdrawUnderlyingDealToken(indexed address,indexed address,uint256)
           handler: handleWithdrawUnderlyingDealToken
-        - event: ClaimedUnderlyingDealToken(indexed address,indexed address,uint256,indexed uint256)
+        - event: ClaimedUnderlyingDealToken(indexed address,indexed uint256,address,uint256)
           handler: handleClaimedUnderlyingDealToken
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleDealERC721Transfer
         - event: VestingTokenMinted(indexed address,indexed uint256,uint256,uint256)
           handler: handleVestingTokenMinted
-        - event: VestingShareTransferred(indexed address,indexed address,uint256,uint256,indexed uint256)
+        - event: VestingShareTransferred(indexed address,indexed address,indexed uint256,uint256)
           handler: handleVestingShareTransferred
 
   - name: AelinUpfrontDeal

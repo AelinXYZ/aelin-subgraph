@@ -1,5 +1,6 @@
 {
   "network": "goerli",
+  "templatesVersions": [{ "name": "AelinDeal_v1", "startBlock": 8751845 }],
   "dataSources": {
     "sponsorPools": [
       {
