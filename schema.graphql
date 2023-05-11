@@ -135,6 +135,9 @@ type PoolCreated @entity {
   totalVouchers: Int!
 
   vouchers: [String!]!
+
+  "deal token is transferable"
+  isDealTokenTransferable: Boolean!
 }
 
 type TotalPoolsCreated @entity {
@@ -780,6 +783,7 @@ type Investor @entity {
 type VestingToken @entity {
   "token Id"
   id: ID!
+  dealAddress: Bytes!
   owner: Bytes!
   tokenId: BigInt!
   amount: BigInt!

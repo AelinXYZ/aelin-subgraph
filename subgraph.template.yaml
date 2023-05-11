@@ -107,6 +107,56 @@ templates:
         - event: Disavow(indexed address)
           handler: handleDisavow
 
+  - name: AelinPool_v1
+    kind: ethereum/contract
+    network: {{network}}
+    source:
+      abi: AelinPool_v1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/aelin-pool.ts
+      entities:
+        - DealCreated
+        - PurchasePoolToken
+        - WithdrawFromPool
+        - AcceptDeal
+      abis:
+        - name: AelinPool_v1
+          file: ./abis/AelinPool_v1.json
+        - name: AelinDeal_v1
+          file: ./abis/AelinDeal_v1.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: SetSponsor(indexed address)
+          handler: handleSetSponsor
+        - event: PurchasePoolToken(indexed address,uint256)
+          handler: handlePurchasePoolToken
+        - event: CreateDeal(string,string,indexed address,indexed address)
+          handler: handleCreateDeal
+        - event: DealDetail(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,indexed address,uint256)
+          handler: handleDealDetail
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlePoolTransfer
+        - event: WithdrawFromPool(indexed address,uint256)
+          handler: handleWithdrawFromPool
+        - event: AcceptDeal(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleAcceptDeal
+        - event: AelinToken(string,string,uint8)
+          handler: handleAelinPoolToken
+        - event: PoolWith721(indexed address,uint256)
+          handler: handleNewPoolWith721
+        - event: PoolWith1155(indexed address,uint256,uint256[],uint256[])
+          handler: handleNewPoolWith1155
+        - event: BlacklistNFT(indexed address,uint256)
+          handler: handleBlacklistNFT
+        - event: Vouch(indexed address)
+          handler: handleVouch
+        - event: Disavow(indexed address)
+          handler: handleDisavow
+
   - name: AelinDeal
     kind: ethereum/contract
     network: {{network}}
@@ -153,7 +203,7 @@ templates:
           file: ./abis/AelinDeal_v1.json
       eventHandlers:
         - event: HolderAccepted(indexed address)
-          handler: handleSetHolder
+          handler: handleHolderAccepted
         - event: DealFullyFunded(indexed address,uint256,uint256,uint256,uint256)
           handler: handleDealFullyFunded
         - event: DepositDealToken(indexed address,indexed address,uint256)
@@ -161,7 +211,7 @@ templates:
         - event: WithdrawUnderlyingDealToken(indexed address,indexed address,uint256)
           handler: handleWithdrawUnderlyingDealToken
         - event: ClaimedUnderlyingDealToken(indexed address,indexed uint256,address,uint256)
-          handler: handleClaimedUnderlyingDealToken
+          handler: handleClaimedUnderlyingDealTokenERC721
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleDealERC721Transfer
         - event: VestingTokenMinted(indexed address,indexed uint256,uint256,uint256)
@@ -214,4 +264,57 @@ templates:
         - event: Vouch(indexed address)
           handler: handleVouch
         - event: Disavow(indexed address)
-          handler: handleDisavow            
+          handler: handleDisavow     
+
+  - name: AelinUpfrontDeal_v1
+    kind: ethereum/contract
+    network: {{network}}
+    source:
+      abi: AelinUpfrontDeal_v1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/aelin-upfront-deal.ts
+      entities:
+        - AelinUpfrontDeal
+      abis:
+        - name: AelinUpfrontDeal_v1
+          file: ./abis/AelinUpfrontDeal_v1.json
+      eventHandlers:
+        - event: DepositDealToken(indexed address,indexed address,uint256)
+          handler: handleDepositDealToken
+        - event: DealFullyFunded(address,uint256,uint256,uint256,uint256)
+          handler: handleDealFullyFunded
+        - event: WithdrewExcess(address,uint256)
+          handler: handleWithdrewExcess
+        - event: AcceptDeal(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleAcceptDeal
+        - event: ClaimDealTokens(indexed address,uint256,uint256)
+          handler: handleClaimDealTokens
+        - event: SponsorClaim(indexed address,uint256)
+          handler: handleSponsorClaim
+        - event: HolderClaim(indexed address,address,uint256,address,uint256,uint256)
+          handler: handleHolderClaim
+        - event: FeeEscrowClaim(indexed address,indexed address,uint256)
+          handler: handleFeeEscrowClaim
+        - event: ClaimedUnderlyingDealToken(indexed address,indexed uint256,address,uint256)
+          handler: handleClaimedUnderlyingDealTokenERC721
+        - event: PoolWith721(indexed address,uint256)
+          handler: handleUpfrontDealWith721
+        - event: PoolWith1155(indexed address,uint256,uint256[],uint256[])
+          handler: handleUpfrontDealWith1155
+        - event: BlacklistNFT(indexed address,uint256)
+          handler: handleBlacklistNFT
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleUpfrontDealERC721Transfer
+        - event: HolderAccepted(indexed address)
+          handler: handleHolderAccepted
+        - event: Vouch(indexed address)
+          handler: handleVouch
+        - event: Disavow(indexed address)
+          handler: handleDisavow       
+        - event: VestingTokenMinted(indexed address,indexed uint256,uint256,uint256)
+          handler: handleVestingTokenMinted
+        - event: VestingShareTransferred(indexed address,indexed address,indexed uint256,uint256)
+          handler: handleVestingShareTransferred 
