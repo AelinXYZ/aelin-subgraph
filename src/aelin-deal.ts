@@ -26,6 +26,7 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
+
 import { VestingToken } from './types/schema'
 
 export function handleSetHolder(event: SetHolderEvent): void {

@@ -110,6 +110,8 @@ type PoolCreated @entity {
 
   totalAmountEarnedByProtocol: BigInt!
 
+  totalAmountEarnedByProtocolDecimal: BigDecimal!
+
   dealsCreated: Int!
 
   vestingStarts: BigInt

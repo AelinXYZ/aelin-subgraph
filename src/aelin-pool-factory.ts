@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 import { PoolCreated, TotalPoolsCreated } from './types/schema'
 import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory_v4/AelinPoolFactory'
 import { AelinPool, AelinPool_v1 } from './types/templates'
@@ -47,6 +47,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   poolCreatedEntity.totalAmountFunded = BigInt.fromI32(0)
   poolCreatedEntity.totalAmountEarnedBySponsor = BigInt.fromI32(0)
   poolCreatedEntity.totalAmountEarnedByProtocol = BigInt.fromI32(0)
+  poolCreatedEntity.totalAmountEarnedByProtocolDecimal = BigDecimal.zero()
   poolCreatedEntity.dealsCreated = 0
   poolCreatedEntity.filter = `${event.params.name.toLowerCase()}-${event.params.sponsor.toHex()}-${getTokenSymbol(
     event.params.purchaseToken,

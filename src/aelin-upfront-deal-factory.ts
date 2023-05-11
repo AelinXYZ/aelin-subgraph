@@ -1,4 +1,4 @@
-import { PoolCreated, TotalPoolsCreated, UpfrontDeal, VestingToken } from './types/schema'
+import { PoolCreated, TotalPoolsCreated, UpfrontDeal } from './types/schema'
 import {
   CreateUpFrontDeal as CreateUpFrontDealEvent,
   CreateUpFrontDealConfig as CreateUpFrontDealConfigEvent,
@@ -15,7 +15,8 @@ import {
 } from './services/entities'
 import { getTokenDecimals, getTokenSymbol } from './services/token'
 import { createNotificationsForEvent } from './services/notifications'
-import { BigInt } from '@graphprotocol/graph-ts'
+
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { TemplatesVersions } from '../templatesVersions'
 
 export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
@@ -51,6 +52,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.totalAmountFunded = ZERO
   poolCreatedEntity.totalAmountEarnedBySponsor = ZERO
   poolCreatedEntity.totalAmountEarnedByProtocol = ZERO
+  poolCreatedEntity.totalAmountEarnedByProtocolDecimal = BigDecimal.zero()
   poolCreatedEntity.totalSupply = ZERO
   poolCreatedEntity.totalUsersInvested = 0
   poolCreatedEntity.totalAddressesInvested = []

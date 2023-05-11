@@ -92,12 +92,6 @@
         "type": "address"
       },
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
         "indexed": false,
         "internalType": "address",
         "name": "underlyingToken",
@@ -343,19 +337,6 @@
         "internalType": "address",
         "name": "holder",
         "type": "address"
-      }
-    ],
-    "name": "HolderAccepted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "holder",
-        "type": "address"
       },
       {
         "indexed": false,
@@ -389,19 +370,6 @@
       }
     ],
     "name": "HolderClaim",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "holder",
-        "type": "address"
-      }
-    ],
-    "name": "HolderSet",
     "type": "event"
   },
   {
@@ -464,6 +432,19 @@
       }
     ],
     "name": "PoolWith721",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "holder",
+        "type": "address"
+      }
+    ],
+    "name": "SetHolder",
     "type": "event"
   },
   {

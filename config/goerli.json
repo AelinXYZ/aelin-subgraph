@@ -28,11 +28,6 @@
       },
       {
         "name": "AelinPoolFactory_v5",
-        "address": "0x4829926Fa74B84B8418c459FcecaD1790041f8A0",
-        "startBlock": 8751845
-      },
-      {
-        "name": "AelinPoolFactory_v6",
         "address": "0x19360EF7870Ed8F75171A8C6FBD6943DFfd6d687",
         "startBlock": 8977474
       }
@@ -45,8 +40,8 @@
       },
       {
         "name": "AelinUpfrontDealFactory_v2",
-        "address": "0x92Ac9B2c2b394E5f90105769CA7228E41D7e70fD",
-        "startBlock": 8751845
+        "address": "0x76b9e9A6e62C6975846d39d58aCbadc4459aaDc6",
+        "startBlock": 8779202
       },
       {
         "name": "AelinUpfrontDealFactory_v3",
