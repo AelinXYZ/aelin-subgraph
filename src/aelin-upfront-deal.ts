@@ -1,3 +1,5 @@
+import { BigInt } from '@graphprotocol/graph-ts'
+
 import { AELIN_FEE, ONE_HUNDRED, ZERO } from './helpers'
 import {
   createEntity,

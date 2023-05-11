@@ -1,5 +1,19 @@
 {
   "network": "sepolia",
+  "templatesVersions": [
+    {
+      "name": "AelinPool_v1",
+      "startBlock": 3446663
+    },
+    {
+      "name": "AelinDeal_v1",
+      "startBlock": 3446664
+    },
+    { 
+      "name": "AelinUpfrontDeal_v1",
+      "startBlock": 3446677 
+    }
+  ],
   "dataSources": {
     "sponsorPools": [
       {
