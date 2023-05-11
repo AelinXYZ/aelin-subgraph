@@ -1,6 +1,0 @@
-Deal Transfer Integration
-  - UpfrontDeals
-
-Once contracts are deployed
-  - Remove the config/gcomplete.json and update config/goerli.json
-  - Add block numbers for all networks (including new field "templatesVersions")
