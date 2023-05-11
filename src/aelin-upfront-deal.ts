@@ -1,4 +1,3 @@
-import { BigInt } from '@graphprotocol/graph-ts'
 import { AELIN_FEE, ONE_HUNDRED, ZERO } from './helpers'
 import {
   createEntity,
@@ -13,6 +12,7 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent } from './services/notifications'
+import { VestingToken } from './types/schema'
 import {
   DealFullyFunded as DealFullyFundedEvent,
   AcceptDeal as AcceptDealEvent,
@@ -27,7 +27,47 @@ import {
   Vouch as VouchEvent,
   Disavow as DisavowEvent,
   FeeEscrowClaim as FeeEscrowClaimEvent,
+  SetHolder as SetHolderEvent,
 } from './types/templates/AelinUpfrontDeal/AelinUpfrontDeal'
+
+import {
+  Transfer as TransferDealERC721Event,
+  VestingShareTransferred as VestingShareTransferredEvent,
+  VestingTokenMinted as VestingTokenMintedEvent,
+  HolderAccepted as HolderAcceptedEvent,
+  PoolWith721 as UpfrontDealWith721Event,
+  PoolWith1155 as UpfrontDealWith1155Event,
+  ClaimedUnderlyingDealToken as ClaimedUnderlyingDealTokenERC721Event,
+} from './types/templates/AelinUpfrontDeal_v1/AelinUpfrontDeal_v1'
+
+export function handleSetHolder(event: SetHolderEvent): void {
+  if (event instanceof SetHolderEvent) {
+    createEntity(Entity.SetHolder, event)
+    createNotificationsForEvent(event)
+  }
+}
+
+export function handleHolderAccepted(event: HolderAcceptedEvent): void {
+  if (event instanceof HolderAcceptedEvent) {
+    createEntity(Entity.SetHolder, event)
+    createNotificationsForEvent(event)
+  }
+}
+
+export function handleUpfrontDealERC721Transfer(event: TransferDealERC721Event): void {
+  createEntity(Entity.TransferDeal, event)
+
+  if (event instanceof TransferDealERC721Event) {
+    let existingVestingTokenEntity = VestingToken.load(
+      event.address.toHex() + '-' + event.params.tokenId.toHex(),
+    )
+
+    if (existingVestingTokenEntity !== null) {
+      existingVestingTokenEntity.owner = event.params.to
+      existingVestingTokenEntity.save()
+    }
+  }
+}
 
 export function handleDealFullyFunded(event: DealFullyFundedEvent): void {
   /**
@@ -250,6 +290,14 @@ export function handlePoolWith1155(event: PoolWith1155Event): void {
   createEntity(Entity.NftCollectionRule, event)
 }
 
+export function handleUpfrontDealWith721(event: UpfrontDealWith721Event): void {
+  createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handleUpfrontDealWith1155(event: UpfrontDealWith1155Event): void {
+  createEntity(Entity.NftCollectionRule, event)
+}
+
 export function handleBlacklistNFT(event: BlacklistNFTEvent): void {
   /**
    * Update NftCollectionRule entity
@@ -326,4 +374,50 @@ export function handleFeeEscrowClaim(event: FeeEscrowClaimEvent): void {
 
   poolCreatedEntity.totalAmountEarnedByProtocol = event.params.amount
   poolCreatedEntity.save()
+}
+
+export function handleClaimedUnderlyingDealTokenERC721(
+  event: ClaimedUnderlyingDealTokenERC721Event,
+): void {
+  if (event instanceof ClaimedUnderlyingDealTokenERC721Event) {
+    createEntity(Entity.ClaimedUnderlyingDealToken, event)
+
+    /**
+     * Update VestingDeal entity
+     */
+
+    let vestingDealEntity = getVestingDeal(event.params.user.toHex() + '-' + event.address.toHex())
+    if (vestingDealEntity !== null) {
+      vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(event.params.amountClaimed)
+      vestingDealEntity.save()
+    }
+
+    createEntity(Entity.Vest, event)
+    createNotificationsForEvent(event)
+  }
+}
+
+export function handleVestingTokenMinted(event: VestingTokenMintedEvent): void {
+  let upfrontDeal = getUpfrontDeal(event.address.toHex())
+
+  if (upfrontDeal !== null) {
+    createEntity(Entity.VestingToken, event)
+  }
+}
+
+export function handleVestingShareTransferred(event: VestingShareTransferredEvent): void {
+  let upfrontDeal = getUpfrontDeal(event.address.toHex())
+
+  if (upfrontDeal !== null) {
+    let existingVestingTokenEntity = VestingToken.load(
+      event.address.toHex() + '-' + event.params.tokenId.toHex(),
+    )
+
+    if (existingVestingTokenEntity !== null) {
+      existingVestingTokenEntity.amount = existingVestingTokenEntity.amount.minus(
+        event.params.amount,
+      )
+      existingVestingTokenEntity.save()
+    }
+  }
 }

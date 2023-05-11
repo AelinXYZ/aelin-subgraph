@@ -28,8 +28,15 @@ import {
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
 import { VestingToken } from './types/schema'
 
-export function handleSetHolder<T>(event: T): void {
-  if (event instanceof SetHolderEvent || event instanceof HolderAcceptedEvent) {
+export function handleSetHolder(event: SetHolderEvent): void {
+  if (event instanceof SetHolderEvent) {
+    createEntity(Entity.SetHolder, event)
+    createNotificationsForEvent(event)
+  }
+}
+
+export function handleHolderAccepted(event: HolderAcceptedEvent): void {
+  if (event instanceof HolderAcceptedEvent) {
     createEntity(Entity.SetHolder, event)
     createNotificationsForEvent(event)
   }
@@ -54,11 +61,33 @@ export function handleDealERC721Transfer(event: TransferDealERC721Event): void {
   }
 }
 
-export function handleClaimedUnderlyingDealToken<T>(event: T): void {
-  if (
-    event instanceof ClaimedUnderlyingDealTokenEvent ||
-    event instanceof ClaimedUnderlyingDealTokenERC721Event
-  ) {
+export function handleClaimedUnderlyingDealToken(event: ClaimedUnderlyingDealTokenEvent): void {
+  if (event instanceof ClaimedUnderlyingDealTokenEvent) {
+    createEntity(Entity.ClaimedUnderlyingDealToken, event)
+
+    /**
+     * Update VestingDeal entity
+     */
+
+    let vestingDealEntity = getVestingDeal(
+      event.params.recipient.toHex() + '-' + event.address.toHex(),
+    )
+    if (vestingDealEntity !== null) {
+      vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(
+        event.params.underlyingDealTokensClaimed,
+      )
+      vestingDealEntity.save()
+    }
+
+    createEntity(Entity.Vest, event)
+    removeNotificationsForEvent(event)
+  }
+}
+
+export function handleClaimedUnderlyingDealTokenERC721(
+  event: ClaimedUnderlyingDealTokenERC721Event,
+): void {
+  if (event instanceof ClaimedUnderlyingDealTokenERC721Event) {
     createEntity(Entity.ClaimedUnderlyingDealToken, event)
 
     /**

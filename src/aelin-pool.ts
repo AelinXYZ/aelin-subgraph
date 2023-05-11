@@ -14,6 +14,12 @@ import {
   Vouch as VouchEvent,
   Disavow as DisavowEvent,
 } from './types/templates/AelinPool/AelinPool'
+
+import {
+  PoolWith721 as NewPoolWith721Event,
+  PoolWith1155 as NewPoolWith1155Event,
+} from './types/templates/AelinPool_v1/AelinPool_v1'
+
 import { Address, BigInt } from '@graphprotocol/graph-ts'
 import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
 import { AelinDeal, AelinDeal_v1 } from './types/templates'
@@ -123,11 +129,10 @@ export function handleDealDetail(event: DealDetailEvent): void {
   }
 
   // use templates to create a new deal to track events
-
-  if (event.block.number < BigInt.fromString(TemplatesVersions.AelinDeal_v1)) {
-    AelinDeal.create(event.params.dealContract)
-  } else {
+  if (event.block.number.gt(BigInt.fromString(TemplatesVersions.AelinDeal_v1))) {
     AelinDeal_v1.create(event.params.dealContract)
+  } else {
+    AelinDeal.create(event.params.dealContract)
   }
 
   createNotificationsForEvent(event)
@@ -355,6 +360,14 @@ export function handlePoolWith721(event: PoolWith721Event): void {
 }
 
 export function handlePoolWith1155(event: PoolWith1155Event): void {
+  createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handleNewPoolWith721(event: NewPoolWith721Event): void {
+  createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handleNewPoolWith1155(event: NewPoolWith1155Event): void {
   createEntity(Entity.NftCollectionRule, event)
 }
 
