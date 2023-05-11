@@ -257,12 +257,6 @@
       },
       {
         "indexed": false,
-        "internalType": "bool",
-        "name": "purchaseAmountPerToken",
-        "type": "bool"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256[]",
         "name": "tokenIds",
         "type": "uint256[]"
@@ -291,12 +285,6 @@
         "internalType": "uint256",
         "name": "purchaseAmount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "purchaseAmountPerToken",
-        "type": "bool"
       }
     ],
     "name": "PoolWith721",
@@ -848,11 +836,6 @@
                 "type": "address"
               },
               {
-                "internalType": "bool",
-                "name": "purchaseAmountPerToken",
-                "type": "bool"
-              },
-              {
                 "internalType": "uint256[]",
                 "name": "tokenIds",
                 "type": "uint256[]"
@@ -968,11 +951,6 @@
         "internalType": "address",
         "name": "collectionAddress",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "purchaseAmountPerToken",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -992,30 +970,6 @@
       }
     ],
     "name": "nftId",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "nftWalletUsedForPurchase",
     "outputs": [
       {
         "internalType": "bool",
