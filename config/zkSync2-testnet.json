@@ -1,0 +1,33 @@
+{
+  "network": "zkSync2-testnet",
+  "templatesVersions": [
+    {
+      "name": "AelinPool_v1",
+      "startBlock": 0
+    },
+    {
+      "name": "AelinDeal_v1",
+      "startBlock": 0
+    },
+    {
+      "name": "AelinUpfrontDeal_v1",
+      "startBlock": 0
+    }
+  ],
+  "dataSources": {
+    "sponsorPools": [
+      {
+        "name": "AelinPoolFactory_v5",
+        "address": "0xaC7d17b88C8bD48DAD63ABcB5A318b4dE7a83D57",
+        "startBlock": 0
+      }
+    ],
+    "upfrontDeals": [
+      {
+        "name": "AelinUpfrontDealFactory_v3",
+        "address": "0x5632f65AEe95757926D7c9b6d514944BE005a485",
+        "startBlock": 0
+      }
+    ]
+  }
+}
