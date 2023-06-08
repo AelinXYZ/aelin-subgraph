@@ -15,7 +15,7 @@
     "prettier:fix": "prettier --write \"./**/*.{js,jsx,ts,tsx}\"",
     "prepare:goerli-ci": "mustache config/goerli-ci.json subgraph.template.yaml > subgraph.yaml && npm run codegen",
     "create-local-ci": "graph create  aelinprotocol/e2e-subgraph --node http://graph-node:8020",
-    "deploy-local-ci": "echo | graph deploy aelinprotocol/e2e-subgraph --debug --ipfs http://ipfs:5001 --node http://graph-node:8020",
+    "deploy-local-ci": "echo | graph deploy aelinprotocol/e2e-subgraph --version-label 1.0.0 --ipfs http://ipfs:5001 --node http://graph-node:8020",
     "deploy-ci": "npm run prepare:goerli-ci && npm run create-local-ci && npm run deploy-local-ci"
   },
   "devDependencies": {
