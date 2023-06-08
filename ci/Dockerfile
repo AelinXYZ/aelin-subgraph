@@ -1,5 +1,5 @@
 # Builder
-FROM node:14-alpine as builder
+FROM node:16-alpine as builder
 
 # Deps
 RUN apk update && apk add git bash python3 g++ make
