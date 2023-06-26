@@ -18,12 +18,14 @@ import {
 import {
   PoolWith721 as NewPoolWith721Event,
   PoolWith1155 as NewPoolWith1155Event,
+  SponsorClaim as SponsorClaimEvent,
 } from './types/templates/AelinPool_v1/AelinPool_v1'
 
 import { Address, BigInt } from '@graphprotocol/graph-ts'
-import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
+import { ZERO_ADDRESS, EIGHTEEN_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
 import { AelinDeal, AelinDeal_v1 } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
+import { AelinPool_v1 as AelinPoolContract } from './types/templates/AelinPool_v1/AelinPool_v1'
 import {
   createEntity,
   createOrUpdateSponsorVestingDeal,
@@ -257,14 +259,17 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     dealFundedEntity.save()
   }
 
-  let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
+  let decimals = EIGHTEEN_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
   let dealTokenAmount = event.params.poolTokenAmount.times(
     // @ts-ignore
-    BigInt.fromI32(10).pow(<u8>exp.toI32()),
+    BigInt.fromI32(10).pow(<u8>decimals.toI32()),
   )
   let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
   let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
   let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
+
+  let aelinPoolContract = AelinPoolContract.bind(event.address)
+  let maxProRataAmount = aelinPoolContract.maxProRataAmount(event.transaction.from)
 
   /**
    * UserAllocationStat entity
@@ -274,6 +279,10 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   )
 
   if (userAllocationStatEntity !== null) {
+    if (maxProRataAmount.equals(ZERO)) {
+      userAllocationStatEntity.isRoundOneMaxAccepted = true
+    }
+
     userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.minus(
       event.params.poolTokenAmount,
     )
@@ -450,4 +459,15 @@ export function handleDisavow(event: DisavowEvent): void {
     poolCreatedEntity.save()
     userEntity.save()
   }
+}
+
+export function handleSponsorClaim(event: SponsorClaimEvent): void {
+  const poolCreatedEntity = getPoolCreated(event.address.toHex())
+  if (poolCreatedEntity === null) {
+    return
+  }
+
+  poolCreatedEntity.sponsorClaimed = true
+
+  poolCreatedEntity.save()
 }
