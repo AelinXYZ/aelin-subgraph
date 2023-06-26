@@ -1,6 +1,6 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, log, store } from '@graphprotocol/graph-ts'
 
-import { AELIN_FEE, ONE_HUNDRED, ZERO } from './helpers'
+import { AELIN_FEE, ONE_HUNDRED, ZERO, ZERO_ADDRESS } from './helpers'
 import {
   createEntity,
   createOrUpdateSponsorVestingUpfrontDeal,
@@ -14,7 +14,7 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent } from './services/notifications'
-import { VestingToken } from './types/schema'
+import { VestingToken, VestingDeal } from './types/schema'
 import {
   DealFullyFunded as DealFullyFundedEvent,
   AcceptDeal as AcceptDealEvent,
@@ -57,16 +57,100 @@ export function handleHolderAccepted(event: HolderAcceptedEvent): void {
 }
 
 export function handleUpfrontDealERC721Transfer(event: TransferDealERC721Event): void {
+  // Create a new entity to represent this transfer event
   createEntity(Entity.TransferDeal, event)
 
+  // Check if the event is an instance of TransferDealERC721Event
   if (event instanceof TransferDealERC721Event) {
-    let existingVestingTokenEntity = VestingToken.load(
+    // Load the vesting token associated with the address and token ID
+    let vestingTokenEntity = VestingToken.load(
       event.address.toHex() + '-' + event.params.tokenId.toHex(),
     )
 
-    if (existingVestingTokenEntity !== null) {
-      existingVestingTokenEntity.owner = event.params.to
-      existingVestingTokenEntity.save()
+    // Continue only if a vesting token was found
+    if (vestingTokenEntity !== null) {
+      // Update the owner of the vesting token
+      vestingTokenEntity.owner = event.params.to
+
+      // Load vesting deal entities associated with the sender and recipient
+      let senderVestingDealEntity = getVestingDeal(
+        event.params.from.toHex() + '-' + event.address.toHex(),
+      )
+      let recipientVestingDealEntity = getVestingDeal(
+        event.params.to.toHex() + '-' + event.address.toHex(),
+      )
+
+      // Continue only if a vesting deal entity was found for the sender and neither the sender nor recipient is the zero address
+      if (
+        senderVestingDealEntity !== null &&
+        event.params.from.toHex() != ZERO_ADDRESS.toHex() &&
+        event.params.to.toHex() != ZERO_ADDRESS.toHex()
+      ) {
+        // Retrieve pool details associated with the vesting deal
+        let poolDetails = getPoolCreated(senderVestingDealEntity.poolAddress.toHex())
+
+        // Return if no pool details were found
+        if (poolDetails === null) {
+          return
+        }
+
+        // Add the receiver to invested pools, if not already present
+        let userToEntity = getOrCreateUser(event.params.to.toHex())
+        let poolsInvested = userToEntity.poolsInvested
+        if (!poolsInvested.includes(senderVestingDealEntity.poolAddress.toHex())) {
+          poolsInvested.push(senderVestingDealEntity.poolAddress.toHex())
+        }
+        userToEntity.poolsInvested = poolsInvested
+        userToEntity.save()
+
+        // Remove the pool from the sender's list of invested pools
+        let userFromEntity = getOrCreateUser(event.params.from.toHex())
+        poolsInvested = userFromEntity.poolsInvested
+        let poolInvestedIndex = poolsInvested.indexOf(senderVestingDealEntity.poolAddress.toHex())
+        if (poolInvestedIndex >= 0) {
+          poolsInvested.splice(poolInvestedIndex, 1)
+          userFromEntity.poolsInvested = poolsInvested
+        }
+        userFromEntity.save()
+
+        // If the recipient does not already have a vesting deal, create a new one
+        if (recipientVestingDealEntity === null) {
+          let newVestingDealEntity = new VestingDeal(
+            event.params.to.toHex() + '-' + event.address.toHex(),
+          )
+
+          // Copy properties from the sender's vesting deal
+          newVestingDealEntity.merge([senderVestingDealEntity])
+
+          // Add total amount to vest
+          newVestingDealEntity.investorDealTotal = vestingTokenEntity.amount
+
+          // Override id
+          newVestingDealEntity.id = event.params.to.toHex() + '-' + event.address.toHex()
+
+          // Override user
+          newVestingDealEntity.user = event.params.to.toHex()
+
+          store.remove('VestingDeal', event.params.from.toHex() + '-' + event.address.toHex())
+          newVestingDealEntity.save()
+        } else {
+          // If the recipient already has a vesting deal, just update the totals
+          recipientVestingDealEntity.investorDealTotal =
+            recipientVestingDealEntity.investorDealTotal!.plus(vestingTokenEntity.amount)
+          recipientVestingDealEntity.totalVested = recipientVestingDealEntity.totalVested.plus(
+            senderVestingDealEntity.totalVested,
+          )
+          recipientVestingDealEntity.remainingAmountToVest =
+            recipientVestingDealEntity.remainingAmountToVest.plus(vestingTokenEntity.amount)
+
+          store.remove('VestingDeal', event.params.from.toHex() + '-' + event.address.toHex())
+
+          recipientVestingDealEntity.save()
+        }
+
+        // Save the updated vesting token
+        vestingTokenEntity.save()
+      }
     }
   }
 }
@@ -408,6 +492,9 @@ export function handleClaimedUnderlyingDealTokenERC721(
 
     let vestingDealEntity = getVestingDeal(event.params.user.toHex() + '-' + event.address.toHex())
     if (vestingDealEntity !== null) {
+      vestingDealEntity.remainingAmountToVest = vestingDealEntity.totalVested.minus(
+        event.params.amountClaimed,
+      )
       vestingDealEntity.totalVested = vestingDealEntity.totalVested.plus(event.params.amountClaimed)
       vestingDealEntity.save()
     }
@@ -429,6 +516,7 @@ export function handleVestingShareTransferred(event: VestingShareTransferredEven
   let upfrontDeal = getUpfrontDeal(event.address.toHex())
 
   if (upfrontDeal !== null) {
+    // Reduce vesting token amount by transferred amount
     let existingVestingTokenEntity = VestingToken.load(
       event.address.toHex() + '-' + event.params.tokenId.toHex(),
     )
@@ -438,6 +526,63 @@ export function handleVestingShareTransferred(event: VestingShareTransferredEven
         event.params.amount,
       )
       existingVestingTokenEntity.save()
+    }
+
+    let senderVestingDealEntity = getVestingDeal(
+      event.params.from.toHex() + '-' + event.address.toHex(),
+    )
+
+    if (senderVestingDealEntity !== null) {
+      // Update user's invested pools
+      let userEntity = getOrCreateUser(event.params.to.toHex())
+      let poolsInvested = userEntity.poolsInvested
+      if (!poolsInvested.includes(senderVestingDealEntity.poolAddress.toHex())) {
+        poolsInvested.push(senderVestingDealEntity.poolAddress.toHex())
+      }
+      userEntity.poolsInvested = poolsInvested
+      userEntity.poolsInvestedAmt = poolsInvested.length
+
+      userEntity.save()
+
+      // Get vesting deal for recipient
+      let recipientVestingDealEntity = getVestingDeal(
+        event.params.to.toHex() + '-' + event.address.toHex(),
+      )
+
+      // If the entity does not exists, create a new entity and save it
+      if (recipientVestingDealEntity === null) {
+        recipientVestingDealEntity = new VestingDeal(
+          event.params.to.toHex() + '-' + event.address.toHex(),
+        )
+
+        recipientVestingDealEntity.merge([senderVestingDealEntity])
+        recipientVestingDealEntity.id = event.params.to.toHex() + '-' + event.address.toHex()
+        recipientVestingDealEntity.user = event.params.to.toHex()
+        recipientVestingDealEntity.investorDealTotal = event.params.amount
+        recipientVestingDealEntity.remainingAmountToVest = event.params.amount
+        recipientVestingDealEntity.totalVested = BigInt.fromI32(0)
+        recipientVestingDealEntity.save()
+      } else {
+        // If entity exists, update entity amounts
+        recipientVestingDealEntity.investorDealTotal =
+          recipientVestingDealEntity.investorDealTotal!.plus(event.params.amount)
+
+        recipientVestingDealEntity.remainingAmountToVest =
+          recipientVestingDealEntity.remainingAmountToVest.plus(event.params.amount)
+        recipientVestingDealEntity.save()
+      }
+
+      // Reduce sender's deal totals by transferred amount if result is non-negative
+      if (senderVestingDealEntity.investorDealTotal!.minus(event.params.amount).gt(ZERO)) {
+        senderVestingDealEntity.investorDealTotal =
+          senderVestingDealEntity.investorDealTotal!.minus(event.params.amount)
+      }
+      if (senderVestingDealEntity.remainingAmountToVest.minus(event.params.amount).gt(ZERO)) {
+        senderVestingDealEntity.remainingAmountToVest =
+          senderVestingDealEntity.remainingAmountToVest.minus(event.params.amount)
+      }
+
+      senderVestingDealEntity.save()
     }
   }
 }
