@@ -61,6 +61,7 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.totalVouchers = 0
   poolCreatedEntity.vouchers = []
   poolCreatedEntity.nftCollectionRules = []
+  poolCreatedEntity.sponsorClaimed = false
 
   poolCreatedEntity.isDealTokenTransferable = event.block.number.gt(
     BigInt.fromString(TemplatesVersions.AelinUpfrontDeal_v1),
