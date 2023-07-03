@@ -299,7 +299,6 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   if (vestingDealEntity === null) {
     createEntity(Entity.VestingDeal, event)
   } else {
-    createOrUpdateSponsorVestingDeal(event)
     let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
     let dealTokens = investorDealTotal
       .div(BigInt.fromI32(10).pow(18))
@@ -466,6 +465,8 @@ export function handleSponsorClaim(event: SponsorClaimEvent): void {
   if (poolCreatedEntity === null) {
     return
   }
+
+  createOrUpdateSponsorVestingDeal(event)
 
   poolCreatedEntity.sponsorClaimed = true
 

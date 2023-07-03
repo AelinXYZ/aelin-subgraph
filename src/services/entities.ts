@@ -1,4 +1,4 @@
-import { BigInt, log } from '@graphprotocol/graph-ts'
+import { Address, BigInt, log } from '@graphprotocol/graph-ts'
 import {
   Transfer as TransferEvent,
   SetSponsor as SetSponsorEvent,
@@ -15,6 +15,7 @@ import {
 import {
   PoolWith721 as NewPoolWith721Event,
   PoolWith1155 as NewPoolWith1155Event,
+  SponsorClaim as PoolSponsorClaimEvent,
 } from '../types/templates/AelinPool_v1/AelinPool_v1'
 
 import {
@@ -830,27 +831,33 @@ export function createOrUpdateSponsorVestingUpfrontDeal<T>(event: T): void {
   }
 }
 
-export function createOrUpdateSponsorVestingDeal(event: AcceptDealEvent): void {
+export function createOrUpdateSponsorVestingDeal(event: PoolSponsorClaimEvent): void {
   let poolCreatedEntity = getPoolCreated(event.address.toHex())
-  let dealEntity = getDeal(event.params.dealAddress.toHex())
 
-  if (dealEntity === null || poolCreatedEntity === null) {
+  if (poolCreatedEntity === null) {
+    return
+  }
+
+  let dealEntity = getDeal(poolCreatedEntity.dealAddress!.toHex())
+
+  if (dealEntity === null) {
     return
   }
 
   let vestingDealEntity = getVestingDeal(
-    poolCreatedEntity.sponsor.toHex() + '-' + event.params.dealAddress.toHex(),
+    poolCreatedEntity.sponsor.toHex() + '-' + poolCreatedEntity.dealAddress!.toHex(),
   )
 
-  let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
+  let aelinDealContract = AelinDealContract.bind(Address.fromBytes(poolCreatedEntity.dealAddress!))
   let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
-  let investorDealTotal = event.params.sponsorFee
+
+  let investorDealTotal = event.params.amountMinted
     .times(underlyingPerDealExchangeRate)
     .div(BigInt.fromI32(10).pow(18))
 
   if (vestingDealEntity === null) {
     vestingDealEntity = new VestingDeal(
-      poolCreatedEntity.sponsor.toHex() + '-' + event.params.dealAddress.toHex(),
+      poolCreatedEntity.sponsor.toHex() + '-' + poolCreatedEntity.dealAddress!.toHex(),
     )
 
     vestingDealEntity.poolName = poolCreatedEntity.name
@@ -913,8 +920,6 @@ function createVestingUpfrontDealEntity(event: ClaimDealTokensEvent): void {
 }
 
 function createVestingDealEntity(event: AcceptDealEvent): void {
-  createOrUpdateSponsorVestingDeal(event)
-
   let vestingDealEntity = getVestingDeal(
     event.params.purchaser.toHex() + '-' + event.params.dealAddress.toHex(),
   )
