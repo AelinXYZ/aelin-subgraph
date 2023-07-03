@@ -1,4 +1,4 @@
-import { BigInt, store } from '@graphprotocol/graph-ts'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 import { AELIN_FEE, ONE_HUNDRED, ZERO, ZERO_ADDRESS } from './helpers'
 import {
@@ -106,16 +106,6 @@ export function handleUpfrontDealERC721Transfer(event: TransferDealERC721Event):
         userToEntity.poolsInvested = poolsInvested
         userToEntity.save()
 
-        // Remove the pool from the sender's list of invested pools
-        let userFromEntity = getOrCreateUser(event.params.from.toHex())
-        poolsInvested = userFromEntity.poolsInvested
-        let poolInvestedIndex = poolsInvested.indexOf(senderVestingDealEntity.poolAddress.toHex())
-        if (poolInvestedIndex >= 0) {
-          poolsInvested.splice(poolInvestedIndex, 1)
-          userFromEntity.poolsInvested = poolsInvested
-        }
-        userFromEntity.save()
-
         // If the recipient does not already have a vesting deal, create a new one
         if (recipientVestingDealEntity === null) {
           let newVestingDealEntity = new VestingDeal(
@@ -134,7 +124,6 @@ export function handleUpfrontDealERC721Transfer(event: TransferDealERC721Event):
           // Override user
           newVestingDealEntity.user = event.params.to.toHex()
 
-          store.remove('VestingDeal', event.params.from.toHex() + '-' + event.address.toHex())
           newVestingDealEntity.save()
         } else {
           // If the recipient already has a vesting deal, just update the totals
@@ -146,10 +135,16 @@ export function handleUpfrontDealERC721Transfer(event: TransferDealERC721Event):
           recipientVestingDealEntity.remainingAmountToVest =
             recipientVestingDealEntity.remainingAmountToVest.plus(vestingTokenEntity.amount)
 
-          store.remove('VestingDeal', event.params.from.toHex() + '-' + event.address.toHex())
-
           recipientVestingDealEntity.save()
         }
+        // Reduce sender's deal totals by transferred amount
+        senderVestingDealEntity.investorDealTotal =
+          senderVestingDealEntity.investorDealTotal!.minus(vestingTokenEntity.amount)
+
+        senderVestingDealEntity.remainingAmountToVest =
+          senderVestingDealEntity.remainingAmountToVest.minus(vestingTokenEntity.amount)
+
+        senderVestingDealEntity.save()
       }
     }
   }
@@ -569,15 +564,11 @@ export function handleVestingShareTransferred(event: VestingShareTransferredEven
           recipientVestingDealEntity.save()
         }
 
-        // Reduce sender's deal totals by transferred amount if result is non-negative
-        if (senderVestingDealEntity.investorDealTotal!.minus(event.params.amount).gt(ZERO)) {
-          senderVestingDealEntity.investorDealTotal =
-            senderVestingDealEntity.investorDealTotal!.minus(event.params.amount)
-        }
-        if (senderVestingDealEntity.remainingAmountToVest.minus(event.params.amount).gt(ZERO)) {
-          senderVestingDealEntity.remainingAmountToVest =
-            senderVestingDealEntity.remainingAmountToVest.minus(event.params.amount)
-        }
+        senderVestingDealEntity.investorDealTotal =
+          senderVestingDealEntity.investorDealTotal!.minus(event.params.amount)
+
+        senderVestingDealEntity.remainingAmountToVest =
+          senderVestingDealEntity.remainingAmountToVest.minus(event.params.amount)
 
         senderVestingDealEntity.save()
         existingVestingTokenEntity.save()
