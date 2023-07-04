@@ -56,6 +56,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   poolCreatedEntity.totalVouchers = 0
   poolCreatedEntity.vouchers = []
   poolCreatedEntity.nftCollectionRules = []
+  poolCreatedEntity.sponsorClaimed = false
 
   poolCreatedEntity.isDealTokenTransferable = event.block.number.gt(
     BigInt.fromString(TemplatesVersions.AelinPool_v1),
@@ -72,13 +73,12 @@ export function handleCreatePool(event: CreatePoolEvent): void {
     userEntity.save()
   }
 
+  // use templates to create a new pool to track events
   if (event.block.number.gt(BigInt.fromString(TemplatesVersions.AelinPool_v1))) {
     AelinPool_v1.create(event.params.poolAddress)
   } else {
     AelinPool.create(event.params.poolAddress)
   }
-
-  // use templates to create a new pool to track events
 
   createNotificationsForEvent(event)
 }

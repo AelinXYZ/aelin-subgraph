@@ -140,6 +140,9 @@ type PoolCreated @entity {
 
   "deal token is transferable"
   isDealTokenTransferable: Boolean!
+
+  "sponsor claim flag"
+  sponsorClaimed: Boolean!
 }
 
 type TotalPoolsCreated @entity {
@@ -462,6 +465,8 @@ type UserAllocationStat @entity {
   totalAccepted: BigInt!
 
   poolTokenBalance: BigInt!
+
+  isRoundOneMaxAccepted: Boolean!
 
   pool: PoolCreated!
 }

@@ -75,6 +75,8 @@ templates:
       abis:
         - name: AelinPool
           file: ./abis/AelinPool.json
+        - name: AelinPool_v1
+          file: ./abis/AelinPool_v1.json
         - name: AelinDeal
           file: ./abis/AelinDeal.json
         - name: ERC20
@@ -125,6 +127,8 @@ templates:
       abis:
         - name: AelinPool_v1
           file: ./abis/AelinPool_v1.json
+        - name: AelinDeal
+          file: ./abis/AelinDeal.json
         - name: AelinDeal_v1
           file: ./abis/AelinDeal_v1.json
         - name: ERC20
@@ -156,6 +160,8 @@ templates:
           handler: handleVouch
         - event: Disavow(indexed address)
           handler: handleDisavow
+        - event: SponsorClaim(indexed address,uint256)
+          handler: handleSponsorClaim
 
   - name: AelinDeal
     kind: ethereum/contract
