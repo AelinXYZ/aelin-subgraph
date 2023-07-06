@@ -134,6 +134,9 @@ export function handleDealERC721Transfer(event: TransferDealERC721Event): void {
         // Add total amount to vest
         newVestingDealEntity.investorDealTotal = investorDealTotal
 
+        // Initialize total vested to zero
+        newVestingDealEntity.totalVested = BigInt.fromI32(0)
+
         newVestingDealEntity.save()
       } else {
         // If the receiver has a VestingDeal entity, update the deal totals
@@ -185,6 +188,17 @@ export function handleClaimedUnderlyingDealTokenERC721(
 ): void {
   if (event instanceof ClaimedUnderlyingDealTokenERC721Event) {
     createEntity(Entity.ClaimedUnderlyingDealToken, event)
+
+    let vestingTokenEntity = VestingToken.load(
+      event.address.toHex() + '-' + event.params.tokenId.toHex(),
+    )
+
+    if (vestingTokenEntity !== null) {
+      vestingTokenEntity.amount = vestingTokenEntity.amount.minus(
+        event.params.underlyingDealTokensClaimed,
+      )
+      vestingTokenEntity.save()
+    }
 
     /**
      * Update VestingDeal entity

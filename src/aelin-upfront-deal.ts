@@ -124,14 +124,15 @@ export function handleUpfrontDealERC721Transfer(event: TransferDealERC721Event):
           // Override user
           newVestingDealEntity.user = event.params.to.toHex()
 
+          // Initialize total vested to zero
+          newVestingDealEntity.totalVested = BigInt.fromI32(0)
+
           newVestingDealEntity.save()
         } else {
           // If the recipient already has a vesting deal, just update the totals
           recipientVestingDealEntity.investorDealTotal =
             recipientVestingDealEntity.investorDealTotal!.plus(vestingTokenEntity.amount)
-          recipientVestingDealEntity.totalVested = recipientVestingDealEntity.totalVested.plus(
-            senderVestingDealEntity.totalVested,
-          )
+
           recipientVestingDealEntity.remainingAmountToVest =
             recipientVestingDealEntity.remainingAmountToVest.plus(vestingTokenEntity.amount)
 
@@ -480,6 +481,19 @@ export function handleClaimedUnderlyingDealTokenERC721(
 ): void {
   if (event instanceof ClaimedUnderlyingDealTokenERC721Event) {
     createEntity(Entity.ClaimedUnderlyingDealToken, event)
+
+    /**
+     * Update VestingToken entity
+     */
+
+    let vestingTokenEntity = VestingToken.load(
+      event.address.toHex() + '-' + event.params.tokenId.toHex(),
+    )
+
+    if (vestingTokenEntity !== null) {
+      vestingTokenEntity.amount = vestingTokenEntity.amount.minus(event.params.amountClaimed)
+      vestingTokenEntity.save()
+    }
 
     /**
      * Update VestingDeal entity
