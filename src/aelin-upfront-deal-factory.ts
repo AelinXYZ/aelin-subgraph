@@ -63,9 +63,9 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.nftCollectionRules = []
   poolCreatedEntity.sponsorClaimed = false
 
-  poolCreatedEntity.isDealTokenTransferable = event.block.number.gt(
-    BigInt.fromString(TemplatesVersions.AelinUpfrontDeal_v1),
-  )
+  const startBlockAelinUpfrontDeal_v1 = BigInt.fromString(TemplatesVersions.AelinUpfrontDeal_v1)
+  poolCreatedEntity.isDealTokenTransferable =
+    startBlockAelinUpfrontDeal_v1.ge(ZERO) && event.block.number.gt(startBlockAelinUpfrontDeal_v1)
 
   let userEntity = getOrCreateUser(event.params.sponsor.toHex())
   if (userEntity !== null) {
@@ -107,7 +107,10 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   createNotificationsForEvent(event)
 
   // use templates to create a new deal to track events
-  if (event.block.number.gt(BigInt.fromString(TemplatesVersions.AelinUpfrontDeal_v1))) {
+  if (
+    startBlockAelinUpfrontDeal_v1.ge(ZERO) &&
+    event.block.number.gt(startBlockAelinUpfrontDeal_v1)
+  ) {
     AelinUpfrontDeal_v1.create(event.params.dealAddress)
   } else {
     AelinUpfrontDeal.create(event.params.dealAddress)
