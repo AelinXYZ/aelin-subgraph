@@ -148,7 +148,8 @@ module.exports = {
       files: [
         "**/assembly/**/*.ts",
         "src/**/*.ts",
-        "lib/parse/src/**/*.ts"
+        "lib/parse/src/**/*.ts",
+        "templatesVersions.ts"
       ],
       rules: {
         // Namespaces are quite useful in AssemblyScript

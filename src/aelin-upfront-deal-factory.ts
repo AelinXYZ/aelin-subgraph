@@ -5,7 +5,7 @@ import {
 } from './types/AelinUpfrontDealFactory_v1/AelinUpfrontDealFactory'
 import { ONE, ZERO } from './helpers'
 import { PoolStatus, DealType } from './enum'
-import { AelinUpfrontDeal } from './types/templates'
+import { AelinUpfrontDeal, AelinUpfrontDeal_v1 } from './types/templates'
 import {
   createEntity,
   Entity,
@@ -15,7 +15,9 @@ import {
 } from './services/entities'
 import { getTokenDecimals, getTokenSymbol } from './services/token'
 import { createNotificationsForEvent } from './services/notifications'
+
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { TemplatesVersions } from '../templatesVersions'
 
 export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   let totalPoolsCreatedEntity = TotalPoolsCreated.load('1')
@@ -59,6 +61,11 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
   poolCreatedEntity.totalVouchers = 0
   poolCreatedEntity.vouchers = []
   poolCreatedEntity.nftCollectionRules = []
+  poolCreatedEntity.sponsorClaimed = false
+
+  poolCreatedEntity.isDealTokenTransferable = event.block.number.gt(
+    BigInt.fromString(TemplatesVersions.AelinUpfrontDeal_v1),
+  )
 
   let userEntity = getOrCreateUser(event.params.sponsor.toHex())
   if (userEntity !== null) {
@@ -98,9 +105,15 @@ export function handleCreateUpfrontDeal(event: CreateUpFrontDealEvent): void {
 
   createEntity(Entity.DealSponsored, event)
   createNotificationsForEvent(event)
-  // use templates to create a new pool to track events
-  AelinUpfrontDeal.create(event.params.dealAddress)
+
+  // use templates to create a new deal to track events
+  if (event.block.number.gt(BigInt.fromString(TemplatesVersions.AelinUpfrontDeal_v1))) {
+    AelinUpfrontDeal_v1.create(event.params.dealAddress)
+  } else {
+    AelinUpfrontDeal.create(event.params.dealAddress)
+  }
 }
+
 export function handleCreateUpfrontDealConfig(event: CreateUpFrontDealConfigEvent): void {
   const upFrontDealEntity = getUpfrontDeal(event.params.dealAddress.toHex())
   const poolCreatedEntity = getPoolCreated(event.params.dealAddress.toHex())

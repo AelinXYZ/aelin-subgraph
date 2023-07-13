@@ -92,6 +92,12 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "underlyingToken",
@@ -326,7 +332,20 @@
         "type": "uint256"
       }
     ],
-    "name": "FeeEscrowClaimed",
+    "name": "FeeEscrowClaim",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "holder",
+        "type": "address"
+      }
+    ],
+    "name": "HolderAccepted",
     "type": "event"
   },
   {
@@ -378,6 +397,19 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "holder",
+        "type": "address"
+      }
+    ],
+    "name": "HolderSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "collectionAddress",
         "type": "address"
       },
@@ -386,12 +418,6 @@
         "internalType": "uint256",
         "name": "purchaseAmount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "purchaseAmountPerToken",
-        "type": "bool"
       },
       {
         "indexed": false,
@@ -423,28 +449,9 @@
         "internalType": "uint256",
         "name": "purchaseAmount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "purchaseAmountPerToken",
-        "type": "bool"
       }
     ],
     "name": "PoolWith721",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "holder",
-        "type": "address"
-      }
-    ],
-    "name": "SetHolder",
     "type": "event"
   },
   {
@@ -644,11 +651,6 @@
             "internalType": "address",
             "name": "collectionAddress",
             "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "purchaseAmountPerToken",
-            "type": "bool"
           },
           {
             "internalType": "uint256[]",

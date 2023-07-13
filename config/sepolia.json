@@ -1,5 +1,19 @@
 {
   "network": "sepolia",
+  "templatesVersions": [
+    {
+      "name": "AelinPool_v1",
+      "startBlock": 3446663
+    },
+    {
+      "name": "AelinDeal_v1",
+      "startBlock": 3446664
+    },
+    { 
+      "name": "AelinUpfrontDeal_v1",
+      "startBlock": 3446677 
+    }
+  ],
   "dataSources": {
     "sponsorPools": [
       {
@@ -13,6 +27,11 @@
         "name": "AelinUpfrontDealFactory_v1",
         "address": "0xF38B0D93a3E034E6B41Fd6601D7A40DC5dda7bA1",
         "startBlock": 3455470
+      },
+      {
+        "name": "AelinUpfrontDealFactory_v3",
+        "address": "0x466B1935ADB1ca43fFF53559fF74ec85b99E0d68",
+        "startBlock": 3446678
       }
     ]
   }

@@ -14,10 +14,18 @@ import {
   Vouch as VouchEvent,
   Disavow as DisavowEvent,
 } from './types/templates/AelinPool/AelinPool'
+
+import {
+  PoolWith721 as NewPoolWith721Event,
+  PoolWith1155 as NewPoolWith1155Event,
+  SponsorClaim as SponsorClaimEvent,
+} from './types/templates/AelinPool_v1/AelinPool_v1'
+
 import { Address, BigInt } from '@graphprotocol/graph-ts'
-import { ZERO_ADDRESS, DEAL_WRAPPER_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
-import { AelinDeal } from './types/templates'
+import { ZERO_ADDRESS, EIGHTEEN_DECIMALS, ONE_HUNDRED, AELIN_FEE, ZERO } from './helpers'
+import { AelinDeal, AelinDeal_v1 } from './types/templates'
 import { AelinDeal as AelinDealContract } from './types/templates/AelinDeal/AelinDeal'
+import { AelinPool_v1 as AelinPoolContract } from './types/templates/AelinPool_v1/AelinPool_v1'
 import {
   createEntity,
   createOrUpdateSponsorVestingDeal,
@@ -34,6 +42,7 @@ import {
   getVestingDeal,
 } from './services/entities'
 import { createNotificationsForEvent, removeNotificationsForEvent } from './services/notifications'
+import { TemplatesVersions } from '../templatesVersions'
 
 export function handleAelinPoolToken(event: AelinTokenEvent): void {
   createEntity(Entity.AelinToken, event)
@@ -69,6 +78,7 @@ export function handlePoolTransfer(event: TransferEvent): void {
   if (event.params.to.toHex() == ZERO_ADDRESS.toHex()) {
     poolCreatedEntity.totalSupply = poolCreatedEntity.totalSupply.minus(event.params.value)
   }
+
   poolCreatedEntity.save()
 }
 
@@ -121,7 +131,12 @@ export function handleDealDetail(event: DealDetailEvent): void {
   }
 
   // use templates to create a new deal to track events
-  AelinDeal.create(event.params.dealContract)
+  if (event.block.number.gt(BigInt.fromString(TemplatesVersions.AelinDeal_v1))) {
+    AelinDeal_v1.create(event.params.dealContract)
+  } else {
+    AelinDeal.create(event.params.dealContract)
+  }
+
   createNotificationsForEvent(event)
 }
 
@@ -244,14 +259,17 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
     dealFundedEntity.save()
   }
 
-  let exp = DEAL_WRAPPER_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
+  let decimals = EIGHTEEN_DECIMALS.minus(BigInt.fromI32(poolCreatedEntity.purchaseTokenDecimals))
   let dealTokenAmount = event.params.poolTokenAmount.times(
     // @ts-ignore
-    BigInt.fromI32(10).pow(<u8>exp.toI32()),
+    BigInt.fromI32(10).pow(<u8>decimals.toI32()),
   )
   let aelinDealContract = AelinDealContract.bind(event.params.dealAddress)
   let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
   let investorDealTotal = dealTokenAmount.times(underlyingPerDealExchangeRate)
+
+  let aelinPoolContract = AelinPoolContract.bind(event.address)
+  let maxProRataAmount = aelinPoolContract.maxProRataAmount(event.transaction.from)
 
   /**
    * UserAllocationStat entity
@@ -261,6 +279,10 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   )
 
   if (userAllocationStatEntity !== null) {
+    if (maxProRataAmount.equals(ZERO)) {
+      userAllocationStatEntity.isRoundOneMaxAccepted = true
+    }
+
     userAllocationStatEntity.poolTokenBalance = userAllocationStatEntity.poolTokenBalance.minus(
       event.params.poolTokenAmount,
     )
@@ -277,7 +299,6 @@ export function handleAcceptDeal(event: AcceptDealEvent): void {
   if (vestingDealEntity === null) {
     createEntity(Entity.VestingDeal, event)
   } else {
-    createOrUpdateSponsorVestingDeal(event)
     let sponsorFee = poolCreatedEntity.sponsorFee.div(BigInt.fromI32(10).pow(18))
     let dealTokens = investorDealTotal
       .div(BigInt.fromI32(10).pow(18))
@@ -364,6 +385,14 @@ export function handlePoolWith1155(event: PoolWith1155Event): void {
   createEntity(Entity.NftCollectionRule, event)
 }
 
+export function handleNewPoolWith721(event: NewPoolWith721Event): void {
+  createEntity(Entity.NftCollectionRule, event)
+}
+
+export function handleNewPoolWith1155(event: NewPoolWith1155Event): void {
+  createEntity(Entity.NftCollectionRule, event)
+}
+
 export function handleBlacklistNFT(event: BlacklistNFTEvent): void {
   /**
    * Update NftCollectionRule entity
@@ -429,4 +458,17 @@ export function handleDisavow(event: DisavowEvent): void {
     poolCreatedEntity.save()
     userEntity.save()
   }
+}
+
+export function handleSponsorClaim(event: SponsorClaimEvent): void {
+  const poolCreatedEntity = getPoolCreated(event.address.toHex())
+  if (poolCreatedEntity === null) {
+    return
+  }
+
+  createOrUpdateSponsorVestingDeal(event)
+
+  poolCreatedEntity.sponsorClaimed = true
+
+  poolCreatedEntity.save()
 }
