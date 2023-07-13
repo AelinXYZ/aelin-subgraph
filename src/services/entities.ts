@@ -851,7 +851,7 @@ export function createOrUpdateSponsorVestingDeal(event: PoolSponsorClaimEvent): 
   let aelinDealContract = AelinDealContract.bind(Address.fromBytes(poolCreatedEntity.dealAddress!))
   let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
 
-  let investorDealTotal = event.params.amountMinted
+  let investorDealTotal = event.params.sponsorFeeAmount
     .times(underlyingPerDealExchangeRate)
     .div(BigInt.fromI32(10).pow(18))
 

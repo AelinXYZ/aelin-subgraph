@@ -130,8 +130,9 @@ export function handleDealDetail(event: DealDetailEvent): void {
     }
   }
 
+  const startBlockAelinDeal_v1 = BigInt.fromString(TemplatesVersions.AelinDeal_v1)
   // use templates to create a new deal to track events
-  if (event.block.number.gt(BigInt.fromString(TemplatesVersions.AelinDeal_v1))) {
+  if (startBlockAelinDeal_v1.ge(ZERO) && event.block.number.gt(startBlockAelinDeal_v1)) {
     AelinDeal_v1.create(event.params.dealContract)
   } else {
     AelinDeal.create(event.params.dealContract)

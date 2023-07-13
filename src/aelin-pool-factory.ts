@@ -2,7 +2,7 @@ import { BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 import { PoolCreated, TotalPoolsCreated } from './types/schema'
 import { CreatePool as CreatePoolEvent } from './types/AelinPoolFactory_v4/AelinPoolFactory'
 import { AelinPool, AelinPool_v1 } from './types/templates'
-import { ONE } from './helpers'
+import { ONE, ZERO } from './helpers'
 import { PoolStatus, DealType } from './enum'
 import { createNotificationsForEvent } from './services/notifications'
 import { getOrCreateUser } from './services/entities'
@@ -58,9 +58,9 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   poolCreatedEntity.nftCollectionRules = []
   poolCreatedEntity.sponsorClaimed = false
 
-  poolCreatedEntity.isDealTokenTransferable = event.block.number.gt(
-    BigInt.fromString(TemplatesVersions.AelinPool_v1),
-  )
+  const startBlockAelinPool_v1 = BigInt.fromString(TemplatesVersions.AelinPool_v1)
+  poolCreatedEntity.isDealTokenTransferable =
+    startBlockAelinPool_v1.ge(ZERO) && event.block.number.gt(startBlockAelinPool_v1)
 
   poolCreatedEntity.save()
 
@@ -74,7 +74,7 @@ export function handleCreatePool(event: CreatePoolEvent): void {
   }
 
   // use templates to create a new pool to track events
-  if (event.block.number.gt(BigInt.fromString(TemplatesVersions.AelinPool_v1))) {
+  if (startBlockAelinPool_v1.ge(ZERO) && event.block.number.gt(startBlockAelinPool_v1)) {
     AelinPool_v1.create(event.params.poolAddress)
   } else {
     AelinPool.create(event.params.poolAddress)
