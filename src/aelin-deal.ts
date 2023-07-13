@@ -189,14 +189,23 @@ export function handleClaimedUnderlyingDealTokenERC721(
   if (event instanceof ClaimedUnderlyingDealTokenERC721Event) {
     createEntity(Entity.ClaimedUnderlyingDealToken, event)
 
+    /**
+     * Update VestingToken entity
+     */
+
     let vestingTokenEntity = VestingToken.load(
       event.address.toHex() + '-' + event.params.tokenId.toHex(),
     )
 
+    let aelinDealContract = AelinDealContract.bind(event.address)
+    let underlyingPerDealExchangeRate = aelinDealContract.underlyingPerDealExchangeRate()
+
+    let underlyingDealTokensClaimed = event.params.underlyingDealTokensClaimed
+      .times(BigInt.fromI32(10).pow(18))
+      .div(underlyingPerDealExchangeRate)
+
     if (vestingTokenEntity !== null) {
-      vestingTokenEntity.amount = vestingTokenEntity.amount.minus(
-        event.params.underlyingDealTokensClaimed,
-      )
+      vestingTokenEntity.amount = vestingTokenEntity.amount.minus(underlyingDealTokensClaimed)
       vestingTokenEntity.save()
     }
 
