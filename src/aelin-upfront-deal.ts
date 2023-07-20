@@ -277,7 +277,7 @@ export function handleSponsorClaim(event: SponsorClaimEvent): void {
   if (upFrontDealEntity !== null) {
     upFrontDealEntity.sponsorClaim = true
     upFrontDealEntity.totalRedeemed = upFrontDealEntity.totalRedeemed!.plus(
-      event.params.amountMinted.div(ONE_HUNDRED.minus(AELIN_FEE)),
+      event.params.amountMinted.times(ONE_HUNDRED).div(ONE_HUNDRED.minus(AELIN_FEE)),
     )
 
     upFrontDealEntity.save()
@@ -317,7 +317,7 @@ export function handleClaimDealTokens(event: ClaimDealTokensEvent): void {
       event.params.amountMinted,
     )
     upFrontDealEntity.totalRedeemed = upFrontDealEntity.totalRedeemed!.plus(
-      event.params.amountMinted.div(ONE_HUNDRED.minus(AELIN_FEE)),
+      event.params.amountMinted.times(ONE_HUNDRED).div(ONE_HUNDRED.minus(AELIN_FEE)),
     )
 
     upFrontDealEntity.save()
